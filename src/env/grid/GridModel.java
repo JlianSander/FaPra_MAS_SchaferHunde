@@ -8,13 +8,12 @@ public class GridModel extends GridWorldModel {
     static final int CORRAL = 16;
     static final int SHEEP = 32;
 
-    GridProcessor gridProcessor;
+    private GridProcessor gridProcessor;
 
     // Random from parameters
     public GridModel(int size, int corralWidth, int corralHeight) {
         super(size, size, 1);
-
-        gridProcessor = new GridProcessor(size, size);
+        commonInit();
 
         // Define corral
         int startX = 1;
@@ -34,8 +33,13 @@ public class GridModel extends GridWorldModel {
 
     // From file
     public GridModel(String filePath) {
-        super(0, 0, 1);
+        super(0, 0, 1000);
+        commonInit();
         loadFromFile(filePath);
+    }
+
+    private void commonInit() {
+        gridProcessor = new GridProcessor(width, height);
     }
 
     private void loadFromFile(String filepath) {
@@ -60,12 +64,4 @@ public class GridModel extends GridWorldModel {
             }
         }
     }
-
-    // private void initSheep(int count){
-    //     for (int i = 0; i < width; i++) {
-    //         for (int j = 0; j < height; j++) {
-    //             if (isFree(x, y)) {  // Check if the cell is free
-    //         add(SHEEP, x, y);
-    //     }
-    // }
 }

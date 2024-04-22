@@ -1,6 +1,7 @@
 package grid;
 
 import cartago.*;
+import grid.util.GridProcessor;
 import jason.environment.grid.Location;
 
 public class GridWorld extends Artifact {
@@ -37,9 +38,20 @@ public class GridWorld extends Artifact {
         }
     }
 
-    // @OPERATION
-    // void placeObstacle(int x, int y) {
-    //     model.add(GridModel.OBSTACLE, x, y);
-    //     view.update(x, y);
-    // }
+    @OPERATION
+    void place_sheep() {
+        // int agentId = this.getCurrentOpAgentId().getLocalId();
+
+        boolean[] placed = { false };
+        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
+        gridProcessor.processEntireGrid(
+                loc -> model.isFree(GridModel.SHEEP, loc) && !placed[0],
+                loc -> {
+                    model.add(GridModel.SHEEP, loc);
+                    placed[0] = true;
+                });
+
+        view.repaint();
+        view.update();
+    }
 }

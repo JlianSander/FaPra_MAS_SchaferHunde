@@ -21,13 +21,24 @@ public class GridView extends GridWorldView {
                 drawObstacle(g, x, y);
                 break;
             case GridModel.CORRAL:
-                drawCorral(g, x, y, Color.blue);
+                drawFill(g, x, y, Color.BLUE);
+                break;
+            case GridModel.SHEEP:
+                drawCircle(g, x, y, Color.GRAY);
+                break;
+            case GridModel.AGENT:
+                drawAgent(g, x, y, Color.BLACK, GridModel.AGENT);
                 break;
         }
     }
 
-    public void drawCorral(Graphics g, int x, int y, Color color) {
+    public void drawFill(Graphics g, int x, int y, Color color) {
         g.setColor(color);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+    }
+
+    public void drawCircle(Graphics g, int x, int y, Color color) {
+        g.setColor(color);
+        g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
     }
 }

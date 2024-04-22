@@ -13,13 +13,14 @@
 */
 
 mas mas_schafherde {
-
-    agent bob: sample_agent.asl {
-      focus: world.grid
+    agent sheep: sheep.asl {
+        instances: 5
+        focus: world.grid
     }
 
     workspace world {
-      // artifact grid: grid.GridWorld(40, 6, 2, 6, 2)
+      // artifact grid: grid.GridWorld(20, 3, 2)
       artifact grid: grid.GridWorld("src/env/grid/templates/1.txt")
+      debug
     }
 }
