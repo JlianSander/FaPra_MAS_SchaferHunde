@@ -9,21 +9,22 @@ public class GridModel extends GridWorldModel {
     public GridModel(int size, int corralWidth, int corralHeight) {
         super(size, size, 1);
 
-        // Initialize the grid with obstructions
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (Math.random() < 0.2) {
-                    add(OBSTACLE, i, j);
-                }
-            }
-        }
-
         // Define corral
         int startX = 1;
         int startY = 1;
         for (int i = startX; i < startX + corralWidth; i++) {
             for (int j = startY; j < startY + corralHeight; j++) {
                 add(CORRAL, i, j);
+            }
+        }
+
+        // Initialize the grid with obstructions
+        double obstacleDensity = 0.2;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (isFree(CORRAL, i, j) && Math.random() < obstacleDensity) {
+                    add(OBSTACLE, i, j);
+                }
             }
         }
     }
