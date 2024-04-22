@@ -1,13 +1,20 @@
 package grid;
 
+import grid.util.GridModelFileParser;
+import grid.util.GridProcessor;
 import jason.environment.grid.GridWorldModel;
 
 public class GridModel extends GridWorldModel {
     static final int CORRAL = 16;
+    static final int SHEEP = 32;
+
+    GridProcessor gridProcessor;
 
     // Random from parameters
     public GridModel(int size, int corralWidth, int corralHeight) {
         super(size, size, 1);
+
+        gridProcessor = new GridProcessor(size, size);
 
         // Define corral
         int startX = 1;
@@ -20,13 +27,9 @@ public class GridModel extends GridWorldModel {
 
         // Initialize the grid with obstructions
         double obstacleDensity = 0.2;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (isFree(CORRAL, i, j) && Math.random() < obstacleDensity) {
-                    add(OBSTACLE, i, j);
-                }
-            }
-        }
+        gridProcessor.processEntireGrid(loc -> isFree(CORRAL, loc)
+                && Math.random() < obstacleDensity,
+                loc -> add(OBSTACLE, loc));
     }
 
     // From file
@@ -57,4 +60,12 @@ public class GridModel extends GridWorldModel {
             }
         }
     }
+
+    // private void initSheep(int count){
+    //     for (int i = 0; i < width; i++) {
+    //         for (int j = 0; j < height; j++) {
+    //             if (isFree(x, y)) {  // Check if the cell is free
+    //         add(SHEEP, x, y);
+    //     }
+    // }
 }
