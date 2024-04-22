@@ -7,8 +7,17 @@ public class GridWorld extends Artifact {
     GridModel model;
     GridView view;
 
+    void init(int size, int corralWidth, int corralHeight) {
+        model = new GridModel(size, corralWidth, corralHeight);
+        commonInit(model);
+    }
+
     void init(String filePath) {
         model = new GridModel(filePath);
+        commonInit(model);
+    }
+
+    void commonInit(GridModel model) {
         view = new GridView(model);
         defineObsProperty("gridSize", model.getWidth());
     }
