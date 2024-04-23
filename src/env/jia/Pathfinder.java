@@ -6,11 +6,9 @@ import jason.environment.grid.Location;
 
 public class Pathfinder {
     DStarLite ds;
-    GridModel model;
 
     public Pathfinder(GridModel model) {
         ds = new DStarLite();
-        this.model = model;
         excludeObstacles(model);
     }
 
