@@ -14,7 +14,7 @@
 
 mas mas_schafherde {
     agent sheep: sheep.asl {
-        instances: 1
+        instances: 5
         focus: world.grid
     }
 

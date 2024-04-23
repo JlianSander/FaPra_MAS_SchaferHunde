@@ -63,15 +63,11 @@ public class GridWorld extends Artifact {
         boolean[] placed = { false };
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(
-                // loc -> model.isFree(GridModel.SHEEP, loc) && !placed[0],
                 loc -> model.isFree(loc) && !placed[0],
                 loc -> {
                     // model.add(GridModel.SHEEP, loc);
                     model.setAgPos(agentId, loc);
                     placed[0] = true;
                 });
-
-        view.repaint();
-        view.update();
     }
 }
