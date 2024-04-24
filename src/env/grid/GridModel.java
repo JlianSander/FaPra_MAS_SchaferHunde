@@ -3,6 +3,7 @@ package grid;
 import grid.util.GridModelFileParser;
 import grid.util.GridProcessor;
 import jason.environment.grid.GridWorldModel;
+import jason.environment.grid.Location;
 
 public class GridModel extends GridWorldModel {
     static final int CORRAL = 16;
@@ -63,5 +64,9 @@ public class GridModel extends GridWorldModel {
                 }
             }
         }
+    }
+
+    public Location getFreePos() {
+        return super.getFreePos();
     }
 }
