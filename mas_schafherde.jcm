@@ -14,6 +14,7 @@
 
 mas mas_schafherde {
     agent sheep: sheep.asl {
+        join world              //agent joins the common workspace "world"
         instances: 5
         focus: world.grid
     }
