@@ -1,13 +1,10 @@
 package grid;
 
-import java.util.List;
-
 import cartago.*;
 import grid.util.GridProcessor;
 import jason.environment.grid.Location;
 
 import jia.Pathfinder;
-import jia.State;
 
 public class GridWorld extends Artifact {
     GridModel model;
@@ -31,7 +28,7 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void test() {
+    void dstar() {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         // int newX = Math.random() < 0.5 ? 1 : -1;
         // int newY = Math.random() < 0.5 ? 1 : -1;

@@ -4,6 +4,11 @@ import grid.GridModel;
 import grid.util.GridProcessor;
 import jason.environment.grid.Location;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import dstarlite.DStarLite;
+
 public class Pathfinder {
     DStarLite ds;
 
@@ -19,10 +24,13 @@ public class Pathfinder {
     }
 
     public Location getNextPosition(Location start, Location target) {
+        return getPath(start, target).get(1);
+    }
+
+    public List<Location> getPath(Location start, Location target) {
         ds.updateStart(start.x, start.y);
         ds.updateGoal(target.x, target.y);
         ds.replan();
-        State s = ds.getPath().get(1);
-        return new Location(s.x, s.y);
+        return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
     }
 }

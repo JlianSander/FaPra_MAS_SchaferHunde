@@ -6,7 +6,7 @@
        !moveRightContinuously.
 
 +!moveRightContinuously
-    <- test;
+    <- dstar;
        .wait(100);
        !moveRightContinuously.
 
