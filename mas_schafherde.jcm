@@ -23,6 +23,7 @@ mas mas_schafherde {
         join world
         instances: 3
         focus: world.grid
+        goals: observe, explore(NORTH)
     }
 
     workspace world {

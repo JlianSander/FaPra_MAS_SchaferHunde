@@ -2,6 +2,7 @@ package grid;
 
 import cartago.*;
 import grid.util.GridProcessor;
+import grid.util.GridVision;
 import jason.environment.grid.Location;
 
 import jia.Pathfinder;
@@ -66,5 +67,16 @@ public class GridWorld extends Artifact {
                     model.setAgPos(agentId, loc);
                     placed[0] = true;
                 });
+    }
+
+     /**
+     * This method calculates the agents in the field of view at a specified location, for a given sight.
+     * @param loc Location at which the spectator is situated.
+     * @param range Range in which the spectator can recognize other agents.
+     * @return Bitset containing the idexes of all agents visible from the specified location, within the specified sight.
+     */
+    @OPERATION
+     public boolean[] getVisibleAgts(Location loc, int range) {
+        return GridVision.getVisibleAgts(model, loc, range);
     }
 }
