@@ -19,6 +19,12 @@ mas mas_schafherde {
         focus: world.grid
     }
 
+    agent hound: hound.asl {
+        join world
+        instances: 3
+        focus: world.grid
+    }
+
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
       artifact grid: grid.GridWorld("src/env/grid/templates/1.txt")

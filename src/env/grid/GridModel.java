@@ -69,4 +69,35 @@ public class GridModel extends GridWorldModel {
     public Location getFreePos() {
         return super.getFreePos();
     }
+
+    /**
+     * This method calculates the field of view at a specified location, for a given sight.
+     * @param loc Location at which the spectator is situated.
+     * @param range Range in which the spectator can recognize other agents.
+     * @return Bitset containing the idexes of all agents visible from the specified location, within the specified sight.
+     */
+    public boolean[] getVisibleAgts(Location loc, int range) {
+        boolean[] agtsInVision = new boolean[this.getNbOfAgs()];
+        //iterate through square around location
+        for(int i = 0; i <= range; i++) {
+            for(int j = 0; j <= range; j++) {
+                //check for agents in the cells around
+                setVisibleAgts(agtsInVision, new Location(loc.x - i, loc.y - j));
+                setVisibleAgts(agtsInVision, new Location(loc.x + i, loc.y - j));
+                setVisibleAgts(agtsInVision, new Location(loc.x - i, loc.y + j));
+                setVisibleAgts(agtsInVision, new Location(loc.x + i, loc.y + j));
+            }
+        }
+        
+        return agtsInVision;
+    }
+
+    //Method sets the agent visible in the specified location in the specified bitset
+    private void setVisibleAgts(boolean[] agtsInVision, Location spectdCell){
+        int idxAg = this.getAgAtPos(spectdCell);
+        //set bitset if agent is located in the cell
+        if(idxAg > -1) {
+            agtsInVision[idxAg] = true;
+        }
+    }
 }
