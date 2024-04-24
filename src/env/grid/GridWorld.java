@@ -13,6 +13,7 @@ public class GridWorld extends Artifact {
     Pathfinder pathFinder;
 
     void init(int size, int corralWidth, int corralHeight) {
+        
         model = new GridModel(size, corralWidth, corralHeight);
         commonInit(model);
     }
@@ -25,6 +26,7 @@ public class GridWorld extends Artifact {
     void commonInit(GridModel model) {
         view = new GridView(model);
         defineObsProperty("gridSize", model.getWidth());
+        defineObsProperty("modelChanged", 0);               //flag to signal changes at the model
         pathFinder = new Pathfinder(model);
     }
 
@@ -48,6 +50,8 @@ public class GridWorld extends Artifact {
             if (model.isFree(location.x, location.y)) {
                 model.setAgPos(agentId, location.x, location.y);
                 this.signal("agentMoved", agentId, location.x, location.y);
+                ObsProperty prop = getObsProperty("modelChanged");
+                prop.updateValue(prop.intValue()+1);                        //raise flag for changes at the model
             }
         } catch (Exception e) {
             failed("move_failed");

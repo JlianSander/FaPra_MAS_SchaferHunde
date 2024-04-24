@@ -14,16 +14,16 @@
 
 mas mas_schafherde {
     agent sheep: sheep.asl {
-        join world              //agent joins the common workspace "world"
+        join: world              //agent joins the common workspace "world"
         instances: 5
         focus: world.grid
     }
 
     agent hound: hound.asl {
-        join world
+        join: world
         instances: 3
         focus: world.grid
-        goals: observe, explore(NORTH)
+        //goals: observe, explore(NORTH)
     }
 
     workspace world {
