@@ -3,7 +3,6 @@ package grid;
 import cartago.*;
 import grid.util.GridProcessor;
 import jason.environment.grid.Location;
-
 import jia.Pathfinder;
 
 public class GridWorld extends Artifact {
@@ -12,6 +11,7 @@ public class GridWorld extends Artifact {
     Pathfinder pathFinder;
 
     void init(int size, int corralWidth, int corralHeight) {
+        
         model = new GridModel(size, corralWidth, corralHeight);
         commonInit(model);
     }
@@ -23,7 +23,8 @@ public class GridWorld extends Artifact {
 
     void commonInit(GridModel model) {
         view = new GridView(model);
-        defineObsProperty("gridSize", model.getWidth());
+        defineObsProperty("gridSize", model.getWidth());       
+        //defineObsProperty("lastSeenBy", "Observer","SeenAgent", new Location(0, 0));
         pathFinder = new Pathfinder(model);
     }
 
@@ -41,20 +42,44 @@ public class GridWorld extends Artifact {
         moveTo(agentId, nextPos);
     }
 
-    @OPERATION
-    void moveTo(int agentId, Location location) {
+    private void moveTo(int agentId, Location location) {
         try {
             if (model.isFree(location.x, location.y)) {
                 model.setAgPos(agentId, location.x, location.y);
-                this.signal("agentMoved", agentId, location.x, location.y);
+                this.signal("agentMoved", agentId, location.x, location.y);                      
             }
         } catch (Exception e) {
             failed("move_failed");
         }
     }
 
+    /**
+     * This method moves the current agent to the location defined by the specified X and Y value.
+     * @param x Value of the location to move to on the X-axis.
+     * @param y Value of the location to move to on the X-axis.
+     * @param newX Out-Parameter to inform the agent of his new position on the X-axis.
+     * @param newY Out-Parameter to inform the agent of his new position on the Y-axis.
+     */
+    @OPERATION
+    public void moveTo(int x, int y, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY){
+        int agentId = this.getCurrentOpAgentId().getLocalId();
+        var destination = new Location(x, y);
+        moveTo(agentId, destination);
+        newX.set(x);
+        newY.set(y);
+    }
+
     @OPERATION
     void place_sheep() {
+        placeAgent();
+    }
+
+    @OPERATION
+    void place_hound() {
+        placeAgent();
+    }
+
+    private void placeAgent() {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
         boolean[] placed = { false };
@@ -66,5 +91,29 @@ public class GridWorld extends Artifact {
                     model.setAgPos(agentId, loc);
                     placed[0] = true;
                 });
+    }
+
+    /**
+     * This method return the identifier, that is used to identify the agent
+     * in the grid.
+     * @param ID Identifier of the current agent in the grid artifact.
+     */
+    @OPERATION
+    public void getOwnID(OpFeedbackParam<Integer> ID){
+        ID.set(this.getCurrentOpAgentId().getLocalId());
+    }
+
+    /**
+     * This method returns the position of the current agent in the grid
+     * by setting output parameters.
+     * @param X Output-parameter for the coordinates in X axis.
+     * @param Y Output-parameter for the coordinates in Y axis.
+     */
+    @OPERATION
+    public void getOwnLocation(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y){
+        int agentId = this.getCurrentOpAgentId().getLocalId();
+        var loc = model.getAgPos(agentId);
+        X.set(loc.x);
+        Y.set(loc.y);
     }
 }
