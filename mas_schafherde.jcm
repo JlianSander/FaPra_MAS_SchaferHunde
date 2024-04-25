@@ -19,11 +19,29 @@ mas mas_schafherde {
         focus: world.grid
     }
 
-    agent hound: hound.asl {
+    agent houndX: hound.asl {
         join: world
-        instances: 3
+        instances: 1
         focus: world.grid
-        //goals: observe, explore(NORTH)
+        beliefs: destination(18,0)
+        goals: explore
+    }
+
+    agent houndY: hound.asl {
+        join: world
+        instances: 1
+        focus: world.grid
+        beliefs: destination(0,18)
+        goals: explore
+    }
+
+    agent houndZ: hound.asl {
+        join: world
+        instances: 1
+        focus: world.grid
+        beliefs: destination(18,18)
+        //beliefs: target(grid.getWidth() - 1, grid.getHeight() - 1)
+        goals: explore
     }
 
     workspace world {

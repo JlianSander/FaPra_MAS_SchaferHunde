@@ -42,6 +42,25 @@ public class GridWorld extends Artifact {
         moveTo(agentId, nextPos);
     }
 
+
+    /**
+     * This method moves the current agent to the next cell on his way to the specified destination defined by the specified X and Y value.
+     * @param targetX Value of the final destination on the X-axis.
+     * @param targetY Value of the final destination on the Y-axis.
+     * @param newX Out-Parameter to inform the agent of his new position on the X-axis.
+     * @param newY Out-Parameter to inform the agent of his new position on the Y-axis.
+     */
+    @OPERATION
+    void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
+        int agentId = this.getCurrentOpAgentId().getLocalId();
+        Location startPos = model.getAgPos(agentId);
+        Location targetPos = new Location(targetX, targetY);
+        Location nextPos = pathFinder.getNextPosition(startPos, targetPos);
+        moveTo(agentId, nextPos);
+        newX.set(nextPos.x);
+        newY.set(nextPos.y);
+    }
+
     private void moveTo(int agentId, Location location) {
         try {
             if (model.isFree(location.x, location.y)) {
@@ -51,22 +70,6 @@ public class GridWorld extends Artifact {
         } catch (Exception e) {
             failed("move_failed");
         }
-    }
-
-    /**
-     * This method moves the current agent to the location defined by the specified X and Y value.
-     * @param x Value of the location to move to on the X-axis.
-     * @param y Value of the location to move to on the X-axis.
-     * @param newX Out-Parameter to inform the agent of his new position on the X-axis.
-     * @param newY Out-Parameter to inform the agent of his new position on the Y-axis.
-     */
-    @OPERATION
-    public void moveTo(int x, int y, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY){
-        int agentId = this.getCurrentOpAgentId().getLocalId();
-        var destination = new Location(x, y);
-        moveTo(agentId, destination);
-        newX.set(x);
-        newY.set(y);
     }
 
     @OPERATION
