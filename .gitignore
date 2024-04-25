@@ -1,6 +1,7 @@
 .vscode
 .gradle
 **/build/
+**/bin/
 !src/**/build/
 
 # Ignore Gradle GUI config
