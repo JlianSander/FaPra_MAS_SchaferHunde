@@ -23,7 +23,6 @@ mas mas_schafherde {
         join: world
         instances: 3
         focus: world.grid
-        //beliefs: position(-1,-1)
         //goals: observe, explore(NORTH)
     }
 

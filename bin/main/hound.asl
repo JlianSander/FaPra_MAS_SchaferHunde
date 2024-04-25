@@ -24,7 +24,7 @@
     X >= MyX - 2 &
     Y <= MyY + 2 &
     Y >= MyY - 2
-    <- !observe(ID).
+    <- !observe(ID, X, Y).
 
 +agentMoved(ID, X, Y) 
     :  myID(MyID) &
@@ -34,7 +34,9 @@
 
 
 
-+!observe(ID) <- .print("observing ", ID).
++!observe(ID, X, Y) <- 
+    -+pos_agent(X ,Y)[agent_ID(ID)];
+    .print("observing ", ID).
 
 
 /*+!explore(DIR) <- ;
