@@ -1,11 +1,40 @@
-+modelChanged(X) <- //trigger every time when model changes
-    !observe.
+//initial plans
+!start.
 
-+!observe <- .print("observing");
-    //get current position
-    //.getVisibleAgts(LOC, 2); //get visible agents of current position
-    //add beliefs for every agent and his current position
-    .
++!start : true
+    <- place_hound;
+       getOwnID(MyID);
+       +myID(MyID);
+       getOwnLocation(X,Y);
+       +pos(X,Y);
+       .print("Hound initialized. ID: " , MyID).
+       
+
+
++pos(X,Y) <- 
+    ?myID(ID);
+    .print(ID," moves to: (", X," , ", Y, ")").
+
+
++agentMoved(ID, X, Y) 
+    :  myID(MyID) &
+    not MyID = ID &
+    pos(MyX,MyY) &
+    X <= MyX + 2 &
+    X >= MyX - 2 &
+    Y <= MyY + 2 &
+    Y >= MyY - 2
+    <- !observe(ID).
+
++agentMoved(ID, X, Y) 
+    :  myID(MyID) &
+    MyID = ID 
+    <- 
+    -+pos(X,Y).
+
+
+
++!observe(ID) <- .print("observing ", ID).
 
 
 /*+!explore(DIR) <- ;
