@@ -83,7 +83,6 @@ public class GridWorld extends Artifact {
     private void placeAgent() {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
-        System.out.println("HEREEEEEEEEEEE");
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(
                 loc -> model.isFree(loc),
