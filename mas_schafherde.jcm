@@ -17,6 +17,7 @@ mas mas_schafherde {
         join: world              //agent joins the common workspace "world"
         instances: 5
         focus: world.grid
+        beliefs: jammed_counter(0)
     }
 
     agent houndX: hound.asl {
@@ -28,7 +29,7 @@ mas mas_schafherde {
         //goals: explore
     }
 
-    agent houndY: hound.asl {
+    /*agent houndY: hound.asl {
         join: world
         instances: 1
         focus: world.grid
@@ -44,7 +45,7 @@ mas mas_schafherde {
         roles: driver in hounds
         //beliefs: destination(18,18)
         //goals: explore
-    }
+    }*/
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
