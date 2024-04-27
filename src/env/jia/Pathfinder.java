@@ -17,16 +17,20 @@ public class Pathfinder {
         excludeObstacles(model);
     }
 
-    void excludeObstacles(GridModel model) {
+    private void excludeObstacles(GridModel model) {
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.OBSTACLE, loc),
-                loc -> ds.updateCell(loc.x, loc.y, -1));
+                loc -> ds.updateCell(loc.x, loc.y, -1),
+                c -> false);
     }
 
     public Location getNextPosition(Location start, Location target) {
         return getPath(start, target).get(1);
     }
 
+    /**
+     * Excluding start location
+     */
     public List<Location> getPath(Location start, Location target) {
         ds.updateStart(start.x, start.y);
         ds.updateGoal(target.x, target.y);

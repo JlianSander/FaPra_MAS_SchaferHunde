@@ -12,13 +12,18 @@ public class GridProcessor {
         this.height = height;
     }
 
-    public void processEntireGrid(Predicate<Location> pred,
-            Consumer<Location> func) {
-        for (int i = 0; i < width; i++) {
+    public void processEntireGrid(Predicate<Location> testPred,
+            Consumer<Location> func,
+            Predicate<Integer> breakPred) {
+        int counter = 0;
+        o: for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Location loc = new Location(i, j);
-                if (pred.test(loc)) {
+                if (testPred.test(loc)) {
                     func.accept(loc);
+                    if (breakPred.test(++counter)) {
+                        break o;
+                    }
                 }
             }
         }

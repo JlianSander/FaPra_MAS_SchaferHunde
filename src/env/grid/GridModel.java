@@ -29,7 +29,8 @@ public class GridModel extends GridWorldModel {
         double obstacleDensity = 0.2;
         gridProcessor.processEntireGrid(loc -> isFree(CORRAL, loc)
                 && Math.random() < obstacleDensity,
-                loc -> add(OBSTACLE, loc));
+                loc -> add(OBSTACLE, loc),
+                c -> false);
     }
 
     // From file

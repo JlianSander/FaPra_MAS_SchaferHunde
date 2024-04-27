@@ -11,7 +11,6 @@ public class GridWorld extends Artifact {
     Pathfinder pathFinder;
 
     void init(int size, int corralWidth, int corralHeight) {
-        
         model = new GridModel(size, corralWidth, corralHeight);
         commonInit(model);
     }
@@ -23,7 +22,7 @@ public class GridWorld extends Artifact {
 
     void commonInit(GridModel model) {
         view = new GridView(model);
-        defineObsProperty("gridSize", model.getWidth());       
+        defineObsProperty("gridSize", model.getWidth());
         //defineObsProperty("lastSeenBy", "Observer","SeenAgent", new Location(0, 0));
         pathFinder = new Pathfinder(model);
     }
@@ -41,7 +40,6 @@ public class GridWorld extends Artifact {
         Location nextPos = pathFinder.getNextPosition(startPos, targetPos);
         moveTo(agentId, nextPos);
     }
-
 
     /**
      * This method moves the current agent to the next cell on his way to the specified destination defined by the specified X and Y value.
@@ -65,7 +63,7 @@ public class GridWorld extends Artifact {
         try {
             if (model.isFree(location.x, location.y)) {
                 model.setAgPos(agentId, location.x, location.y);
-                this.signal("agentMoved", agentId, location.x, location.y);                      
+                this.signal("agentMoved", agentId, location.x, location.y);
             }
         } catch (Exception e) {
             failed("move_failed");
@@ -85,15 +83,14 @@ public class GridWorld extends Artifact {
     private void placeAgent() {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
-        boolean[] placed = { false };
+        System.out.println("HEREEEEEEEEEEE");
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(
-                loc -> model.isFree(loc) && !placed[0],
+                loc -> model.isFree(loc),
                 loc -> {
-                    // model.add(GridModel.SHEEP, loc);
                     model.setAgPos(agentId, loc);
-                    placed[0] = true;
-                });
+                },
+                c -> c == 1);
     }
 
     /**
@@ -102,7 +99,7 @@ public class GridWorld extends Artifact {
      * @param ID Identifier of the current agent in the grid artifact.
      */
     @OPERATION
-    public void getOwnID(OpFeedbackParam<Integer> ID){
+    public void getOwnID(OpFeedbackParam<Integer> ID) {
         ID.set(this.getCurrentOpAgentId().getLocalId());
     }
 
@@ -113,7 +110,7 @@ public class GridWorld extends Artifact {
      * @param Y Output-parameter for the coordinates in Y axis.
      */
     @OPERATION
-    public void getOwnLocation(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y){
+    public void getOwnLocation(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         var loc = model.getAgPos(agentId);
         X.set(loc.x);
