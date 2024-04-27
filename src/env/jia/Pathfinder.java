@@ -17,10 +17,11 @@ public class Pathfinder {
         excludeObstacles(model);
     }
 
-    void excludeObstacles(GridModel model) {
+    private void excludeObstacles(GridModel model) {
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.OBSTACLE, loc),
-                loc -> ds.updateCell(loc.x, loc.y, -1));
+                loc -> ds.updateCell(loc.x, loc.y, -1),
+                c -> false);
     }
 
     public Location getNextPosition(Location start, Location target) {
