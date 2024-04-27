@@ -12,25 +12,28 @@
                         http://moise.sourceforge.net/xml/os.xsd' >
 
 <structural-specification>
-
+<!--
 <role-definitions>
     <role id="role1" />
-    <!--<role id="role2" />-->
+    <role id="role2" />
 </role-definitions>
+-->
 
-<group-specification id="hunde">
+<group-specification id="hounds_specs">
     <roles>
-        <role id="role1" min="1" max="99"/>
+        <role id="driver" min="1" max="99"/>
         <!--<role id="role2" min="1" max="1"/>-->
     </roles>
 
+    <!--
     <links>
        <link from="role1" to="role2" type="authority"     scope="intra-group" bi-dir="false"/>
-       <!--<link from="role2" to="role1" type="communication" scope="intra-group" bi-dir="false"/>-->
+       <link from="role2" to="role1" type="communication" scope="intra-group" bi-dir="false"/>
     </links>
     <formation-constraints>
-       <!--<compatibility from="role1" to="role2" />-->
+       <compatibility from="role1" to="role2" />
     </formation-constraints>
+    -->
 </group-specification>
 </structural-specification>
 

@@ -23,6 +23,7 @@ mas mas_schafherde {
         join: world
         instances: 1
         focus: world.grid
+        roles: driver in hounds
         //beliefs: destination(18,0)
         //goals: explore
     }
@@ -31,6 +32,7 @@ mas mas_schafherde {
         join: world
         instances: 1
         focus: world.grid
+        roles: driver in hounds
         //beliefs: destination(0,18)
         //goals: explore
     }
@@ -39,6 +41,7 @@ mas mas_schafherde {
         join: world
         instances: 1
         focus: world.grid
+        roles: driver in hounds
         //beliefs: destination(18,18)
         //goals: explore
     }
@@ -47,5 +50,9 @@ mas mas_schafherde {
       // artifact grid: grid.GridWorld(20, 3, 2)
       artifact grid: grid.GridWorld("src/env/grid/templates/1.txt")
       debug
+    }
+
+    organisation animals : org.xml {
+        group hounds : hounds_specs 
     }
 }
