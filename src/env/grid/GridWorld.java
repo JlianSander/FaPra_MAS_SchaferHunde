@@ -8,23 +8,22 @@ import jia.Pathfinder;
 public class GridWorld extends Artifact {
     GridModel model;
     GridView view;
-    Pathfinder pathFinder;
+    Pathfinder pathfinder;
 
     void init(int size, int corralWidth, int corralHeight) {
-        model = new GridModel(size, corralWidth, corralHeight);
+        model = GridModel.create(size, corralWidth, corralHeight);
         commonInit(model);
     }
 
     void init(String filePath) {
-        model = new GridModel(filePath);
+        model = GridModel.create(filePath);
         commonInit(model);
     }
 
     void commonInit(GridModel model) {
         view = new GridView(model);
         defineObsProperty("gridSize", model.getWidth());
-        //defineObsProperty("lastSeenBy", "Observer","SeenAgent", new Location(0, 0));
-        pathFinder = new Pathfinder(model);
+        pathfinder = new Pathfinder(model);
     }
 
     @OPERATION
@@ -37,7 +36,7 @@ public class GridWorld extends Artifact {
         Location startPos = model.getAgPos(agentId);
         // Location targetPos = model.getFreePos();
         Location targetPos = new Location(model.getWidth() - 1, model.getHeight() - 1);
-        Location nextPos = pathFinder.getNextPosition(startPos, targetPos);
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         moveTo(agentId, nextPos);
     }
 
@@ -53,7 +52,7 @@ public class GridWorld extends Artifact {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         Location startPos = model.getAgPos(agentId);
         Location targetPos = new Location(targetX, targetY);
-        Location nextPos = pathFinder.getNextPosition(startPos, targetPos);
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         moveTo(agentId, nextPos);
         newX.set(nextPos.x);
         newY.set(nextPos.y);

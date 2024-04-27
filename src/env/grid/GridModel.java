@@ -5,47 +5,67 @@ import grid.util.GridProcessor;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
 public class GridModel extends GridWorldModel {
     static final int CORRAL = 16;
     static final int SHEEP = 32;
 
-    private GridProcessor gridProcessor;
+    private static GridProcessor gridProcessor;
+    private static GridModel model = null;
 
-    // Random from parameters
-    public GridModel(int size, int corralWidth, int corralHeight) {
-        super(size, size, 1);
-        commonInit();
+    // Private constructor for singleton
+    private GridModel(int width, int height) {
+        super(width, height, 1000);
+        commonInit(width, height);
+    }
+
+    public static GridModel getInstance() {
+        if (model == null)
+            throw new IllegalStateException("GridModel not initialized");
+
+        return model;
+    }
+
+    // Factory method to create the singleton instance from parameters
+    public static synchronized GridModel create(int size, int corralWidth, int corralHeight) {
+        model = new GridModel(size, size);
 
         // Define corral
         int startX = 1;
         int startY = 1;
         for (int i = startX; i < startX + corralWidth; i++) {
             for (int j = startY; j < startY + corralHeight; j++) {
-                add(CORRAL, i, j);
+                model.add(CORRAL, i, j);
             }
         }
 
         // Initialize the grid with obstructions
-        double obstacleDensity = 0.2;
-        gridProcessor.processEntireGrid(loc -> isFree(CORRAL, loc)
+        float obstacleDensity = 0.2f;
+        gridProcessor.processEntireGrid(loc -> model.isFree(CORRAL, loc)
                 && Math.random() < obstacleDensity,
-                loc -> add(OBSTACLE, loc),
+                loc -> model.add(OBSTACLE, loc),
                 c -> false);
+        return getInstance();
     }
 
-    // From file
-    public GridModel(String filePath) {
-        super(0, 0, 1000);
-        commonInit();
-        loadFromFile(filePath);
+    // Factory method to create the singleton instance from file
+    public static synchronized GridModel create(String filePath) {
+        char[][] gridData = GridModelFileParser.parseGridFile(filePath);
+        int width = gridData[0].length;
+        int height = gridData.length;
+        model = new GridModel(width, height);
+        model.loadFromFile(gridData);
+        return getInstance();
     }
 
-    private void commonInit() {
+    private static void commonInit(int width, int height) {
         gridProcessor = new GridProcessor(width, height);
     }
 
-    private void loadFromFile(String filepath) {
-        char[][] gridData = GridModelFileParser.parseGridFile(filepath);
+    private void loadFromFile(char[][] gridData) {
         this.width = gridData[0].length;
         this.height = gridData.length;
         this.data = new int[width][height];
@@ -69,5 +89,20 @@ public class GridModel extends GridWorldModel {
 
     public Location getFreePos() {
         return super.getFreePos();
+    }
+
+    public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
+        List<Location> neighbors = new ArrayList<>();
+        for (int dx = -range; dx <= range; dx++) {
+            for (int dy = -range; dy <= range; dy++) {
+                int newX = loc.x + dx;
+                int newY = loc.y + dy;
+                Location newLoc = new Location(newX, newY);
+                if (filter.test(newLoc)) {
+                    neighbors.add(newLoc);
+                }
+            }
+        }
+        return neighbors;
     }
 }
