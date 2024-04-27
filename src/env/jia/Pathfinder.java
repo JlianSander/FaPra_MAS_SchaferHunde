@@ -28,9 +28,6 @@ public class Pathfinder {
         return getPath(start, target).get(1);
     }
 
-    /**
-     * Excluding start location
-     */
     public List<Location> getPath(Location start, Location target) {
         ds.updateStart(start.x, start.y);
         ds.updateGoal(target.x, target.y);
