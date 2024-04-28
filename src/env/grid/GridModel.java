@@ -87,10 +87,6 @@ public class GridModel extends GridWorldModel {
         }
     }
 
-    public Location getFreePos() {
-        return super.getFreePos();
-    }
-
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
         List<Location> neighbors = new ArrayList<>();
         for (int dx = -range; dx <= range; dx++) {
