@@ -27,7 +27,7 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void dstar() {
+    void dstar(OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         // int newX = Math.random() < 0.5 ? 1 : -1;
         // int newY = Math.random() < 0.5 ? 1 : -1;
@@ -36,8 +36,12 @@ public class GridWorld extends Artifact {
         Location startPos = model.getAgPos(agentId);
         // Location targetPos = model.getFreePos();
         Location targetPos = new Location(model.getWidth() - 1, model.getHeight() - 1);
-        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-        moveTo(agentId, nextPos);
+        try {
+            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+            moveTo(agentId, nextPos, newX, newY);
+        } catch (Exception e) {
+            failed("no next step possible");
+        }
     }
 
     /**
@@ -52,17 +56,22 @@ public class GridWorld extends Artifact {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         Location startPos = model.getAgPos(agentId);
         Location targetPos = new Location(targetX, targetY);
-        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-        moveTo(agentId, nextPos);
-        newX.set(nextPos.x);
-        newY.set(nextPos.y);
+        try {
+            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+            moveTo(agentId, nextPos, newX, newY);
+        } catch (Exception e) {
+            failed("no next step possible");
+        }
     }
 
-    void moveTo(int agentId, Location location) {
+    private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         try {
             if (model.isFree(location.x, location.y)) {
                 model.setAgPos(agentId, location.x, location.y);
-                this.signal("agentMoved", agentId, location.x, location.y);
+                newX.set(location.x);
+                newY.set(location.y);
+            } else {
+                failed("move_failed");
             }
         } catch (Exception e) {
             failed("move_failed");
