@@ -79,16 +79,16 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void place_sheep() {
-        placeAgent();
+    void place_sheep(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+        placeAgent(X, Y);
     }
 
     @OPERATION
-    void place_hound() {
-        placeAgent();
+    void place_hound(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+        placeAgent(X, Y);
     }
 
-    private void placeAgent() {
+    private void placeAgent(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -96,38 +96,20 @@ public class GridWorld extends Artifact {
                 loc -> model.isFree(loc),
                 loc -> {
                     model.setAgPos(agentId, loc);
+                    X.set(loc.x);
+                    Y.set(loc.y);
                 },
                 c -> c == 1);
     }
 
-    /**
-     * This method return the identifier, that is used to identify the agent
-     * in the grid.
-     * @param ID Identifier of the current agent in the grid artifact.
-     */
-    @OPERATION
-    public void getOwnID(OpFeedbackParam<Integer> ID) {
-        System.out.println("-------------------------------------");
-        System.out.println(this.getCurrentOpAgentId());
-        System.out.println(this.getCurrentOpAgentId().getAgentName());
-        System.out.println(this.getCurrentOpAgentId().getAgentRole());
-        System.out.println(this.getCurrentOpAgentId().getGlobalId());
-        System.out.println(this.getCurrentOpAgentId().getLocalId());
-        System.out.println("-------------------------------------");
-        ID.set(this.getCurrentOpAgentId().getLocalId());
-    }
-
-    /**
-     * This method returns the position of the current agent in the grid
-     * by setting output parameters.
-     * @param X Output-parameter for the coordinates in X axis.
-     * @param Y Output-parameter for the coordinates in Y axis.
-     */
-    @OPERATION
-    public void getOwnLocation(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
-        int agentId = this.getCurrentOpAgentId().getLocalId();
-        var loc = model.getAgPos(agentId);
-        X.set(loc.x);
-        Y.set(loc.y);
-    }
+    // Leaving this here for a few commits just in case we do end up needing it.
+    // /**
+    //  * This method return the identifier, that is used to identify the agent
+    //  * in the grid.
+    //  * @param ID Identifier of the current agent in the grid artifact.
+    //  */
+    // @OPERATION
+    // public void getOwnID(OpFeedbackParam<Integer> ID) {
+    //     ID.set(this.getCurrentOpAgentId().getLocalId());
+    // }
 }
