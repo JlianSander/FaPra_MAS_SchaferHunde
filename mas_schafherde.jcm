@@ -17,36 +17,43 @@ mas mas_schafherde {
         join: world              //agent joins the common workspace "world"
         instances: 5
         focus: world.grid
+        beliefs: jammed_counter(0)
     }
 
     agent houndX: hound.asl {
         join: world
         instances: 1
         focus: world.grid
-        beliefs: destination(18,0)
-        goals: explore
+        roles: driver in hounds
+        //beliefs: destination(18,0)
+        //goals: explore
     }
 
-    agent houndY: hound.asl {
+    /*agent houndY: hound.asl {
         join: world
         instances: 1
         focus: world.grid
-        beliefs: destination(0,18)
-        goals: explore
+        roles: driver in hounds
+        //beliefs: destination(0,18)
+        //goals: explore
     }
 
     agent houndZ: hound.asl {
         join: world
         instances: 1
         focus: world.grid
-        beliefs: destination(18,18)
-        //beliefs: target(grid.getWidth() - 1, grid.getHeight() - 1)
-        goals: explore
-    }
+        roles: driver in hounds
+        //beliefs: destination(18,18)
+        //goals: explore
+    }*/
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
       artifact grid: grid.GridWorld("src/env/grid/templates/1.txt")
       debug
+    }
+
+    organisation animals : org.xml {
+        group hounds : hounds_specs 
     }
 }
