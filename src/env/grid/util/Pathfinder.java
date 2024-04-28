@@ -1,7 +1,6 @@
-package jia;
+package grid.util;
 
 import grid.GridModel;
-import grid.util.GridProcessor;
 import jason.environment.grid.Location;
 
 import java.util.List;
