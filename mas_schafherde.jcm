@@ -14,35 +14,36 @@
 
 mas mas_schafherde {
     agent sheep: sheep.asl {
+        ag-arch: arch.Sheep
         join: world              //agent joins the common workspace "world"
-        instances: 5
+        instances: 2
         focus: world.grid
     }
 
-    agent houndX: hound.asl {
-        join: world
-        instances: 1
-        focus: world.grid
-        beliefs: destination(18,0)
-        goals: explore
-    }
+    // agent houndX: hound.asl {
+    //     join: world
+    //     instances: 1
+    //     focus: world.grid
+    //     beliefs: destination(18,0)
+    //     goals: explore
+    // }
 
-    agent houndY: hound.asl {
-        join: world
-        instances: 1
-        focus: world.grid
-        beliefs: destination(0,18)
-        goals: explore
-    }
+    // agent houndY: hound.asl {
+    //     join: world
+    //     instances: 1
+    //     focus: world.grid
+    //     beliefs: destination(0,18)
+    //     goals: explore
+    // }
 
-    agent houndZ: hound.asl {
-        join: world
-        instances: 1
-        focus: world.grid
-        beliefs: destination(18,18)
-        //beliefs: target(grid.getWidth() - 1, grid.getHeight() - 1)
-        goals: explore
-    }
+    // agent houndZ: hound.asl {
+    //     join: world
+    //     instances: 1
+    //     focus: world.grid
+    //     beliefs: destination(18,18)
+    //     //beliefs: target(grid.getWidth() - 1, grid.getHeight() - 1)
+    //     goals: explore
+    // }
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)

@@ -58,7 +58,7 @@ public class GridWorld extends Artifact {
         newY.set(nextPos.y);
     }
 
-    private void moveTo(int agentId, Location location) {
+    void moveTo(int agentId, Location location) {
         try {
             if (model.isFree(location.x, location.y)) {
                 model.setAgPos(agentId, location.x, location.y);
@@ -98,6 +98,13 @@ public class GridWorld extends Artifact {
      */
     @OPERATION
     public void getOwnID(OpFeedbackParam<Integer> ID) {
+        System.out.println("-------------------------------------");
+        System.out.println(this.getCurrentOpAgentId());
+        System.out.println(this.getCurrentOpAgentId().getAgentName());
+        System.out.println(this.getCurrentOpAgentId().getAgentRole());
+        System.out.println(this.getCurrentOpAgentId().getGlobalId());
+        System.out.println(this.getCurrentOpAgentId().getLocalId());
+        System.out.println("-------------------------------------");
         ID.set(this.getCurrentOpAgentId().getLocalId());
     }
 
