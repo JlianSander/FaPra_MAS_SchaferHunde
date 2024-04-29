@@ -4,10 +4,12 @@ import cartago.*;
 import grid.util.GridProcessor;
 import grid.util.Pathfinder;
 import jason.environment.grid.Location;
+import service.AgentDB;
 
 public class GridWorld extends Artifact {
     GridModel model;
     GridView view;
+    AgentDB agentDB;
     Pathfinder pathfinder;
 
     void init(int size, int corralWidth, int corralHeight) {
@@ -23,6 +25,7 @@ public class GridWorld extends Artifact {
     void commonInit(GridModel model) {
         view = new GridView(model);
         defineObsProperty("gridSize", model.getWidth());
+        agentDB = new AgentDB();
         pathfinder = new Pathfinder(model);
     }
 
@@ -61,7 +64,7 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    private void initAgent(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -73,5 +76,7 @@ public class GridWorld extends Artifact {
                     Y.set(loc.y);
                 },
                 c -> c == 1);
+
+        agentDB.addAgent(agentId, name);
     }
 }
