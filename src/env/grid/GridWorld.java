@@ -23,9 +23,9 @@ public class GridWorld extends Artifact {
     }
 
     void commonInit(GridModel model) {
-        view = new GridView(model);
-        defineObsProperty("gridSize", model.getWidth());
         agentDB = new AgentDB();
+        view = new GridView(model, agentDB);
+        defineObsProperty("gridSize", model.getWidth());
         pathfinder = new Pathfinder(model);
     }
 

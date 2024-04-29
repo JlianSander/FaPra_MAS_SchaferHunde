@@ -15,9 +15,9 @@ public class AgentDB {
 
     public void addAgent(int id, String name) {
         AgentType type = null;
-        if (name.contains("sheep")) {
+        if (name.toLowerCase().contains("sheep")) {
             type = AgentType.SHEEP;
-        } else if (name.contains("hound")) {
+        } else if (name.toLowerCase().contains("hound")) {
             type = AgentType.HOUND;
         } else {
             throw new IllegalArgumentException("Invalid agent name");
