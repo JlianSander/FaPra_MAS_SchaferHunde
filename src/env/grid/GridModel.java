@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 public class GridModel extends GridWorldModel {
     static final int CORRAL = 16;
     static final int SHEEP = 32;
+    static final int HOUND = 64;
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
