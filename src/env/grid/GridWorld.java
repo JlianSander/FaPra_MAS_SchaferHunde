@@ -2,12 +2,14 @@ package grid;
 
 import cartago.*;
 import grid.util.GridProcessor;
+import grid.util.Pathfinder;
 import jason.environment.grid.Location;
-import jia.Pathfinder;
+import service.AgentDB;
 
 public class GridWorld extends Artifact {
     GridModel model;
     GridView view;
+    AgentDB agentDB;
     Pathfinder pathfinder;
 
     void init(int size, int corralWidth, int corralHeight) {
@@ -21,29 +23,10 @@ public class GridWorld extends Artifact {
     }
 
     void commonInit(GridModel model) {
-        view = new GridView(model);
+        agentDB = new AgentDB();
+        view = new GridView(model, agentDB);
         defineObsProperty("gridSize", model.getWidth());
         pathfinder = new Pathfinder(model);
-    }
-
-    @OPERATION
-    void dstar(OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        int agentId = this.getCurrentOpAgentId().getLocalId();
-        // int newX = Math.random() < 0.5 ? 1 : -1;
-        // int newY = Math.random() < 0.5 ? 1 : -1;
-        // move(agentId, newX, newY);
-
-        Location startPos = model.getAgPos(agentId);
-        // Location targetPos = model.getFreePos();
-        Location targetPos = new Location(model.getWidth() - 1, model.getHeight() - 1);
-        try
-        {
-            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-            moveTo(agentId, nextPos, newX, newY);
-        }
-        catch(Exception e) {
-            failed("no next step possible");
-        }
     }
 
     /**
@@ -58,24 +41,21 @@ public class GridWorld extends Artifact {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         Location startPos = model.getAgPos(agentId);
         Location targetPos = new Location(targetX, targetY);
-        try
-        {
+        try {
             Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
             moveTo(agentId, nextPos, newX, newY);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             failed("no next step possible");
         }
     }
 
-    private void moveTo(int agentId, Location location,  OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
+    private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         try {
             if (model.isFree(location.x, location.y)) {
-                model.setAgPos(agentId, location.x, location.y); 
+                model.setAgPos(agentId, location.x, location.y);
                 newX.set(location.x);
-                newY.set(location.y);                   
-            }
-            else {
+                newY.set(location.y);
+            } else {
                 failed("move_failed");
             }
         } catch (Exception e) {
@@ -84,16 +64,7 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void place_sheep() {
-        placeAgent();
-    }
-
-    @OPERATION
-    void place_hound() {
-        placeAgent();
-    }
-
-    private void placeAgent() {
+    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -101,31 +72,11 @@ public class GridWorld extends Artifact {
                 loc -> model.isFree(loc),
                 loc -> {
                     model.setAgPos(agentId, loc);
+                    X.set(loc.x);
+                    Y.set(loc.y);
                 },
                 c -> c == 1);
-    }
 
-    /**
-     * This method return the identifier, that is used to identify the agent
-     * in the grid.
-     * @param ID Identifier of the current agent in the grid artifact.
-     */
-    @OPERATION
-    public void getOwnID(OpFeedbackParam<Integer> ID) {
-        ID.set(this.getCurrentOpAgentId().getLocalId());
-    }
-
-    /**
-     * This method returns the position of the current agent in the grid
-     * by setting output parameters.
-     * @param X Output-parameter for the coordinates in X axis.
-     * @param Y Output-parameter for the coordinates in Y axis.
-     */
-    @OPERATION
-    public void getOwnLocation(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
-        int agentId = this.getCurrentOpAgentId().getLocalId();
-        var loc = model.getAgPos(agentId);
-        X.set(loc.x);
-        Y.set(loc.y);
+        agentDB.addAgent(agentId, name);
     }
 }

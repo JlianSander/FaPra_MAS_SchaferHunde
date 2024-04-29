@@ -1,14 +1,18 @@
 package grid;
 
 import jason.environment.grid.GridWorldView;
+import service.AgentDB;
 import jason.environment.grid.GridWorldModel;
 
 import java.awt.Graphics;
 import java.awt.Color;
 
 public class GridView extends GridWorldView {
-    public GridView(GridWorldModel model) {
+    AgentDB agentDB;
+
+    public GridView(GridWorldModel model, AgentDB agentDB) {
         super(model, "Grid World", 600);
+        this.agentDB = agentDB;
         setVisible(true);
         repaint();
     }
@@ -21,14 +25,25 @@ public class GridView extends GridWorldView {
                 drawObstacle(g, x, y);
                 break;
             case GridModel.CORRAL:
-                drawFill(g, x, y, Color.BLUE);
+                drawFill(g, x, y, Color.GREEN);
                 break;
-            case GridModel.SHEEP:
-                drawCircle(g, x, y, Color.GRAY);
+        }
+    }
+
+    @Override
+    public void drawAgent(Graphics g, int x, int y, Color c, int id) {
+        if (agentDB.getAgentById(id) == null)
+            return;
+
+        switch (agentDB.getAgentById(id).getType()) {
+            case SHEEP:
+                super.drawAgent(g, x, y, Color.GRAY, id);
                 break;
-            case GridModel.AGENT:
-                drawAgent(g, x, y, Color.BLACK, GridModel.AGENT);
+            case HOUND:
+                super.drawAgent(g, x, y, Color.red, id);
                 break;
+            default:
+                throw new IllegalArgumentException("Invalid agent type");
         }
     }
 
