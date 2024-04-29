@@ -1,9 +1,8 @@
 !start.
 
-+!start : true
-    <- initAgent(AgX, AgY);
++!start : .my_name(Me)
+    <- initAgent(Me, AgX, AgY);
         +pos(AgX,AgY);
-        .my_name(Me);
         .print(Me, " initialized at (", AgX, " , ", AgY, ")");
         !init.
 

@@ -6,7 +6,7 @@
 +!flock : pos(AgX, AgY)
     <- 
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
-    .print("Target: (", TargetX, " , ", TargetY, ")");
+    // .print("Target: (", TargetX, " , ", TargetY, ")");
     !moveStep(TargetX, TargetY);
     !flock.
 
