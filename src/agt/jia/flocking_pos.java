@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Random;
 
 import grid.GridModel;
-import jason.asSemantics.Agent;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -21,11 +20,7 @@ public class flocking_pos extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        // int AgX = (int) ((NumberTerm) args[0]).solve();
-        // int AgY = (int) ((NumberTerm) args[1]).solve();
         GridModel model = GridModel.getInstance();
-        Agent ag = ts.getAg();
-        System.out.println(ag.toString());
         int AgX = (int) ((NumberTerm) args[0]).solve();
         int AgY = (int) ((NumberTerm) args[1]).solve();
         Location agLoc = new Location(AgX, AgY);
@@ -43,6 +38,7 @@ public class flocking_pos extends DefaultInternalAction {
             cellWeights.put(loc, weight);
         }
 
+        // Find max weight
         int maxWeight = Collections.max(cellWeights.values());
 
         // Filter locations with maximum weight
