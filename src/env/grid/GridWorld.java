@@ -26,24 +26,6 @@ public class GridWorld extends Artifact {
         pathfinder = new Pathfinder(model);
     }
 
-    @OPERATION
-    void dstar(OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        int agentId = this.getCurrentOpAgentId().getLocalId();
-        // int newX = Math.random() < 0.5 ? 1 : -1;
-        // int newY = Math.random() < 0.5 ? 1 : -1;
-        // move(agentId, newX, newY);
-
-        Location startPos = model.getAgPos(agentId);
-        // Location targetPos = model.getFreePos();
-        Location targetPos = new Location(model.getWidth() - 1, model.getHeight() - 1);
-        try {
-            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-            moveTo(agentId, nextPos, newX, newY);
-        } catch (Exception e) {
-            failed("no next step possible");
-        }
-    }
-
     /**
      * This method moves the current agent to the next cell on his way to the specified destination defined by the specified X and Y value.
      * @param targetX Value of the final destination on the X-axis.
@@ -79,16 +61,7 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void place_sheep(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
-        placeAgent(X, Y);
-    }
-
-    @OPERATION
-    void place_hound(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
-        placeAgent(X, Y);
-    }
-
-    private void placeAgent(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+    private void initAgent(OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
 
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -101,15 +74,4 @@ public class GridWorld extends Artifact {
                 },
                 c -> c == 1);
     }
-
-    // Leaving this here for a few commits just in case we do end up needing it.
-    // /**
-    //  * This method return the identifier, that is used to identify the agent
-    //  * in the grid.
-    //  * @param ID Identifier of the current agent in the grid artifact.
-    //  */
-    // @OPERATION
-    // public void getOwnID(OpFeedbackParam<Integer> ID) {
-    //     ID.set(this.getCurrentOpAgentId().getLocalId());
-    // }
 }
