@@ -1,6 +1,7 @@
-+!init : true
++!init
     <- .my_name(Me);
        .broadcast(tell, sheep(Me));
+       +formerPos(-1, -1);
        !flock;
        .
 
@@ -31,22 +32,22 @@
 
 +!takeStep : pos(AgX, AgY) &
             destination(TargetX, TargetY) &
+            formerPos(FormerX, FormerY) &
             not (AgX = TargetX  &  AgY = TargetY)
     <-
-    .print("Destination not reached yet");
-    .print("before step:");
-    .print("destination: (", TargetX, " , ", TargetY, ")");
-    .print("current pos: (", AgX, " , ", AgY, ")");
-    ?formerPos(OldX, OldY);
-    .print("former pos: (", OldX, " , ", OldY, ")");
+    // .print("Destination not reached yet");
+    // .print("before step:");
+    // .print("destination: (", TargetX, " , ", TargetY, ")");
+    // .print("current pos: (", AgX, " , ", AgY, ")");
+    // .print("former pos: (", FormerX, " , ", FormerY, ")");
     +formerPos(AgX, AgY);
     nextStep(TargetX, TargetY, NewX, NewY);
-    +pos(NewX, NewY);
-    .wait(10);
-    .print("after step:");
-    .print("destination: (", TargetX, " , ", TargetY, ")");
-    .print("current pos: (", NewX, " , ", NewX, ")");
-    .print("former pos: (", AgX, " , ", AgY, ")");
+    -+pos(NewX, NewY);
+    .wait(100);
+    // .print("after step:");
+    // .print("destination: (", TargetX, " , ", TargetY, ")");
+    // .print("current pos: (", NewX, " , ", NewY, ")");
+    // .print("former pos: (", AgX, " , ", AgY, ")");
     !takeStep;
     .
 
@@ -62,7 +63,7 @@
             destination(TargetX, TargetY) &
             ( AgX = TargetX  &  AgY = TargetY)
     <-
-    .print("IM Done!!!!!! yessssssss!!!!!!");
+    .print("Im Done!");
     -destination(X,Y);
     !flock.
 

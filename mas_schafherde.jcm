@@ -16,18 +16,11 @@ mas mas_schafherde {
     agent sheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 1
+        instances: 4
         focus: world.grid
         beliefs: doflock
     }
     
-    agent sheep2: sheep.asl {
-        // ag-arch: arch.Sheep
-        join: world
-        instances: 0
-        focus: world.grid
-    }
-
     agent houndX: hound.asl {
         join: world
         instances: 0
@@ -57,7 +50,7 @@ mas mas_schafherde {
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
-      artifact grid: grid.GridWorld("src/env/grid/templates/2.txt")
+      artifact grid: grid.GridWorld("src/env/grid/templates/1.txt")
       debug
     }
 
