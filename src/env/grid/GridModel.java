@@ -4,6 +4,8 @@ import grid.util.GridModelFileParser;
 import grid.util.GridProcessor;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
+import model.AgentInfo;
+import model.AgentInfo.AgentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class GridModel extends GridWorldModel {
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
+    private char[][] gridData;
 
     // Private constructor for singleton
     private GridModel(int width, int height) {
@@ -67,6 +70,7 @@ public class GridModel extends GridWorldModel {
     }
 
     private void loadFromFile(char[][] gridData) {
+        this.gridData = gridData;
         this.width = gridData[0].length;
         this.height = gridData.length;
         this.data = new int[width][height];
@@ -75,7 +79,8 @@ public class GridModel extends GridWorldModel {
             for (int x = 0; x < width; x++) {
                 switch (gridData[y][x]) {
                     case 'O':
-                        // Regular cell, do nothing
+                    case 'S':
+                    case 'H':
                         break;
                     case 'X':
                         add(OBSTACLE, x, y);
@@ -83,9 +88,41 @@ public class GridModel extends GridWorldModel {
                     case 'C':
                         add(CORRAL, x, y);
                         break;
+                    default:
+                        throw new IllegalArgumentException("Invalid object type in grid template file");
                 }
             }
         }
+    }
+
+    public Location initAgent(AgentInfo agent) {
+        if (gridData != null) {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (agent.getType() == AgentType.SHEEP && gridData[y][x] == 'S' ||
+                            agent.getType() == AgentType.HOUND && gridData[y][x] == 'H') {
+                        if (!isFree(x, y)) {
+                            continue;
+                        }
+
+                        setAgPos(agent.getCartagoId(), x, y);
+                        return new Location(x, y);
+                    }
+                }
+            }
+        }
+
+        Location location = new Location(-1, -1);
+        gridProcessor.processEntireGrid(
+                loc -> model.isFree(loc),
+                loc -> {
+                    setAgPos(agent.getCartagoId(), loc);
+                    location.x = loc.x;
+                    location.y = loc.y;
+                },
+                c -> c == 1);
+
+        return location;
     }
 
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {

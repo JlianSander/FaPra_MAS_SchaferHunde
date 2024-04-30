@@ -1,14 +1,18 @@
 +!init : true
     <- .my_name(Me);
        .broadcast(tell, sheep(Me));
-       !flock.
+    //    !flock
+    !move;
+       .
 
 +!flock : pos(AgX, AgY)
     <- 
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
-    // .print("Target: (", TargetX, " , ", TargetY, ")");
+    .print("Target: (", TargetX, " , ", TargetY, ")");
     +destination(TargetX, TargetY);
-    !move.
+    !move;
+    // !flock;
+    .
 
 +pos(X,Y) : formerPos(FX, FY) &
             ( X = FX  &  Y = FY)       //counter is not set
@@ -24,10 +28,10 @@
     pos(MyX,MyY) &
     not ( MyX = X  &  MyY = Y)       //only take this plan if you haven't reached destination
     <- 
-    .print("start move 2 to (", X, ",", Y,")");
+    // .print("start move 2 to (", X, ",", Y,")");
     -+formerPos(MyX, MyY);
     nextStep(X,Y, NewX, NewY);
-    .print("set new pos (",NewX,",",NewY,")");
+    // .print("set new pos (",NewX,",",NewY,")");
     -+pos(NewX, NewY);
     .wait(100);
     !move.
@@ -38,7 +42,8 @@
     <- 
     .print("reached destination");
     -destination(X,Y);
-    !flock.
+    // !flock.
+    .
 
 // +!moveStep(X, Y) : pos(AgX, AgY)
 //     <- 

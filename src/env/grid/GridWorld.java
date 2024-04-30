@@ -4,6 +4,7 @@ import cartago.*;
 import grid.util.GridProcessor;
 import grid.util.Pathfinder;
 import jason.environment.grid.Location;
+import model.AgentInfo;
 import service.AgentDB;
 
 public class GridWorld extends Artifact {
@@ -66,17 +67,9 @@ public class GridWorld extends Artifact {
     @OPERATION
     private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
-
-        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
-        gridProcessor.processEntireGrid(
-                loc -> model.isFree(loc),
-                loc -> {
-                    model.setAgPos(agentId, loc);
-                    X.set(loc.x);
-                    Y.set(loc.y);
-                },
-                c -> c == 1);
-
-        agentDB.addAgent(agentId, name);
+        AgentInfo agentInfo = agentDB.addAgent(agentId, name);
+        Location loc = model.initAgent(agentInfo);
+        X.set(loc.x);
+        Y.set(loc.y);
     }
 }

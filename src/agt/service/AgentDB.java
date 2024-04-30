@@ -13,7 +13,7 @@ public class AgentDB {
         this.agents = new ArrayList<>();
     }
 
-    public void addAgent(int id, String name) {
+    public AgentInfo addAgent(int id, String name) {
         AgentType type = null;
         if (name.toLowerCase().contains("sheep")) {
             type = AgentType.SHEEP;
@@ -22,7 +22,9 @@ public class AgentDB {
         } else {
             throw new IllegalArgumentException("Invalid agent name");
         }
-        agents.add(new AgentInfo(type, id, name));
+        AgentInfo agent = new AgentInfo(type, id, name);
+        agents.add(agent);
+        return agent;
     }
 
     public List<AgentInfo> getAllAgents() {
