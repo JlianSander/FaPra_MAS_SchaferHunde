@@ -54,8 +54,8 @@ public class GridWorld extends Artifact {
 
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         // try {
-        if (model.isFree(location.x, location.y)) {
-            model.setAgPos(agentDB.getAgentById(agentId), location.x, location.y);
+        if (model.isFree(location)) {
+            model.setAgPos(agentDB.getAgentById(agentId), location);
             newX.set(location.x);
             newY.set(location.y);
         } else {

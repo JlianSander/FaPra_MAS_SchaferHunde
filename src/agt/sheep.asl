@@ -2,6 +2,7 @@
     <- .my_name(Me);
        .broadcast(tell, sheep(Me));
        +formerPos(-1, -1);
+       +doflock;
        !flock;
        .
 

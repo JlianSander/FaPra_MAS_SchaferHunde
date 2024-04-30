@@ -130,9 +130,14 @@ public class GridModel extends GridWorldModel {
     }
 
     @Override
+    public boolean isFree(Location l) {
+        return isFree(l.x, l.y);
+    }
+
+    @Override
     public boolean isFree(int x, int y) {
-        return this.inGrid(x, y) && (this.data[x][y] & SHEEP) == 0 && (this.data[x][y] & HOUND) == 0
-                && (this.data[x][y] & 4) == 0 && (this.data[x][y] & 2) == 0;
+        return inGrid(x, y) && (data[x][y] & SHEEP) == 0 && (data[x][y] & HOUND) == 0
+                && (data[x][y] & 4) == 0 && (data[x][y] & 2) == 0;
     }
 
     @Override
