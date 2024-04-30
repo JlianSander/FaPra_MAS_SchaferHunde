@@ -1,9 +1,9 @@
 package grid;
 
 import cartago.*;
-import grid.util.GridProcessor;
 import grid.util.Pathfinder;
 import jason.environment.grid.Location;
+import model.AgentInfo;
 import service.AgentDB;
 
 public class GridWorld extends Artifact {
@@ -13,17 +13,18 @@ public class GridWorld extends Artifact {
     Pathfinder pathfinder;
 
     void init(int size, int corralWidth, int corralHeight) {
-        model = GridModel.create(size, corralWidth, corralHeight);
+        agentDB = new AgentDB();
+        model = GridModel.create(size, corralWidth, corralHeight, agentDB);
         commonInit(model);
     }
 
     void init(String filePath) {
-        model = GridModel.create(filePath);
+        agentDB = new AgentDB();
+        model = GridModel.create(filePath, agentDB);
         commonInit(model);
     }
 
     void commonInit(GridModel model) {
-        agentDB = new AgentDB();
         view = new GridView(model, agentDB);
         defineObsProperty("gridSize", model.getWidth());
         pathfinder = new Pathfinder(model);
@@ -41,24 +42,17 @@ public class GridWorld extends Artifact {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         Location startPos = model.getAgPos(agentId);
         Location targetPos = new Location(targetX, targetY);
-        try {
-            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-            moveTo(agentId, nextPos, newX, newY);
-        } catch (Exception e) {
-            failed("no next step possible");
-        }
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+        moveTo(agentId, nextPos, newX, newY);
+
     }
 
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        try {
-            if (model.isFree(location.x, location.y)) {
-                model.setAgPos(agentId, location.x, location.y);
-                newX.set(location.x);
-                newY.set(location.y);
-            } else {
-                failed("move_failed");
-            }
-        } catch (Exception e) {
+        if (model.isFree(location)) {
+            model.setAgPos(agentDB.getAgentById(agentId), location);
+            newX.set(location.x);
+            newY.set(location.y);
+        } else {
             failed("move_failed");
         }
     }
@@ -66,17 +60,9 @@ public class GridWorld extends Artifact {
     @OPERATION
     private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         int agentId = this.getCurrentOpAgentId().getLocalId();
-
-        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
-        gridProcessor.processEntireGrid(
-                loc -> model.isFree(loc),
-                loc -> {
-                    model.setAgPos(agentId, loc);
-                    X.set(loc.x);
-                    Y.set(loc.y);
-                },
-                c -> c == 1);
-
-        agentDB.addAgent(agentId, name);
+        AgentInfo agentInfo = agentDB.addAgent(agentId, name);
+        Location loc = model.initAgent(agentInfo);
+        X.set(loc.x);
+        Y.set(loc.y);
     }
 }

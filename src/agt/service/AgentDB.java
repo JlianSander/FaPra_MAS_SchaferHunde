@@ -3,8 +3,8 @@ package service;
 import java.util.ArrayList;
 import java.util.List;
 
+import grid.GridModel;
 import model.AgentInfo;
-import model.AgentInfo.AgentType;
 
 public class AgentDB {
     private List<AgentInfo> agents;
@@ -13,37 +13,35 @@ public class AgentDB {
         this.agents = new ArrayList<>();
     }
 
-    public void addAgent(int id, String name) {
-        AgentType type = null;
+    public AgentInfo addAgent(int id, String name) {
+        int agentType = -1;
         if (name.toLowerCase().contains("sheep")) {
-            type = AgentType.SHEEP;
+            agentType = GridModel.SHEEP;
         } else if (name.toLowerCase().contains("hound")) {
-            type = AgentType.HOUND;
+            agentType = GridModel.HOUND;
         } else {
             throw new IllegalArgumentException("Invalid agent name");
         }
-        agents.add(new AgentInfo(type, id, name));
+        AgentInfo agent = new AgentInfo(agentType, id, name);
+        agents.add(agent);
+        return agent;
     }
 
     public List<AgentInfo> getAllAgents() {
         return agents;
     }
 
-    public AgentInfo getAgentById(int id) {
-        for (AgentInfo agent : agents) {
-            if (agent.getCartagoId() == id) {
-                return agent;
-            }
-        }
-        return null;
+    public AgentInfo getAgentById(int cartagoId) {
+        return agents.stream()
+                .filter(agent -> agent.getCartagoId() == cartagoId)
+                .findFirst()
+                .orElse(null);
     }
 
-    public AgentInfo getAgentByJasonId(String id) {
-        for (AgentInfo agent : agents) {
-            if (agent.getJasonId().equals(id)) {
-                return agent;
-            }
-        }
-        return null;
+    public AgentInfo getAgentByJasonId(String jasonId) {
+        return agents.stream()
+                .filter(agent -> agent.getJasonId() == jasonId)
+                .findFirst()
+                .orElse(null);
     }
 }
