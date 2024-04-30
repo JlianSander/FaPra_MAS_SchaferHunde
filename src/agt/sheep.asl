@@ -1,8 +1,7 @@
 +!init : true
     <- .my_name(Me);
        .broadcast(tell, sheep(Me));
-    //    !flock
-    !move;
+       !flock;
        .
 
 +!flock : pos(AgX, AgY)
@@ -11,7 +10,7 @@
     .print("Target: (", TargetX, " , ", TargetY, ")");
     +destination(TargetX, TargetY);
     !move;
-    // !flock;
+    !flock;
     .
 
 +pos(X,Y) : formerPos(FX, FY) &

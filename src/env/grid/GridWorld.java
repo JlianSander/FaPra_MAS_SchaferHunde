@@ -1,7 +1,6 @@
 package grid;
 
 import cartago.*;
-import grid.util.GridProcessor;
 import grid.util.Pathfinder;
 import jason.environment.grid.Location;
 import model.AgentInfo;
