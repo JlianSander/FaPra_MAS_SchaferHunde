@@ -64,13 +64,13 @@
             destination(TargetX, TargetY) &
             ( AgX = TargetX  &  AgY = TargetY)
     <-
-    .print("Im Done!");
+    // .print("Im Done!");
     -destination(X,Y);
     !flock.
 
 -!takeStep
     <-
-    .print("ABORT :(");
+    // .print("ABORT :(");
     -destination(X,Y);
     -formerPos(X,Y);
     !flock.

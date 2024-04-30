@@ -42,30 +42,19 @@ public class GridWorld extends Artifact {
         int agentId = this.getCurrentOpAgentId().getLocalId();
         Location startPos = model.getAgPos(agentId);
         Location targetPos = new Location(targetX, targetY);
-        // try {
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         moveTo(agentId, nextPos, newX, newY);
-        // } catch (Exception e) {
-        //     System.out.println("1111111111111111111111111");
-        //     failed("no next step possible");
-        // }
 
     }
 
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        // try {
         if (model.isFree(location)) {
             model.setAgPos(agentDB.getAgentById(agentId), location);
             newX.set(location.x);
             newY.set(location.y);
         } else {
-            System.out.println("2222222222222222222222222");
             failed("move_failed");
         }
-        // } catch (Exception e) {
-        //     System.out.println("3333333333333333333333333");
-        //     failed("move_failed");
-        // }
     }
 
     @OPERATION

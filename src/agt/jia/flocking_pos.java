@@ -46,19 +46,19 @@ public class flocking_pos extends DefaultInternalAction {
             cellWeights.put(loc, weight);
         }
 
-        // Filter locations with negative weight and sort them
+        // Filter locations with negative weight
         List<Pair<Double, Location>> negativeCells = new ArrayList<>();
         for (Map.Entry<Location, Double> entry : cellWeights.entrySet()) {
             if (entry.getValue() < 0) {
                 negativeCells.add(new Pair<>(entry.getValue(), entry.getKey()));
             }
         }
-        negativeCells.sort((a, b) -> a.getValue0().compareTo(b.getValue0()));
-        System.out.println("Negative cells: " + negativeCells.size());
+        // negativeCells.sort((a, b) -> a.getValue0().compareTo(b.getValue0()));
+        // System.out.println("Negative cells: " + negativeCells.size());
         List<Location> oppositeCells = getOppositeCells(agLoc, negativeCells);
-        for (Location location : oppositeCells) {
-            System.out.println("Opposite location: " + location);
-        }
+        // for (Location location : oppositeCells) {
+        //     System.out.println("Opposite location: " + location);
+        // }
 
         // Filter locations with maximum weight
         List<Location> maxCells = new ArrayList<>();
@@ -71,15 +71,14 @@ public class flocking_pos extends DefaultInternalAction {
         // Select a random location from the maxCells
         if (!maxCells.isEmpty()) {
             Location chosenLocation = maxCells.get(new Random().nextInt(maxCells.size()));
-            System.out.println("Chosen positive location: " + chosenLocation);
+            // System.out.println("Chosen positive location: " + chosenLocation);
             oppositeCells.add(chosenLocation);
             Location finalLocation = getAverageLocation(oppositeCells);
-            System.out.println("Final location: " + finalLocation);
+            // System.out.println("Final location: " + finalLocation);
             return un.unifies(args[2], new NumberTermImpl(finalLocation.x))
                     && un.unifies(args[3], new NumberTermImpl(finalLocation.y));
         }
 
-        System.out.println("false????????");
         return false;
     }
 
@@ -89,11 +88,11 @@ public class flocking_pos extends DefaultInternalAction {
         double weight = 1.0;
         switch (object) {
             case GridModel.HOUND:
-                System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
+                // System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
                 weight = -50;
                 break;
             case GridModel.SHEEP:
-                System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
+                // System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
                 weight = 30;
                 break;
             case GridModel.OBSTACLE:
@@ -112,7 +111,7 @@ public class flocking_pos extends DefaultInternalAction {
     }
 
     private List<Location> getOppositeCells(Location agentLocation, List<Pair<Double, Location>> negativeCells) {
-        System.out.println("CALC OPPOSITE. Ag loc: " + agentLocation);
+        // System.out.println("CALC OPPOSITE. Ag loc: " + agentLocation);
         List<Location> oppositeCells = new ArrayList<>();
         // for every 10 negative value (the first value in the tuple), add the location 1 cell away from the agent
         // i.e. -30 -> add the location 3 cells away from the agent
@@ -129,7 +128,7 @@ public class flocking_pos extends DefaultInternalAction {
                 weight += 10;
 
                 if (GridModel.getInstance().isFree(oppositeLoc)) {
-                    System.out.println("Adding Opposite location: " + oppositeLoc);
+                    // System.out.println("Adding Opposite location: " + oppositeLoc);
                     oppositeCells.add(oppositeLoc);
                     break;
                 }
