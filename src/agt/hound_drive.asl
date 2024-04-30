@@ -6,11 +6,15 @@
 
 //------------------------------------------------------- driveTarget -------------------------------------------------------
 
-+!driveTarget : not huntTarget <- ?target(A);    //only begin new driving if you're currently driving noone
++!driveTarget : isRunning_driveTarget <- false.
+
++!driveTarget : not isRunning_driveTarget <- +isRunning_driveTarget;
+    ?target(A);    //only begin new driving if you're currently driving noone
     ?pos_agent(X,Y)[source(A)];
     !reachDestination(X,Y);
     -target(A). // free target, since mission fulfilled
 
--!driveTarget : target(A) <- -target(A); .print("not possible to drive ", A). 
+-!driveTarget : target(A) &  isRunning_driveTarget<- -target(A); -isRunning_driveTarget; .print("not possible to drive ", A). 
+-!driveTarget : isRunning_driveTarget <- -isRunning_driveTarget; .print("not possible to drive").
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

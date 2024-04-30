@@ -15,7 +15,7 @@ jammed(0).
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
 
-+!reachDestination(X,Y) : isRunning_reachDestination <- true. //already existing as intention -- can only walk to one destination at a time
++!reachDestination(X,Y) : isRunning_reachDestination <- false. //already existing as intention -- can only walk to one destination at a time
     
 +!reachDestination(X,Y) <- +isRunning_reachDestination;
     !walkTowards(X,Y);
