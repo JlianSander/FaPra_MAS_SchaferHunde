@@ -16,14 +16,13 @@ mas mas_schafherde {
     agent sheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 1
+        instances: 6
         focus: world.grid
-        // beliefs: jammed_counter(0)
     }
 
     agent houndX: hound.asl {
         join: world
-        instances: 1
+        instances: 6
         focus: world.grid
         roles: driver in hounds
         //beliefs: destination(18,0)
