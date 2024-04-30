@@ -27,23 +27,14 @@ public class GridView extends GridWorldView {
             case GridModel.CORRAL:
                 drawFill(g, x, y, Color.GREEN);
                 break;
-        }
-    }
-
-    @Override
-    public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        if (agentDB.getAgentById(id) == null)
-            return;
-
-        switch (agentDB.getAgentById(id).getType()) {
-            case SHEEP:
-                super.drawAgent(g, x, y, Color.GRAY, id);
+            case GridModel.SHEEP:
+                drawAgent(g, x, y, Color.GRAY, object);
                 break;
-            case HOUND:
-                super.drawAgent(g, x, y, Color.red, id);
+            case GridModel.HOUND:
+                drawAgent(g, x, y, Color.RED, object);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid agent type");
+                throw new IllegalArgumentException("Invalid draw type");
         }
     }
 
