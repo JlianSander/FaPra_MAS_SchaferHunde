@@ -27,7 +27,7 @@ public class flocking_pos extends DefaultInternalAction {
         // collect all neighboring cells
         int range = 5;
         List<Location> reachableNeighbors = model.getNeighborhood(agLoc, range, loc -> {
-            return model.inGrid(loc) && model.isFree(loc);
+            return model.inGrid(loc);
         });
 
         // calculate weight for each neighboring cell
@@ -35,7 +35,7 @@ public class flocking_pos extends DefaultInternalAction {
         Map<Location, Double> cellWeights = new HashMap<>();
         for (Location loc : reachableNeighbors) {
             int distance = agLoc.distance(loc);
-            double weight = calculateWeight(loc) / distance * (distance * 5);
+            double weight = calculateWeight(loc) / distance * (distance * 50000);
 
             // Max weight?
             if (weight > maxWeight) {
@@ -56,21 +56,26 @@ public class flocking_pos extends DefaultInternalAction {
         // Select a random location from the maxCells
         if (!maxCells.isEmpty()) {
             Location chosenLocation = maxCells.get(new Random().nextInt(maxCells.size()));
+            System.out.println("Chosen location: " + chosenLocation);
             return un.unifies(args[2], new NumberTermImpl(chosenLocation.x))
                     && un.unifies(args[3], new NumberTermImpl(chosenLocation.y));
         }
 
+        System.out.println("false????????");
         return false;
     }
 
     private double calculateWeight(Location location) {
         int object = GridModel.getInstance().getObjectAt(location);
+        // System.out.println("Testing location: " + location + " with object: " + object);
         double weight = 1.0;
         switch (object) {
             case GridModel.HOUND:
+                System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
                 weight = -200;
                 break;
             case GridModel.SHEEP:
+                System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
                 weight = 10;
                 break;
             case GridModel.OBSTACLE:

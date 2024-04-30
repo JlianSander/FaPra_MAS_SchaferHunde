@@ -5,7 +5,7 @@ import grid.util.GridProcessor;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 import model.AgentInfo;
-import model.AgentInfo.AgentType;
+import service.AgentDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ public class GridModel extends GridWorldModel {
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
+    private AgentDB agentDB;
     private char[][] gridData;
 
     // Private constructor for singleton
@@ -34,8 +35,9 @@ public class GridModel extends GridWorldModel {
     }
 
     // Factory method to create the singleton instance from parameters
-    public static synchronized GridModel create(int size, int corralWidth, int corralHeight) {
+    public static synchronized GridModel create(int size, int corralWidth, int corralHeight, AgentDB agentDB) {
         model = new GridModel(size, size);
+        model.agentDB = agentDB;
 
         // Define corral
         int startX = 1;
@@ -56,11 +58,12 @@ public class GridModel extends GridWorldModel {
     }
 
     // Factory method to create the singleton instance from file
-    public static synchronized GridModel create(String filePath) {
+    public static synchronized GridModel create(String filePath, AgentDB agentDB) {
         char[][] gridData = GridModelFileParser.parseGridFile(filePath);
         int width = gridData[0].length;
         int height = gridData.length;
         model = new GridModel(width, height);
+        model.agentDB = agentDB;
         model.loadFromFile(gridData);
         return getInstance();
     }
@@ -95,17 +98,18 @@ public class GridModel extends GridWorldModel {
         }
     }
 
-    public Location initAgent(AgentInfo agent) {
+    public Location initAgent(AgentInfo agentInfo) {
         if (gridData != null) {
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    if (agent.getType() == AgentType.SHEEP && gridData[y][x] == 'S' ||
-                            agent.getType() == AgentType.HOUND && gridData[y][x] == 'H') {
+                    if (agentInfo.getAgentType() == SHEEP && gridData[y][x] == 'S' ||
+                            agentInfo.getAgentType() == HOUND && gridData[y][x] == 'H') {
+                        // if (!isFree(SHEEP, x, y) || !isFree(HOUND, x, y)) {
                         if (!isFree(x, y)) {
                             continue;
                         }
 
-                        setAgPos(agent.getCartagoId(), x, y);
+                        setAgPos(agentInfo, x, y);
                         return new Location(x, y);
                     }
                 }
@@ -116,7 +120,7 @@ public class GridModel extends GridWorldModel {
         gridProcessor.processEntireGrid(
                 loc -> model.isFree(loc),
                 loc -> {
-                    setAgPos(agent.getCartagoId(), loc);
+                    setAgPos(agentInfo, loc);
                     location.x = loc.x;
                     location.y = loc.y;
                 },
@@ -125,10 +129,42 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
+    @Override
+    public boolean isFree(int x, int y) {
+        return this.inGrid(x, y) && (this.data[x][y] & SHEEP) == 0 && (this.data[x][y] & HOUND) == 0
+                && (this.data[x][y] & 4) == 0 && (this.data[x][y] & 2) == 0;
+    }
+
+    @Override
+    public void setAgPos(int ag, Location l) {
+        AgentInfo agentInfo = agentDB.getAgentById(ag);
+        setAgPos(agentInfo, l);
+    }
+
+    // setAgPos now requires AgentInfo as we need to inject the proper agent type. A wrapper is available above.
+    public void setAgPos(AgentInfo agentInfo, int x, int y) {
+        setAgPos(agentInfo, new Location(x, y));
+    }
+
+    public void setAgPos(AgentInfo agentInfo, Location l) {
+        Location oldLoc = this.getAgPos(agentInfo.getCartagoId());
+        if (oldLoc != null) {
+            this.remove(agentInfo.getAgentType(), oldLoc.x, oldLoc.y);
+        }
+
+        this.agPos[agentInfo.getCartagoId()] = l;
+        this.add(agentInfo.getAgentType(), l.x, l.y);
+    }
+
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
         List<Location> neighbors = new ArrayList<>();
+        System.out.println("getting neighbors of: " + loc);
         for (int dx = -range; dx <= range; dx++) {
             for (int dy = -range; dy <= range; dy++) {
+                if (dx == 0 && dy == 0) {
+                    continue;
+                }
+
                 int newX = loc.x + dx;
                 int newY = loc.y + dy;
                 Location newLoc = new Location(newX, newY);

@@ -13,17 +13,18 @@ public class GridWorld extends Artifact {
     Pathfinder pathfinder;
 
     void init(int size, int corralWidth, int corralHeight) {
-        model = GridModel.create(size, corralWidth, corralHeight);
+        agentDB = new AgentDB();
+        model = GridModel.create(size, corralWidth, corralHeight, agentDB);
         commonInit(model);
     }
 
     void init(String filePath) {
-        model = GridModel.create(filePath);
+        agentDB = new AgentDB();
+        model = GridModel.create(filePath, agentDB);
         commonInit(model);
     }
 
     void commonInit(GridModel model) {
-        agentDB = new AgentDB();
         view = new GridView(model, agentDB);
         defineObsProperty("gridSize", model.getWidth());
         pathfinder = new Pathfinder(model);
@@ -45,6 +46,7 @@ public class GridWorld extends Artifact {
             Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
             moveTo(agentId, nextPos, newX, newY);
         } catch (Exception e) {
+            System.out.println("1111111111111111111111111");
             failed("no next step possible");
         }
     }
@@ -52,13 +54,15 @@ public class GridWorld extends Artifact {
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         try {
             if (model.isFree(location.x, location.y)) {
-                model.setAgPos(agentId, location.x, location.y);
+                model.setAgPos(agentDB.getAgentById(agentId), location.x, location.y);
                 newX.set(location.x);
                 newY.set(location.y);
             } else {
+                System.out.println("2222222222222222222222222");
                 failed("move_failed");
             }
         } catch (Exception e) {
+            System.out.println("3333333333333333333333333");
             failed("move_failed");
         }
     }

@@ -1,22 +1,18 @@
 package model;
 
 public class AgentInfo {
-    public enum AgentType {
-        SHEEP, HOUND
-    }
-
-    private AgentType type;
+    private int agentType;
     private int cartagoId;
     private String jasonId;
 
-    public AgentInfo(AgentType type, int cartagoId, String jasonId) {
-        this.type = type;
+    public AgentInfo(int agentType, int cartagoId, String jasonId) {
+        this.agentType = agentType;
         this.cartagoId = cartagoId;
         this.jasonId = jasonId;
     }
 
-    public AgentType getType() {
-        return type;
+    public int getAgentType() {
+        return agentType;
     }
 
     public int getCartagoId() {
