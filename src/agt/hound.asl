@@ -25,7 +25,7 @@ jammed(0).
 
 //------------------------------------------------------- walkTowards -------------------------------------------------------
 
-+!walkTowards(X,Y) : pos(MyX,MyY) & not ( MyX = X  &  MyY = Y)  //not yet reached target coordinates
++!walkTowards(X,Y) : not pos(X,Y)   //not yet reached target coordinates
     <- !makeStepTowards(X,Y);
     !walkTowards(X,Y).
 
