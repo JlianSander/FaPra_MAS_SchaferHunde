@@ -52,6 +52,7 @@ public class GridWorld extends Artifact {
             model.setAgPos(agentDB.getAgentById(agentId), location);
             newX.set(location.x);
             newY.set(location.y);
+            signal("mapChanged");
         } else {
             failed("move_failed");
         }

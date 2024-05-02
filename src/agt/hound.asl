@@ -48,7 +48,7 @@ jammed(0).
     J <= 10
     <- .print("waiting (jammed)");                                                                                                //DEBUG    
     -+jammed(J + 1);
-    .wait(100);
+    .wait({+mapChanged});
     !makeStepTowards.     //retry making step 
 
 //------------------------------------------------------- observe -------------------------------------------------------
