@@ -174,7 +174,7 @@ public class GridModel extends GridWorldModel {
                 int newX = loc.x + dx;
                 int newY = loc.y + dy;
                 Location newLoc = new Location(newX, newY);
-                if (filter.test(newLoc)) {
+                if (inGrid(newLoc) && filter.test(newLoc)) {
                     neighbors.add(newLoc);
                 }
             }
