@@ -188,6 +188,16 @@ public class GridModel extends GridWorldModel {
         return neighbors;
     }
 
+    public Location getFirstFreeNeighbor(Location location) {
+        for (int i = 1; i < getWidth(); i++) {
+            List<Location> neighbors = getNeighborhood(location, i, loc -> isFree(loc));
+            if (neighbors.size() > 0) {
+                return neighbors.get((int) (Math.random() * neighbors.size()));
+            }
+        }
+        return location;
+    }
+
     public int getObjectAt(Location location) {
         if (!inGrid(location.x, location.y))
             return -1;
