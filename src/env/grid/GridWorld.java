@@ -44,7 +44,6 @@ public class GridWorld extends Artifact {
         Location targetPos = new Location(targetX, targetY);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         moveTo(agentId, nextPos, newX, newY);
-
     }
 
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {

@@ -24,7 +24,8 @@ public class Pathfinder {
     }
 
     public Location getNextPosition(Location start, Location target) {
-        return getPath(start, target).get(1);
+        List<Location> path = getPath(start, target);
+        return path.size() > 1 ? path.get(1) : path.get(0);
     }
 
     public List<Location> getPath(Location start, Location target) {
