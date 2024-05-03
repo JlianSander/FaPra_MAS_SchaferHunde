@@ -10,7 +10,8 @@
     <- 
     // pos(AgX, AgY);
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
-    .print("Target: (", TargetX, " , ", TargetY, ")");
+    // .my_name(Me);
+    // .print(Me, " pos: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
     !setTarget(TargetX, TargetY);
     !flock;
     .
@@ -54,15 +55,19 @@
 
 +!takeStep : pos(AgX, AgY) &
             formerPos(FormerAgX, FormerAgY) &
-            (AgX = FormerAgX  &  AgY = FormerAgY)
+            destination(TargetX, TargetY) &
+            (AgX = FormerAgX  &  AgY = FormerAgY) &
+            not ( AgX = TargetX  &  AgY = TargetY)
     <-
     .print("IM STUCK!");
     -destination(X,Y);
     !flock.
 
 +!takeStep : pos(AgX, AgY) &
+            formerPos(FormerAgX, FormerAgY) &
             destination(TargetX, TargetY) &
-            ( AgX = TargetX  &  AgY = TargetY)
+            ( AgX = TargetX  &  AgY = TargetY) &
+            not (AgX = FormerAgX  &  AgY = FormerAgY)
     <-
     // .print("Im Done!");
     -destination(X,Y);
@@ -70,7 +75,7 @@
 
 -!takeStep
     <-
-    // .print("ABORT :(");
+    .print("ABORT :(");
     -destination(X,Y);
     -formerPos(X,Y);
     !flock.

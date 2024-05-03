@@ -89,11 +89,11 @@ public class flocking_pos extends DefaultInternalAction {
         switch (object) {
             case GridModel.HOUND:
                 // System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
-                weight = -50;
+                weight = -100;
                 break;
             case GridModel.SHEEP:
                 // System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
-                weight = 30;
+                weight = 60;
                 break;
             case GridModel.OBSTACLE:
                 weight = -30;
@@ -141,6 +141,9 @@ public class flocking_pos extends DefaultInternalAction {
     private Location getAverageLocation(List<Location> locations) {
         double x = locations.stream().mapToDouble(loc -> loc.x).sum();
         double y = locations.stream().mapToDouble(loc -> loc.y).sum();
-        return new Location((int) Math.round(x / locations.size()), (int) Math.round(y / locations.size()));
+        Location averageLocation = new Location((int) Math.round(x / locations.size()),
+                (int) Math.round(y / locations.size()));
+        return GridModel.getInstance().isFree(averageLocation) ? averageLocation
+                : GridModel.getInstance().getFirstFreeNeighbor(averageLocation);
     }
 }
