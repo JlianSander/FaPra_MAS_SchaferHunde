@@ -13,8 +13,6 @@ is_jammed :- jammed(J) & J > 10.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 //------------------------------------------------------- reachDestination -------------------------------------------------------
  
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
@@ -53,18 +51,19 @@ is_jammed :- jammed(J) & J > 10.
     !makeStepTowards.     //retry making step 
 
 //------------------------------------------------------- observe -------------------------------------------------------
+@handle_new_sheep_fail[atomic]
++!handle_new_sheep(A) : .desire(driveTarget(_)) <- .print("I'm already driving a sheep."); false.
 
-+!observe(A) : .desire(driveTarget(_)) <- .print("I'm already driving a sheep."); false.
+@handle_new_sheep_target[atomic]
++!handle_new_sheep(A) <- .print("handle_new_sheep: ", A);                                                                                                       
+    !!driveTarget(A). //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
-+!observe(A) <- .print("observe target: ", A);                                                                                                       
-    !driveTarget(A). //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
-
--!observe(A) <- true.                                                                                                                           //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
+-!handle_new_sheep(A) <- true.                                                                                                                           //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
     <- -+pos_agent(X ,Y)[source(S)];
-    !observe(S).
+    !handle_new_sheep(S).
 
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
     <- -+pos_agent(X ,Y)[source(S)]. 
