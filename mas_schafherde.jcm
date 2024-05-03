@@ -37,24 +37,6 @@ mas mas_schafherde {
         //goals: explore
     }
 
-    /*agent houndY: hound.asl {
-        join: world
-        instances: 1
-        focus: world.grid
-        roles: driver in hounds
-        //beliefs: destination(0,18)
-        //goals: explore
-    }
-
-    agent houndZ: hound.asl {
-        join: world
-        instances: 1
-        focus: world.grid
-        roles: driver in hounds
-        //beliefs: destination(18,18)
-        //goals: explore
-    }*/
-
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
       artifact grid: grid.GridWorld("src/env/grid/templates/4.txt")
