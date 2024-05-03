@@ -162,6 +162,8 @@ public class GridModel extends GridWorldModel {
     }
 
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
+        range = Math.clamp(range, 1, getWidth());
+
         List<Location> neighbors = new ArrayList<>();
         for (int dx = -range; dx <= range; dx++) {
             for (int dy = -range; dy <= range; dy++) {
