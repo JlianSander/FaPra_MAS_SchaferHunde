@@ -19,7 +19,7 @@ is_jammed :- jammed(J) & J > 10.
  
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
     <- .print("drop intention of reaching (",L,",",M,")");
-    .drop_intention(walkTowards(L,M));   //ensure only walking in one direction at the same time
+    .drop_desire(walkTowards(L,M));   //ensure only walking in one direction at the same time
     .print("start reaching :(",X,",",Y,")"); 
     !walkTowards(X,Y).
 
