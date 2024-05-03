@@ -162,8 +162,11 @@ public class GridModel extends GridWorldModel {
     }
 
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
-        range = Math.clamp(range, 1, getWidth());
+        return getNeighborhood(loc, range, Integer.MAX_VALUE, filter);
+    }
 
+    public List<Location> getNeighborhood(Location loc, int range, int maxAmount, Predicate<Location> filter) {
+        range = Math.clamp(range, 1, getWidth());
         List<Location> neighbors = new ArrayList<>();
         for (int dx = -range; dx <= range; dx++) {
             for (int dy = -range; dy <= range; dy++) {
@@ -176,6 +179,9 @@ public class GridModel extends GridWorldModel {
                 Location newLoc = new Location(newX, newY);
                 if (inGrid(newLoc) && filter.test(newLoc)) {
                     neighbors.add(newLoc);
+                    if (neighbors.size() >= maxAmount) {
+                        return neighbors;
+                    }
                 }
             }
         }
