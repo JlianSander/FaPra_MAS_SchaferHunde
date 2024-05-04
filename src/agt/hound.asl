@@ -3,8 +3,12 @@ jammed(0).
 
 +!init : true
     <- .my_name(Me);
-       .broadcast(tell, hound(Me)).
+       .broadcast(tell, hound(Me));
+       jia.get_corral_area(TLX,TLY,BRX,BRY);
+       +corral_area(TLX,TLY,BRX,BRY);
+       .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")").
 
+-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
 in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y, 7).
@@ -42,7 +46,9 @@ is_jammed :- jammed(J) & J > 10.
 -!makeStepTowards(X,Y) : is_jammed
     <- -+jammed(0);
     .print("end retrying");
-    false.
+    //false.
+    //.fail_goal({walkTowards(X,Y)}).
+    .fail_goal({makeStepTowards(X,Y)}).
 
 -!makeStepTowards(X,Y) <- .print("waiting (jammed)");                                                                                                    
     ?jammed(J);
@@ -52,14 +58,12 @@ is_jammed :- jammed(J) & J > 10.
 
 //------------------------------------------------------- observe -------------------------------------------------------
 @handle_new_sheep_fail[atomic]
-+!handle_new_sheep(A) : .desire(driveTarget(_)) <- .print("I'm already driving a sheep."); false.
++!handle_new_sheep(A) : .desire(driveTarget(_)) <- .print("I'm already driving a sheep."); .succeed_goal({handle_new_sheep(A)}).
 
 @handle_new_sheep_target[atomic]
 +!handle_new_sheep(A) <- .print("handle_new_sheep: ", A);                                                                                                       
     !!driveTarget(A). //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
-
--!handle_new_sheep(A) <- true.                                                                                                                           //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
     <- -+pos_agent(X ,Y)[source(S)];

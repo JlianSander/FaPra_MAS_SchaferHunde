@@ -1,5 +1,6 @@
 package grid.util;
 
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import jason.environment.grid.Location;
@@ -27,5 +28,18 @@ public class GridProcessor {
                 }
             }
         }
+    }
+
+    public Location getFirstCell(Predicate<Location> testPred) throws NoSuchElementException {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Location loc = new Location(i, j);
+                if (testPred.test(loc)) {
+                    return loc;
+                }
+            }
+        }
+
+        throw new NoSuchElementException();
     }
 }
