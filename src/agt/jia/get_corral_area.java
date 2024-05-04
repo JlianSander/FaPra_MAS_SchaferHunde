@@ -20,17 +20,8 @@ public class get_corral_area extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        GridModel model = GridModel.getInstance();
-        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         try{
-            // get random start point of corral
-            Location startCorral = gridProcessor.getFirstCell(loc -> model.hasObject(GridModel.CORRAL, loc));
-    
-            //cover all corral cells with square
-            this.corral = new Area(startCorral, startCorral);
-            gridProcessor.processEntireGrid(loc -> !this.corral.contains(loc) && model.hasObject(GridModel.CORRAL, loc),
-                    loc -> this.updateCorral( loc),
-                    c -> false);
+           init();
     
             return un.unifies(args[0], new NumberTermImpl((double) this.corral.tl.x))
                         && un.unifies(args[1], new NumberTermImpl((double) this.corral.tl.y))
@@ -39,6 +30,23 @@ public class get_corral_area extends DefaultInternalAction {
         } catch(NoSuchElementException e){
             return false;
         }
+    }
+
+    public void init() throws NoSuchElementException{
+        GridModel model = GridModel.getInstance();
+        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
+        // get random start point of corral
+        Location startCorral = gridProcessor.getFirstCell(loc -> model.hasObject(GridModel.CORRAL, loc));
+    
+        //cover all corral cells with square
+        this.corral = new Area(startCorral, startCorral);
+        gridProcessor.processEntireGrid(loc -> !this.corral.contains(loc) && model.hasObject(GridModel.CORRAL, loc),
+                loc -> this.updateCorral( loc),
+                c -> false);
+    }
+
+    public Area corral(){
+        return this.corral;
     }
 
     private void updateCorral(Location locToProcess){

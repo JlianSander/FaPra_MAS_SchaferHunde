@@ -13,6 +13,8 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jason.environment.grid.Area;
 
+import jia.get_corral_area;
+
 public class get_pos_drive_swarm extends DefaultInternalAction {
 
     @Override
@@ -23,15 +25,13 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         var swarmCenter = new Location(centerX, centerY);
         var swarm = new SwarmManipulator(swarmCenter, radius);
 
-        int corralTLx = (int) ((NumberTerm) args[3]).solve();
-        int corralTLy = (int) ((NumberTerm) args[4]).solve();
-        int corralBRx = (int) ((NumberTerm) args[5]).solve();
-        int corralBRy = (int) ((NumberTerm) args[6]).solve();
-        var corral = new Area(corralTLx, corralTLy, corralBRx, corralBRy);
-
+        var get_corral = new get_corral_area();
+        get_corral.init();
+        var corral = get_corral.corral();
+        
         var agentLoc = DrivePositioner.positionSingleAgent(swarm, corral);
 
-        return un.unifies(args[7], new NumberTermImpl(agentLoc.x))
-                    && un.unifies(args[8], new NumberTermImpl(agentLoc.y));
+        return un.unifies(args[3], new NumberTermImpl(agentLoc.x))
+                    && un.unifies(args[4], new NumberTermImpl(agentLoc.y));
     }
 }

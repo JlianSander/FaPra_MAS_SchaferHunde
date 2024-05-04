@@ -41,7 +41,7 @@ is_jammed :- jammed(J) & J > 10.
 @step[atomic]
 +!makeStepTowards(X,Y)<- 
     nextStep(X,Y, NewX, NewY);
-    .print("stepped to new position: (",NewX,",",NewY,")");
+    //.print("stepped to new position: (",NewX,",",NewY,")");
     !updatePos(NewX,NewY);
     //.wait(300).  
     !!wait(100).       
@@ -49,7 +49,7 @@ is_jammed :- jammed(J) & J > 10.
 -!makeStepTowards(X,Y) : is_jammed
     <- -+jammed(0);
     .print("end retrying");
-    +last_step_not_OK;
+    //+last_step_not_OK;
     false.
 
 -!makeStepTowards(X,Y) <- .print("waiting (jammed)");                                                                                                    
