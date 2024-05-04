@@ -6,9 +6,9 @@
 //------------------------------------------------------- driveTarget -------------------------------------------------------
 
 +!driveTarget(A) : pos_agent(X,Y)[source(A)] & corral_area(TLX,TLY,BRX,BRY) <- .print("start driving"); 
-    //!reachDestination(X,Y).
-    jia.get_swarm_next_pos(X, Y, 0, TLX, TLY, BRX, BRY, NextX, NextY);
-    .print("Sheep is at (",X,",",Y,") and has to move to (",NextX, ",", NextY, ")").
+    jia.get_pos_drive_swarm(X, Y, 0, TLX, TLY, BRX, BRY, NextX, NextY);
+    .print("Sheep is at (",X,",",Y,") position agent at (",NextX, ",", NextY, ")");
+    !reachDestination(NextX,NextY).
 
 +!driveTarget(A) <- .print("Not enough info to drive target").
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
