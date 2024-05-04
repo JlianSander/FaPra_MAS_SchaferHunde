@@ -38,23 +38,29 @@ is_jammed :- jammed(J) & J > 10.
 +!walkTowards(X,Y) <- .print("reached destination").   //reached target coordinates
                                                                                                   
 //------------------------------------------------------- makeStepTowards -------------------------------------------------------
+@step[atomic]
 +!makeStepTowards(X,Y)<- 
     nextStep(X,Y, NewX, NewY);
-    -+pos(NewX, NewY);
-    .wait(100).         
+    .print("stepped to new position: (",NewX,",",NewY,")");
+    !updatePos(NewX,NewY);
+    //.wait(300).  
+    !!wait(100).       
 
 -!makeStepTowards(X,Y) : is_jammed
     <- -+jammed(0);
     .print("end retrying");
-    //false.
-    //.fail_goal({walkTowards(X,Y)}).
-    .fail_goal({makeStepTowards(X,Y)}).
+    +last_step_not_OK;
+    false.
 
 -!makeStepTowards(X,Y) <- .print("waiting (jammed)");                                                                                                    
     ?jammed(J);
     -+jammed(J + 1);
     .wait({+mapChanged});
     !makeStepTowards.     //retry making step 
+
+//------------------------------------------------------- wait -------------------------------------------------------
+
++!wait(X) <- .wait(X).
 
 //------------------------------------------------------- observe -------------------------------------------------------
 @handle_new_sheep_fail[atomic]

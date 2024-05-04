@@ -15,3 +15,9 @@
     .my_name(ID);
     .broadcast(achieve, trackMove(X,Y));
     .print(ID," moves to: (", X," , ", Y, ")").
+
+//------------------------------------------------------- updatePos -------------------------------------------------------   
+
++!updatePos(X,Y) : not last_step_not_OK <-  -+pos(X, Y).
+
++!updatePos(X,Y) : last_step_not_OK <- -last_step_not_OK; .print("last step not ok").
