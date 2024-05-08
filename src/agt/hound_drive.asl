@@ -12,7 +12,6 @@
     ?pos(ME_X, ME_Y);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y);
-    .wait(300);
     !driveTarget(S).
 
 +!driveTarget(S) : not pos_agent(SX,SY)[source(S)] <- .print("Not enough info to drive target").
