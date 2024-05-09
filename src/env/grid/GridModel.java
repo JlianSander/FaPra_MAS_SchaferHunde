@@ -131,13 +131,23 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public boolean isFree(Location l) {
-        return isFree(l.x, l.y);
+        int obj = getObjectAt(l);
+        switch (obj) {
+            case -1:
+            case GridModel.HOUND:
+            case GridModel.SHEEP:
+            case GridModel.OBSTACLE:
+                return false;
+            default:
+                return true;
+        }
     }
 
     @Override
     public boolean isFree(int x, int y) {
-        return inGrid(x, y) && (data[x][y] & SHEEP) == 0 && (data[x][y] & HOUND) == 0
-                && (data[x][y] & 4) == 0 && (data[x][y] & 2) == 0;
+        return isFree(new Location(x, y));
+        // return inGrid(x, y) && (data[x][y] & SHEEP) == 0 && (data[x][y] & HOUND) == 0
+        //         && (data[x][y] & 4) == 0 && (data[x][y] & 2) == 0;
     }
 
     @Override
@@ -199,6 +209,10 @@ public class GridModel extends GridWorldModel {
     }
 
     public int getObjectAt(Location location) {
+        if (!inGrid(location)) {
+            return -1;
+        }
+
         int obj = data[location.x][location.y];
 
         switch (obj) {
