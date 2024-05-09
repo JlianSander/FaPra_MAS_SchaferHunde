@@ -16,16 +16,6 @@
     !flock;
     .
 
-// +pos(X,Y) : formerPos(FX, FY) &
-//             ( X = FX  &  Y = FY)       //counter is not set
-//         <-
-//         -formerPos(FX,FY).
-
-// +pos(X,Y) : formerPos(FX, FY) &
-//             ( X = FX  &  Y = FY)
-//         <-
-//         -formerPos(FX,FY).
-
 +!setTarget(TargetX, TargetY) : true
     <-
     +destination(TargetX, TargetY);
@@ -42,7 +32,7 @@
     // .print("destination: (", TargetX, " , ", TargetY, ")");
     // .print("current pos: (", AgX, " , ", AgY, ")");
     // .print("former pos: (", FormerX, " , ", FormerY, ")");
-    +formerPos(AgX, AgY);
+    -+formerPos(AgX, AgY);
     nextStep(TargetX, TargetY, NewX, NewY);
     -+pos(NewX, NewY);
     .wait(100);
@@ -79,35 +69,6 @@
     -destination(X,Y);
     -formerPos(X,Y);
     !flock.
-
-// +!move : destination(X,Y) & 
-//     pos(AgX, AgY) &
-//     not ( AgX = X  &  AgY = Y)       //only take this plan if you haven't reached destination
-//     <- 
-//     // .print("start move 2 to (", X, ",", Y,")");
-//     -+formerPos(AgX, AgY);
-//     nextStep(X,Y, NewX, NewY);
-//     // .print("set new pos (",NewX,",",NewY,")");
-//     -+pos(NewX, NewY);
-//     .wait(100);
-//     !move.
-
-// +!move : destination(X,Y) & 
-//     pos(AgX, AgY) &
-//     ( AgX = X  &  AgY = Y)       //only take this plan if you have reached destination
-//     <- 
-//     .print("reached destination");
-//     -destination(X,Y);
-//     // !flock.
-//     .
-
-// +!moveStep(X, Y) : pos(AgX, AgY)
-//     <- 
-//     // +formerPos(AgX, AgY);
-//     nextStep(X, Y, NewX, NewY);
-//     -+pos(NewX, NewY);
-//     .wait(100);
-//     .
 
 +!trackMove(X, Y)
     <- true.
