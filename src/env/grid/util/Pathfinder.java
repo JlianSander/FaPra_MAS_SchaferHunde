@@ -16,6 +16,13 @@ public class Pathfinder {
         excludeObstacles(model);
     }
 
+    public void agentMoved(Location prevLoc, Location newLoc) {
+        if (prevLoc != null) {
+            ds.updateCell(prevLoc.x, prevLoc.y, 0);
+        }
+        ds.updateCell(newLoc.x, newLoc.y, -1);
+    }
+
     private void excludeObstacles(GridModel model) {
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.OBSTACLE, loc),

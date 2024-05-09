@@ -48,9 +48,11 @@ public class GridWorld extends Artifact {
 
     private void moveTo(int agentId, Location location, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         if (model.isFree(location)) {
+            Location prevPos = model.getAgPos(agentId);
             model.setAgPos(agentDB.getAgentById(agentId), location);
             newX.set(location.x);
             newY.set(location.y);
+            pathfinder.agentMoved(prevPos, location);
             signal("mapChanged");
         } else {
             failed("move_failed");
@@ -64,5 +66,6 @@ public class GridWorld extends Artifact {
         Location loc = model.initAgent(agentInfo);
         X.set(loc.x);
         Y.set(loc.y);
+        moveTo(agentId, loc, X, Y);
     }
 }

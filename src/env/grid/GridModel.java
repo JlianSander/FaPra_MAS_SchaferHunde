@@ -109,7 +109,7 @@ public class GridModel extends GridWorldModel {
                             continue;
                         }
 
-                        setAgPos(agentInfo, x, y);
+                        // setAgPos(agentInfo, x, y);
                         return new Location(x, y);
                     }
                 }
@@ -120,7 +120,7 @@ public class GridModel extends GridWorldModel {
         gridProcessor.processEntireGrid(
                 loc -> model.isFree(loc),
                 loc -> {
-                    setAgPos(agentInfo, loc);
+                    // setAgPos(agentInfo, loc);
                     location.x = loc.x;
                     location.y = loc.y;
                 },
@@ -199,8 +199,10 @@ public class GridModel extends GridWorldModel {
     }
 
     public int getObjectAt(Location location) {
-        if (!inGrid(location.x, location.y))
+        if (!inGrid(location.x, location.y)) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BAD - loc out of bounds");
             return -1;
+        }
 
         return data[location.x][location.y];
     }
