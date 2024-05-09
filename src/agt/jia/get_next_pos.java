@@ -1,7 +1,5 @@
 package jia;
 
-import agt.jia.util.DrivePositioner;
-import agt.jia.util.SwarmManipulator;
 import grid.GridModel;
 import grid.util.Pathfinder;
 import jason.asSemantics.DefaultInternalAction;
@@ -19,7 +17,7 @@ public class get_next_pos extends DefaultInternalAction {
         int myX = (int) ((NumberTerm) args[0]).solve();
         int myY = (int) ((NumberTerm) args[1]).solve();
         var myLoc = new Location(myX, myY);
-        
+
         int targetX = (int) ((NumberTerm) args[2]).solve();
         int targetY = (int) ((NumberTerm) args[3]).solve();
         var targetLoc = new Location(targetX, targetY);
@@ -29,7 +27,7 @@ public class get_next_pos extends DefaultInternalAction {
         Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
 
         return un.unifies(args[4], new NumberTermImpl(nextPos.x))
-                    && un.unifies(args[5], new NumberTermImpl(nextPos.y));
+                && un.unifies(args[5], new NumberTermImpl(nextPos.y));
     }
-    
+
 }

@@ -1,21 +1,20 @@
-package agt.jia.util;
+package jia.util;
 
 import jason.environment.grid.Location;
 import grid.GridModel;
 import grid.util.Pathfinder;
-import jason.environment.grid.Area;
 
 public class SwarmManipulator {
 
     private Location center;
     private int radius;
 
-    public SwarmManipulator(Location center, int radius){
+    public SwarmManipulator(Location center, int radius) {
         this.center = center;
         this.radius = radius;
     }
-    
-    public Location getNextPositionTo(Location targetLocation){
+
+    public Location getNextPositionTo(Location targetLocation) {
         GridModel model = GridModel.getInstance();
         var pathFinder = new Pathfinder(model);
         var nextPosition = pathFinder.getNextPosition(this.center, targetLocation);
@@ -25,11 +24,11 @@ public class SwarmManipulator {
         return nextPosition;
     }
 
-    public Location center(){
+    public Location center() {
         return center;
     }
 
-    public int radius(){
+    public int radius() {
         return radius;
-    } 
+    }
 }
