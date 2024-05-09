@@ -199,11 +199,21 @@ public class GridModel extends GridWorldModel {
     }
 
     public int getObjectAt(Location location) {
-        if (!inGrid(location.x, location.y)) {
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BAD - loc out of bounds");
-            return -1;
-        }
+        int obj = data[location.x][location.y];
 
-        return data[location.x][location.y];
+        switch (obj) {
+            case GridModel.HOUND:
+            case GridModel.HOUND + GridModel.CORRAL:
+                return GridModel.HOUND;
+            case GridModel.SHEEP:
+            case GridModel.SHEEP + GridModel.CORRAL:
+                return GridModel.SHEEP;
+            case GridModel.OBSTACLE:
+            case GridModel.CLEAN:
+            case GridModel.CORRAL:
+                return obj;
+            default:
+                throw new IllegalStateException("Invalid object type at: " + location);
+        }
     }
 }
