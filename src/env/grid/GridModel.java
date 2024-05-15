@@ -18,7 +18,7 @@ public class GridModel extends GridWorldModel {
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
-    private AgentDB agentDB;
+    public AgentDB agentDB;
     private char[][] gridData;
 
     // Private constructor for singleton
@@ -131,16 +131,8 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public boolean isFree(Location l) {
-        int obj = getObjectAt(l);
-        switch (obj) {
-            case -1:
-            case GridModel.HOUND:
-            case GridModel.SHEEP:
-            case GridModel.OBSTACLE:
-                return false;
-            default:
-                return true;
-        }
+        List<Integer> objects = getObjectsAt(l);
+        return objects.size() == 1 && objects.get(0) == CLEAN;
     }
 
     @Override
@@ -208,26 +200,38 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
-    public int getObjectAt(Location location) {
+    /**
+     * Returns a list of ALL objects for a given location. The items in this list will be sorted by significance (Hound > Sheep > Corral/Obstacle/Clean).
+     * A location that is a corral and that is occupied by a sheep will return both sheep and corral, in that order.
+     * @param location Location to check
+     * @return List of objects at the given location
+     */
+    public List<Integer> getObjectsAt(Location location) {
         if (!inGrid(location)) {
-            return -1;
+            return new ArrayList<>();
         }
 
         int obj = data[location.x][location.y];
 
+        List<Integer> objects = new ArrayList<>();
         switch (obj) {
             case GridModel.HOUND:
             case GridModel.HOUND + GridModel.CORRAL:
-                return GridModel.HOUND;
+                objects.add(GridModel.HOUND);
+                break;
             case GridModel.SHEEP:
             case GridModel.SHEEP + GridModel.CORRAL:
-                return GridModel.SHEEP;
+                objects.add(GridModel.SHEEP);
+                break;
             case GridModel.OBSTACLE:
             case GridModel.CLEAN:
             case GridModel.CORRAL:
-                return obj;
+                objects.add(obj);
+                break;
             default:
                 throw new IllegalStateException("Invalid object type at: " + location);
         }
+
+        return objects;
     }
 }
