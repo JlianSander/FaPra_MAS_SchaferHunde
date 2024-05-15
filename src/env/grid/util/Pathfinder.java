@@ -37,10 +37,12 @@ public class Pathfinder implements AgentMoveListener {
     }
 
     public static Pathfinder getInstance(AgentInfo agent) {
+        System.out.println("PATHFINDER --- Getting instance for agent " + agent.getJasonId());
         return agentInstances.get(agent.getCartagoId());
     }
 
     public synchronized static Pathfinder getInstance() {
+        System.out.println("PATHFINDER --- Getting general instance");
         for (Pair<Pathfinder, Boolean> pair : generalInstances) {
             if (!pair.getValue1()) {
                 generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
@@ -65,12 +67,10 @@ public class Pathfinder implements AgentMoveListener {
 
     @Override
     public void onAgentMoved(Location prevLoc, Location newLoc) {
-        if (prevLoc != null) {
-            ds.updateCell(prevLoc.x, prevLoc.y, 0);
-            System.out.println(prevLoc + " is now free");
-        }
-        ds.updateCell(newLoc.x, newLoc.y, -1);
-        System.out.println(newLoc + " is now occupied");
+        // if (prevLoc != null) {
+        //     ds.updateCell(prevLoc.x, prevLoc.y, 0);
+        // }
+        // ds.updateCell(newLoc.x, newLoc.y, -1);
     }
 
     private void excludeObstacles() {

@@ -13,6 +13,7 @@ public class is_in_corral extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+
         try {
             int locX = (int) ((NumberTerm) args[0]).solve();
             int locY = (int) ((NumberTerm) args[1]).solve();
@@ -22,9 +23,11 @@ public class is_in_corral extends DefaultInternalAction {
             get_corral.init();
             var corral = get_corral.corral();
 
-            System.out.println("Test");
+            boolean result = corral.contains(loc);
 
-            return corral.contains(loc);
+            ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
+
+            return result;
         } catch (NoSuchElementException e) {
             return false;
         }

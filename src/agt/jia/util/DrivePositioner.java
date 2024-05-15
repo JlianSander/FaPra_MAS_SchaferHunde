@@ -25,8 +25,13 @@ public class DrivePositioner {
 
         //ensure to stay on map
         agentPos = new Location(
-                agentPos.x > model.getWidth() - 1 ? model.getWidth() - 1 : agentPos.x,
-                agentPos.y > model.getHeight() - 1 ? model.getHeight() - 1 : agentPos.y);
+                stay_within_limit(agentPos.x, model.getWidth() - 1),
+                stay_within_limit(agentPos.y, model.getHeight() - 1));
         return agentPos;
+    }
+
+    private static int stay_within_limit(int actVal, int maxLimit) {
+        int output = actVal > 0 ? actVal : 0;
+        return output < maxLimit ? output : maxLimit;
     }
 }

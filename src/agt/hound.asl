@@ -33,7 +33,7 @@ is_jammed :- jammed(J) & J > 10.
 +!walkTowards(X,Y) : not pos(X,Y)   //not yet reached target coordinates
     <- .print("walking towards: (",X,",",Y,")");
     !makeStepTowards(X,Y);
-    .wait(1);
+    .wait(100);
     !walkTowards(X,Y).
 
 +!walkTowards(X,Y) <- .print("reached destination").   //reached target coordinates

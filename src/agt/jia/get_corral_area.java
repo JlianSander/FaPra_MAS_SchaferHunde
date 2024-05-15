@@ -49,9 +49,9 @@ public class get_corral_area extends DefaultInternalAction {
     }
 
     private void updateCorral(Location locToProcess) {
-        Location topLeft = (this.corral.tl.x > locToProcess.x) || (this.corral.tl.y < locToProcess.y) ? locToProcess
+        Location topLeft = (locToProcess.x < this.corral.tl.x) || (locToProcess.y < this.corral.tl.y) ? locToProcess
                 : this.corral.tl;
-        Location bottomRight = (this.corral.br.x < locToProcess.x) || (this.corral.br.y > locToProcess.y) ? locToProcess
+        Location bottomRight = (locToProcess.x > this.corral.br.x) || (locToProcess.y > this.corral.br.y) ? locToProcess
                 : this.corral.br;
         corral = new Area(topLeft, bottomRight);
     }

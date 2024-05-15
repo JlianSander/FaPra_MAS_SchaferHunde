@@ -13,7 +13,7 @@ public class GridView extends GridWorldView {
     private boolean drawCoords;
 
     public GridView(GridWorldModel model, AgentDB agentDB, boolean drawCoords) {
-        super(model, "Grid World", 1000);
+        super(model, "Grid World", 600);
         this.agentDB = agentDB;
         this.drawCoords = drawCoords;
         setVisible(true);
