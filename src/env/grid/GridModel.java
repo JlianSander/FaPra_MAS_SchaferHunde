@@ -18,7 +18,7 @@ public class GridModel extends GridWorldModel {
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
-    public AgentDB agentDB;
+    private AgentDB agentDB;
     private char[][] gridData;
 
     // Private constructor for singleton
@@ -96,6 +96,10 @@ public class GridModel extends GridWorldModel {
                 }
             }
         }
+    }
+
+    public AgentDB getAgentDB() {
+        return agentDB;
     }
 
     public Location initAgent(AgentInfo agentInfo) {
