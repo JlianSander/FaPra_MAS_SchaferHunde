@@ -1,6 +1,5 @@
 package jia;
 
-import grid.GridModel;
 import grid.util.Pathfinder;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -22,9 +21,7 @@ public class get_next_pos extends DefaultInternalAction {
         int targetY = (int) ((NumberTerm) args[3]).solve();
         var targetLoc = new Location(targetX, targetY);
 
-        GridModel model = GridModel.getInstance();
-        var pathfinder = new Pathfinder(model);
-        Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
+        Location nextPos = Pathfinder.getInstance().getNextPosition(myLoc, targetLoc);
 
         return un.unifies(args[4], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[5], new NumberTermImpl(nextPos.y));

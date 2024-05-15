@@ -1,7 +1,6 @@
 package jia.util;
 
 import jason.environment.grid.Location;
-import grid.GridModel;
 import grid.util.Pathfinder;
 
 public class SwarmManipulator {
@@ -15,9 +14,7 @@ public class SwarmManipulator {
     }
 
     public Location getNextPositionTo(Location targetLocation) {
-        GridModel model = GridModel.getInstance();
-        var pathFinder = new Pathfinder(model);
-        var nextPosition = pathFinder.getNextPosition(this.center, targetLocation);
+        var nextPosition = Pathfinder.getInstance().getNextPosition(this.center, targetLocation);
 
         //TODO  use radius to check if nextPosition is favourable/problematic for outer elements of swarm
 

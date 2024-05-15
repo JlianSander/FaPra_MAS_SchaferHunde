@@ -83,7 +83,9 @@ public class flocking_pos extends DefaultInternalAction {
     }
 
     private double calculateWeight(Location location) {
-        int object = GridModel.getInstance().getObjectAt(location);
+        // technically we should check if the list is empty, but I cannot see how that would happen.
+        // In any case, an exception would be thrown.
+        int object = GridModel.getInstance().getObjectsAt(location).get(0);
         // System.out.println("Testing location: " + location + " with object: " + object);
         double weight = 1.0;
         switch (object) {
@@ -93,10 +95,10 @@ public class flocking_pos extends DefaultInternalAction {
                 break;
             case GridModel.SHEEP:
                 // System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
-                weight = 60;
+                weight = 40;
                 break;
             case GridModel.OBSTACLE:
-                weight = -30;
+                weight = -10;
                 break;
             case GridModel.CLEAN:
                 weight = 10;
