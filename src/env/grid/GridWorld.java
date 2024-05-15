@@ -10,8 +10,11 @@ import service.AgentDB;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class GridWorld extends Artifact {
+    private static final Logger logger = Logger.getLogger(GridWorld.class.getName());
+
     GridView view;
     AgentDB agentDB;
     private final List<AgentMoveListener> listeners = new ArrayList<>();
@@ -48,12 +51,16 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
+        // get id
         AgentInfo agent = agentDB.getAgentById(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
         Pathfinder pathfinder = Pathfinder.getInstance(agent);
         Location startPos = model.getAgPos(agent.getCartagoId());
         Location targetPos = new Location(targetX, targetY);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+        logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
+                + " calced next move -> "
+                + nextPos);
         moveTo(agent, nextPos, newX, newY);
     }
 
@@ -61,14 +68,16 @@ public class GridWorld extends Artifact {
             OpFeedbackParam<Integer> newY) {
         GridModel model = GridModel.getInstance();
         if (model.isFree(location)) {
+            // logger.info("move successful");
             int agentCartagoId = agent.getCartagoId();
-            Location prevPos = model.getAgPos(agentCartagoId);
             model.setAgPos(agentDB.getAgentById(agentCartagoId), location);
             newX.set(location.x);
             newY.set(location.y);
-            notifyAgentMoved(prevPos, location);
+            // Location prevPos = model.getAgPos(agentCartagoId);
+            // notifyAgentMoved(prevPos, location);
             signal("mapChanged");
         } else {
+            logger.warning("MOVE FAILED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             failed("move_failed");
         }
     }
