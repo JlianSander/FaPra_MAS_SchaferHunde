@@ -39,7 +39,7 @@ mas mas_schafherde {
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2, "true")
-      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt", "true")
+      artifact grid: grid.GridWorld("src/env/grid/templates/3.txt", "true")
       debug
     }
 

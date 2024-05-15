@@ -39,8 +39,10 @@ public class GridWorld extends Artifact {
     }
 
     private void notifyAgentMoved(Location prevLoc, Location newLoc) {
-        for (AgentMoveListener listener : listeners) {
-            listener.onAgentMoved(prevLoc, newLoc);
+        synchronized (listeners) {
+            for (AgentMoveListener listener : listeners) {
+                listener.onAgentMoved(prevLoc, newLoc);
+            }
         }
     }
 

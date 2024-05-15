@@ -43,19 +43,20 @@ public class Pathfinder implements AgentMoveListener {
 
     public synchronized static Pathfinder getInstance() {
         System.out.println("PATHFINDER --- Getting general instance");
-        for (Pair<Pathfinder, Boolean> pair : generalInstances) {
-            if (!pair.getValue1()) {
-                generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
-                return pair.getValue0();
-            }
-        }
-        Pathfinder pf = new Pathfinder();
-        pf.isGeneralInstance = true;
-        generalInstances.add(Pair.with(pf, true));
-        return pf;
+        return new Pathfinder();
+        // for (Pair<Pathfinder, Boolean> pair : generalInstances) {
+        //     if (!pair.getValue1()) {
+        //         generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
+        //         return pair.getValue0();
+        //     }
+        // }
+        // Pathfinder pf = new Pathfinder();
+        // pf.isGeneralInstance = true;
+        // generalInstances.add(Pair.with(pf, true));
+        // return pf;
     }
 
-    public synchronized void releaseInstance() {
+    public void releaseInstance() {
         for (int i = 0; i < generalInstances.size(); i++) {
             Pair<Pathfinder, Boolean> pair = generalInstances.get(i);
             if (pair.getValue0() == this) {
@@ -67,10 +68,10 @@ public class Pathfinder implements AgentMoveListener {
 
     @Override
     public void onAgentMoved(Location prevLoc, Location newLoc) {
-        // if (prevLoc != null) {
-        //     ds.updateCell(prevLoc.x, prevLoc.y, 0);
-        // }
-        // ds.updateCell(newLoc.x, newLoc.y, -1);
+        if (prevLoc != null) {
+            ds.updateCell(prevLoc.x, prevLoc.y, 0);
+        }
+        ds.updateCell(newLoc.x, newLoc.y, -1);
     }
 
     private void excludeObstacles() {
