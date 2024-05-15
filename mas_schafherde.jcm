@@ -30,7 +30,7 @@ mas mas_schafherde {
     
     agent houndX: hound.asl {
         join: world
-        instances: 1
+        instances: 5
         focus: world.grid
         roles: driver in hounds
         //beliefs: destination(18,0)
@@ -39,7 +39,7 @@ mas mas_schafherde {
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2, "true")
-      artifact grid: grid.GridWorld("src/env/grid/templates/3.txt", "true")
+      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt", "true")
       debug
     }
 

@@ -10,10 +10,10 @@
     <- 
     // pos(AgX, AgY);
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
-    // .my_name(Me);
-    // .print(Me, " pos: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
+    .my_name(Me);
+    .print("Calculated new flocking pos. Start: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
     !setTarget(TargetX, TargetY);
-    !flock;
+    // !flock;
     .
 
 +!setTarget(TargetX, TargetY) : true
@@ -27,13 +27,14 @@
             formerPos(FormerX, FormerY) &
             not (AgX = TargetX  &  AgY = TargetY)
     <-
-    // .print("Destination not reached yet");
+    .print("Destination not reached yet");
     // .print("before step:");
     // .print("destination: (", TargetX, " , ", TargetY, ")");
     // .print("current pos: (", AgX, " , ", AgY, ")");
     // .print("former pos: (", FormerX, " , ", FormerY, ")");
     -+formerPos(AgX, AgY);
     nextStep(TargetX, TargetY, NewX, NewY);
+    .print("Old pos: (", AgX, " , ", AgY, ") - New pos: (", NewX, " , ", NewY, ")");
     -+pos(NewX, NewY);
     .wait(100);
     // .print("after step:");
@@ -51,7 +52,7 @@
     <-
     .print("IM STUCK!");
     -destination(X,Y);
-    !flock.
+    !!flock.
 
 +!takeStep : pos(AgX, AgY) &
             formerPos(FormerAgX, FormerAgY) &
@@ -59,16 +60,16 @@
             ( AgX = TargetX  &  AgY = TargetY) &
             not (AgX = FormerAgX  &  AgY = FormerAgY)
     <-
-    // .print("Im Done!");
+    .print("Im Done!");
     -destination(X,Y);
-    !flock.
+    !!flock.
 
 -!takeStep
     <-
     .print("ABORT :(");
     -destination(X,Y);
     -formerPos(X,Y);
-    !flock.
+    !!flock.
 
 +!trackMove(X, Y)
     <- true.

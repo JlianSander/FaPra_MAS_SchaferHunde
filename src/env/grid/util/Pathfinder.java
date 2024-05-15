@@ -1,17 +1,17 @@
 package grid.util;
 
-import grid.GridModel;
-import grid.GridWorld;
-import jason.environment.grid.Location;
-import model.AgentInfo;
-import org.javatuples.Pair;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import jason.environment.grid.Location;
+import grid.GridModel;
+import grid.GridWorld;
+import model.AgentInfo;
+
+import org.javatuples.Pair;
 import dstarlite.DStarLite;
 
 public class Pathfinder implements AgentMoveListener {
@@ -24,6 +24,8 @@ public class Pathfinder implements AgentMoveListener {
     private Pathfinder() {
         ds = new DStarLite();
         excludeObstacles();
+        excludeOuterBorder();
+        excludeAgents();
         gridWorld.addAgentMoveListener(this);
     }
 
@@ -37,23 +39,20 @@ public class Pathfinder implements AgentMoveListener {
     }
 
     public static Pathfinder getInstance(AgentInfo agent) {
-        System.out.println("PATHFINDER --- Getting instance for agent " + agent.getJasonId());
         return agentInstances.get(agent.getCartagoId());
     }
 
     public synchronized static Pathfinder getInstance() {
-        System.out.println("PATHFINDER --- Getting general instance");
-        return new Pathfinder();
-        // for (Pair<Pathfinder, Boolean> pair : generalInstances) {
-        //     if (!pair.getValue1()) {
-        //         generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
-        //         return pair.getValue0();
-        //     }
-        // }
-        // Pathfinder pf = new Pathfinder();
-        // pf.isGeneralInstance = true;
-        // generalInstances.add(Pair.with(pf, true));
-        // return pf;
+        for (Pair<Pathfinder, Boolean> pair : generalInstances) {
+            if (!pair.getValue1()) {
+                generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
+                return pair.getValue0();
+            }
+        }
+        Pathfinder pf = new Pathfinder();
+        pf.isGeneralInstance = true;
+        generalInstances.add(Pair.with(pf, true));
+        return pf;
     }
 
     public void releaseInstance() {
@@ -69,7 +68,7 @@ public class Pathfinder implements AgentMoveListener {
     @Override
     public void onAgentMoved(Location prevLoc, Location newLoc) {
         if (prevLoc != null) {
-            ds.updateCell(prevLoc.x, prevLoc.y, 0);
+            ds.updateCell(prevLoc.x, prevLoc.y, 1.0);
         }
         ds.updateCell(newLoc.x, newLoc.y, -1);
     }
@@ -81,8 +80,6 @@ public class Pathfinder implements AgentMoveListener {
                 loc -> model.hasObject(GridModel.OBSTACLE, loc),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
-
-        excludeOuterBorder();
     }
 
     // This may cover weird edge cases or may not be necessary at all, who knows
@@ -100,6 +97,16 @@ public class Pathfinder implements AgentMoveListener {
         }
     }
 
+    private void excludeAgents() {
+        GridModel model = GridModel.getInstance();
+        for (AgentInfo agent : model.getAgentDB().getAllAgents()) {
+            Location loc = model.getAgPos(agent.getCartagoId());
+            if (loc != null) {
+                ds.updateCell(loc.x, loc.y, 1.0);
+            }
+        }
+    }
+
     public Location getNextPosition(Location start, Location target) {
         List<Location> path = getPath(start, target);
         return path.size() > 1 ? path.get(1) : path.get(0);
@@ -107,9 +114,12 @@ public class Pathfinder implements AgentMoveListener {
 
     public List<Location> getPath(Location start, Location target) {
         try {
-            ds.updateStart(start.x, start.y);
-            ds.updateGoal(target.x, target.y);
-            System.out.println("PATHFINDER --- Start: " + start + " Goal: " + target);
+            ds.init(start.x, start.y, target.x, target.y);
+            excludeObstacles();
+            excludeOuterBorder();
+            excludeAgents();
+            // ds.updateStart(start.x, start.y);
+            // ds.updateGoal(target.x, target.y);
             ds.replan();
             return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
         } finally {
