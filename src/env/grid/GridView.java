@@ -13,7 +13,7 @@ public class GridView extends GridWorldView {
     private boolean drawCoords;
 
     public GridView(GridWorldModel model, AgentDB agentDB, boolean drawCoords) {
-        super(model, "Grid World", 600);
+        super(model, "Grid World", 800);
         this.agentDB = agentDB;
         this.drawCoords = drawCoords;
         setVisible(true);
@@ -73,10 +73,9 @@ public class GridView extends GridWorldView {
         if (!drawCoords)
             return;
 
-        // String str = "(" + x + "," + y + ")";
         String str = x + "," + y;
         g.setColor(Color.BLACK);
-        Font f = new Font("Arial", Font.BOLD, 12);
+        Font f = new Font("Arial", Font.BOLD, 10);
         drawString(g, x, y, f, str);
     }
 }
