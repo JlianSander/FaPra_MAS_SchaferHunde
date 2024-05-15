@@ -132,7 +132,7 @@ public class GridModel extends GridWorldModel {
     @Override
     public boolean isFree(Location l) {
         List<Integer> objects = getObjectsAt(l);
-        return objects.size() == 1 && objects.get(0) == CLEAN;
+        return objects.size() == 1 && (objects.get(0) == CLEAN || objects.get(0) == CORRAL);
     }
 
     @Override

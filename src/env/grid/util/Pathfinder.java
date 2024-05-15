@@ -33,8 +33,7 @@ public class Pathfinder implements AgentMoveListener {
         }
 
         Pathfinder.gridWorld = gridWorld;
-        Pathfinder pathfinder = new Pathfinder();
-        agentInstances.put(agent.getCartagoId(), pathfinder);
+        agentInstances.put(agent.getCartagoId(), new Pathfinder());
     }
 
     public static Pathfinder getInstance(AgentInfo agent) {
@@ -48,10 +47,10 @@ public class Pathfinder implements AgentMoveListener {
                 return pair.getValue0();
             }
         }
-        Pathfinder newPathfinder = new Pathfinder();
-        newPathfinder.isGeneralInstance = true;
-        generalInstances.add(Pair.with(newPathfinder, true));
-        return newPathfinder;
+        Pathfinder pf = new Pathfinder();
+        pf.isGeneralInstance = true;
+        generalInstances.add(Pair.with(pf, true));
+        return pf;
     }
 
     public synchronized void releaseInstance() {
@@ -68,6 +67,7 @@ public class Pathfinder implements AgentMoveListener {
     public void onAgentMoved(Location prevLoc, Location newLoc) {
         if (prevLoc != null) {
             ds.updateCell(prevLoc.x, prevLoc.y, 0);
+            System.out.println(prevLoc + " is now free");
         }
         ds.updateCell(newLoc.x, newLoc.y, -1);
         System.out.println(newLoc + " is now occupied");
@@ -80,6 +80,23 @@ public class Pathfinder implements AgentMoveListener {
                 loc -> model.hasObject(GridModel.OBSTACLE, loc),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
+
+        excludeOuterBorder();
+    }
+
+    // This may cover weird edge cases or may not be necessary at all, who knows
+    private void excludeOuterBorder() {
+        GridModel model = GridModel.getInstance();
+        // Exclude all cells forming a border around the grid, but are not in the grid itself
+        for (int i = -1; i <= model.getWidth(); i++) {
+            ds.updateCell(i, -1, -1); // Top border
+            ds.updateCell(i, model.getHeight(), -1); // Bottom border
+        }
+
+        for (int j = -1; j <= model.getHeight(); j++) {
+            ds.updateCell(-1, j, -1); // Left border
+            ds.updateCell(model.getWidth(), j, -1); // Right border
+        }
     }
 
     public Location getNextPosition(Location start, Location target) {
