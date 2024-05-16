@@ -98,6 +98,10 @@ public class GridModel extends GridWorldModel {
         }
     }
 
+    public AgentDB getAgentDB() {
+        return agentDB;
+    }
+
     public Location initAgent(AgentInfo agentInfo) {
         if (gridData != null) {
             for (int y = 0; y < height; y++) {
@@ -109,7 +113,7 @@ public class GridModel extends GridWorldModel {
                             continue;
                         }
 
-                        setAgPos(agentInfo, x, y);
+                        // setAgPos(agentInfo, x, y);
                         return new Location(x, y);
                     }
                 }
@@ -120,7 +124,7 @@ public class GridModel extends GridWorldModel {
         gridProcessor.processEntireGrid(
                 loc -> model.isFree(loc),
                 loc -> {
-                    setAgPos(agentInfo, loc);
+                    // setAgPos(agentInfo, loc);
                     location.x = loc.x;
                     location.y = loc.y;
                 },
@@ -131,13 +135,15 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public boolean isFree(Location l) {
-        return isFree(l.x, l.y);
+        List<Integer> objects = getObjectsAt(l);
+        return objects.size() == 1 && (objects.get(0) == CLEAN || objects.get(0) == CORRAL);
     }
 
     @Override
     public boolean isFree(int x, int y) {
-        return inGrid(x, y) && (data[x][y] & SHEEP) == 0 && (data[x][y] & HOUND) == 0
-                && (data[x][y] & 4) == 0 && (data[x][y] & 2) == 0;
+        return isFree(new Location(x, y));
+        // return inGrid(x, y) && (data[x][y] & SHEEP) == 0 && (data[x][y] & HOUND) == 0
+        //         && (data[x][y] & 4) == 0 && (data[x][y] & 2) == 0;
     }
 
     @Override
@@ -198,10 +204,38 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
-    public int getObjectAt(Location location) {
-        if (!inGrid(location.x, location.y))
-            return -1;
+    /**
+     * Returns a list of ALL objects for a given location. The items in this list will be sorted by significance (Hound > Sheep > Corral/Obstacle/Clean).
+     * A location that is a corral and that is occupied by a sheep will return both sheep and corral, in that order.
+     * @param location Location to check
+     * @return List of objects at the given location
+     */
+    public List<Integer> getObjectsAt(Location location) {
+        if (!inGrid(location)) {
+            return new ArrayList<>();
+        }
 
-        return data[location.x][location.y];
+        int obj = data[location.x][location.y];
+
+        List<Integer> objects = new ArrayList<>();
+        switch (obj) {
+            case GridModel.HOUND:
+            case GridModel.HOUND + GridModel.CORRAL:
+                objects.add(GridModel.HOUND);
+                break;
+            case GridModel.SHEEP:
+            case GridModel.SHEEP + GridModel.CORRAL:
+                objects.add(GridModel.SHEEP);
+                break;
+            case GridModel.OBSTACLE:
+            case GridModel.CLEAN:
+            case GridModel.CORRAL:
+                objects.add(obj);
+                break;
+            default:
+                throw new IllegalStateException("Invalid object type at: " + location);
+        }
+
+        return objects;
     }
 }

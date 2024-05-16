@@ -10,21 +10,11 @@
     <- 
     // pos(AgX, AgY);
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
-    // .my_name(Me);
-    // .print(Me, " pos: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
+    .my_name(Me);
+    .print("Calculated new flocking pos. Start: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
     !setTarget(TargetX, TargetY);
-    !flock;
+    // !flock;
     .
-
-// +pos(X,Y) : formerPos(FX, FY) &
-//             ( X = FX  &  Y = FY)       //counter is not set
-//         <-
-//         -formerPos(FX,FY).
-
-// +pos(X,Y) : formerPos(FX, FY) &
-//             ( X = FX  &  Y = FY)
-//         <-
-//         -formerPos(FX,FY).
 
 +!setTarget(TargetX, TargetY) : true
     <-
@@ -37,13 +27,14 @@
             formerPos(FormerX, FormerY) &
             not (AgX = TargetX  &  AgY = TargetY)
     <-
-    // .print("Destination not reached yet");
+    .print("Destination not reached yet");
     // .print("before step:");
     // .print("destination: (", TargetX, " , ", TargetY, ")");
     // .print("current pos: (", AgX, " , ", AgY, ")");
     // .print("former pos: (", FormerX, " , ", FormerY, ")");
-    +formerPos(AgX, AgY);
+    -+formerPos(AgX, AgY);
     nextStep(TargetX, TargetY, NewX, NewY);
+    .print("Old pos: (", AgX, " , ", AgY, ") - New pos: (", NewX, " , ", NewY, ")");
     -+pos(NewX, NewY);
     .wait(100);
     // .print("after step:");
@@ -61,7 +52,7 @@
     <-
     .print("IM STUCK!");
     -destination(X,Y);
-    !flock.
+    !!flock.
 
 +!takeStep : pos(AgX, AgY) &
             formerPos(FormerAgX, FormerAgY) &
@@ -69,45 +60,16 @@
             ( AgX = TargetX  &  AgY = TargetY) &
             not (AgX = FormerAgX  &  AgY = FormerAgY)
     <-
-    // .print("Im Done!");
+    .print("Im Done!");
     -destination(X,Y);
-    !flock.
+    !!flock.
 
 -!takeStep
     <-
     .print("ABORT :(");
     -destination(X,Y);
     -formerPos(X,Y);
-    !flock.
-
-// +!move : destination(X,Y) & 
-//     pos(AgX, AgY) &
-//     not ( AgX = X  &  AgY = Y)       //only take this plan if you haven't reached destination
-//     <- 
-//     // .print("start move 2 to (", X, ",", Y,")");
-//     -+formerPos(AgX, AgY);
-//     nextStep(X,Y, NewX, NewY);
-//     // .print("set new pos (",NewX,",",NewY,")");
-//     -+pos(NewX, NewY);
-//     .wait(100);
-//     !move.
-
-// +!move : destination(X,Y) & 
-//     pos(AgX, AgY) &
-//     ( AgX = X  &  AgY = Y)       //only take this plan if you have reached destination
-//     <- 
-//     .print("reached destination");
-//     -destination(X,Y);
-//     // !flock.
-//     .
-
-// +!moveStep(X, Y) : pos(AgX, AgY)
-//     <- 
-//     // +formerPos(AgX, AgY);
-//     nextStep(X, Y, NewX, NewY);
-//     -+pos(NewX, NewY);
-//     .wait(100);
-//     .
+    !!flock.
 
 +!trackMove(X, Y)
     <- true.

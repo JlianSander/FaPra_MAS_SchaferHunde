@@ -1,9 +1,7 @@
 package jia;
 
-import agt.jia.util.DrivePositioner;
-import agt.jia.util.SwarmManipulator;
-import grid.GridModel;
-import grid.util.Pathfinder;
+import jia.util.DrivePositioner;
+import jia.util.SwarmManipulator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -11,9 +9,6 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-import jason.environment.grid.Area;
-
-import jia.get_corral_area;
 
 public class get_pos_drive_swarm extends DefaultInternalAction {
 
@@ -28,10 +23,10 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         var get_corral = new get_corral_area();
         get_corral.init();
         var corral = get_corral.corral();
-        
+
         var agentLoc = DrivePositioner.positionSingleAgent(swarm, corral);
 
         return un.unifies(args[3], new NumberTermImpl(agentLoc.x))
-                    && un.unifies(args[4], new NumberTermImpl(agentLoc.y));
+                && un.unifies(args[4], new NumberTermImpl(agentLoc.y));
     }
 }
