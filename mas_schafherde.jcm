@@ -21,7 +21,7 @@ mas mas_schafherde {
         beliefs: doflock
     }
     
-    agent sheep: sheep.asl {
+    agent nonMovingSheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
         instances: 0
