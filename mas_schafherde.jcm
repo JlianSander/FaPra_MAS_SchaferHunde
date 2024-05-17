@@ -16,7 +16,7 @@ mas mas_schafherde {
     agent sheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 1
+        instances: 3
         focus: world.grid
         beliefs: doflock
     }

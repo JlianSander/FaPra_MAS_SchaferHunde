@@ -33,7 +33,6 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        // get id
         AgentInfo agent = agentDB.getAgentById(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
         Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());

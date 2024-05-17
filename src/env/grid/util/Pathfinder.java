@@ -1,52 +1,53 @@
 package grid.util;
 
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jason.environment.grid.Location;
-import grid.GridModel;
-
-import org.javatuples.Pair;
-
 import dstarlite.DStarLite;
+
+import jason.environment.grid.Location;
+
+import grid.GridModel;
 
 public class Pathfinder {
     private DStarLite ds;
+    private GridProcessor gridProcessor;
     private int user;
-    private static final List<Pair<Pathfinder, Boolean>> generalInstances = new ArrayList<>();
+    private static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
     private Pathfinder() {
         ds = new DStarLite();
+        gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(), GridModel.getInstance().getHeight());
     }
 
     public synchronized static Pathfinder getInstance(Integer user) {
-        Pathfinder pf = null;
-        for (Pair<Pathfinder, Boolean> pair : generalInstances) {
-            if (!pair.getValue1()) {
-                generalInstances.set(generalInstances.indexOf(pair), pair.setAt1(true));
-                pf = pair.getValue0();
-                break;
+        for (var entry : instances.entrySet()) {
+            if (entry.getValue().compareAndSet(false, true)) {
+                entry.getKey().user = user;
+                return entry.getKey();
             }
         }
 
-        if (pf == null) {
-            pf = new Pathfinder();
-            generalInstances.add(Pair.with(pf, true));
-        }
-
+        Pathfinder pf = new Pathfinder();
+        instances.put(pf, new AtomicBoolean(true));
         pf.user = user;
         return pf;
     }
 
     public void releaseInstance() {
-        for (int i = 0; i < generalInstances.size(); i++) {
-            Pair<Pathfinder, Boolean> pair = generalInstances.get(i);
-            if (pair.getValue0() == this) {
-                generalInstances.set(i, pair.setAt1(false));
-                break;
-            }
+        AtomicBoolean inUse = instances.get(this);
+        if (inUse != null) {
+            inUse.set(false);
         }
+    }
+
+    private void excludeObstacles() {
+        ObstacleMap obstacleMap = GridModel.getInstance().getObstacleMap();
+        gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, user),
+                loc -> ds.updateCell(loc.x, loc.y, -1),
+                c -> false);
     }
 
     public Location getNextPosition(Location start, Location target) {
@@ -54,16 +55,7 @@ public class Pathfinder {
         return path.size() > 1 ? path.get(1) : path.get(0);
     }
 
-    private void excludeObstacles() {
-        ObstacleMap obstacleMap = GridModel.getInstance().getObstacleMap();
-        for (int x = 0; x < GridModel.getInstance().getWidth(); x++) {
-            for (int y = 0; y < GridModel.getInstance().getHeight(); y++) {
-                ds.updateCell(x, y, obstacleMap.isObstacle(x, y, user) ? -1 : 1);
-            }
-        }
-    }
-
-    public List<Location> getPath(Location start, Location target) {
+    private List<Location> getPath(Location start, Location target) {
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
         ds.replan();
