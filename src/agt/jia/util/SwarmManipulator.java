@@ -15,7 +15,7 @@ public class SwarmManipulator {
     }
 
     public Location getNextPositionTo(Location targetLocation) {
-        var nextPosition = Pathfinder.getInstance(GridModel.HOUND).getNextPosition(this.center, targetLocation);
+        var nextPosition = Pathfinder.getInstance(GridModel.SHEEP).getNextPosition(this.center, targetLocation);
 
         //TODO  use radius to check if nextPosition is favourable/problematic for outer elements of swarm
 
