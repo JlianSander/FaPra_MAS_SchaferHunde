@@ -6,12 +6,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import dstarlite.DStarLite;
-
 import jason.environment.grid.Location;
 
 import grid.GridModel;
 
 public class Pathfinder {
+    public class UnwalkableTargetCellException extends RuntimeException {
+        public UnwalkableTargetCellException(String message) {
+            super(message);
+        }
+    }
+
     private DStarLite ds;
     private GridProcessor gridProcessor;
     private int user;
@@ -55,7 +60,15 @@ public class Pathfinder {
         return path.size() > 1 ? path.get(1) : path.get(0);
     }
 
-    private List<Location> getPath(Location start, Location target) {
+    private List<Location> getPath(Location start, Location target) throws UnwalkableTargetCellException {
+        if (start.equals(target)) {
+            return List.of(start);
+        }
+
+        if (GridModel.getInstance().getObstacleMap().isObstacle(target, user)) {
+            throw new UnwalkableTargetCellException("Target location is an obstacle");
+        }
+
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
         ds.replan();
