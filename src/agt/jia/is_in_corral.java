@@ -25,7 +25,7 @@ public class is_in_corral extends DefaultInternalAction {
 
             boolean result = corral.contains(loc);
 
-            ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
+            //ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
 
             return result;
         } catch (NoSuchElementException e) {

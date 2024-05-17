@@ -29,3 +29,13 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
 +!driveTarget(S) : has_enough_info(S) & is_in_corral(S) <- .print("sheep is in corral").
 
 
+//------------------------------------------------------- driveSwarm -------------------------------------------------------
+
++!driveSwarm(LS) <- 
+    +swarm(LS);
+    .print("Remembers swarm: ", LS);
+    .wait(1000);
+    // update swarm and create new list of current member and make recursive call with new list
+    .print("Forgot swarm: ", LS);
+    -swarm(LS).
+    
