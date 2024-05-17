@@ -2,14 +2,10 @@ package grid;
 
 import cartago.*;
 import jason.environment.grid.Location;
-
-import grid.util.AgentMoveListener;
 import grid.util.Pathfinder;
 import model.AgentInfo;
 import service.AgentDB;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class GridWorld extends Artifact {
@@ -17,7 +13,6 @@ public class GridWorld extends Artifact {
 
     GridView view;
     AgentDB agentDB;
-    private final List<AgentMoveListener> listeners = new ArrayList<>();
 
     void init(int size, int corralWidth, int corralHeight, boolean drawCoords) {
         agentDB = new AgentDB();
@@ -34,27 +29,13 @@ public class GridWorld extends Artifact {
     void commonInit(boolean drawCoords) {
         GridModel model = GridModel.getInstance();
         view = new GridView(model, agentDB, drawCoords);
-        defineObsProperty("gridSize", model.getWidth());
-    }
-
-    public void addAgentMoveListener(AgentMoveListener listener) {
-        listeners.add(listener);
-    }
-
-    private void notifyAgentMoved(Location prevLoc, Location newLoc) {
-        synchronized (listeners) {
-            for (AgentMoveListener listener : listeners) {
-                listener.onAgentMoved(prevLoc, newLoc);
-            }
-        }
     }
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        // get id
         AgentInfo agent = agentDB.getAgentById(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
-        Pathfinder pathfinder = Pathfinder.getInstance(agent);
+        Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
         Location startPos = model.getAgPos(agent.getCartagoId());
         Location targetPos = new Location(targetX, targetY);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
@@ -73,8 +54,6 @@ public class GridWorld extends Artifact {
             model.setAgPos(agentDB.getAgentById(agentCartagoId), location);
             newX.set(location.x);
             newY.set(location.y);
-            // Location prevPos = model.getAgPos(agentCartagoId);
-            // notifyAgentMoved(prevPos, location);
             signal("mapChanged");
         } else {
             logger.warning("MOVE FAILED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -85,7 +64,6 @@ public class GridWorld extends Artifact {
     @OPERATION
     private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
-        Pathfinder.createForAgent(this, agent);
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);

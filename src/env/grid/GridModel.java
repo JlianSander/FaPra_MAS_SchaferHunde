@@ -2,6 +2,7 @@ package grid;
 
 import grid.util.GridModelFileParser;
 import grid.util.GridProcessor;
+import grid.util.ObstacleMap;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 import model.AgentInfo;
@@ -18,6 +19,7 @@ public class GridModel extends GridWorldModel {
 
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
+    private ObstacleMap obstacleMap;
     private AgentDB agentDB;
     private char[][] gridData;
 
@@ -37,6 +39,7 @@ public class GridModel extends GridWorldModel {
     // Factory method to create the singleton instance from parameters
     public static synchronized GridModel create(int size, int corralWidth, int corralHeight, AgentDB agentDB) {
         model = new GridModel(size, size);
+        model.obstacleMap = new ObstacleMap(size, size);
         model.agentDB = agentDB;
 
         // Define corral
@@ -52,7 +55,10 @@ public class GridModel extends GridWorldModel {
         float obstacleDensity = 0.2f;
         gridProcessor.processEntireGrid(loc -> model.isFree(CORRAL, loc)
                 && Math.random() < obstacleDensity,
-                loc -> model.add(OBSTACLE, loc),
+                loc -> {
+                    model.add(OBSTACLE, loc);
+                    model.obstacleMap.addObstacle(model, loc.x, loc.y);
+                },
                 c -> false);
         return getInstance();
     }
@@ -63,6 +69,7 @@ public class GridModel extends GridWorldModel {
         int width = gridData[0].length;
         int height = gridData.length;
         model = new GridModel(width, height);
+        model.obstacleMap = new ObstacleMap(width, height);
         model.agentDB = agentDB;
         model.loadFromFile(gridData);
         return getInstance();
@@ -87,6 +94,7 @@ public class GridModel extends GridWorldModel {
                         break;
                     case 'X':
                         add(OBSTACLE, x, y);
+                        obstacleMap.addObstacle(model, x, y);
                         break;
                     case 'C':
                         add(CORRAL, x, y);
@@ -96,6 +104,10 @@ public class GridModel extends GridWorldModel {
                 }
             }
         }
+    }
+
+    public ObstacleMap getObstacleMap() {
+        return obstacleMap;
     }
 
     public AgentDB getAgentDB() {
@@ -157,14 +169,15 @@ public class GridModel extends GridWorldModel {
         setAgPos(agentInfo, new Location(x, y));
     }
 
-    public void setAgPos(AgentInfo agentInfo, Location l) {
+    public void setAgPos(AgentInfo agentInfo, Location location) {
         Location oldLoc = this.getAgPos(agentInfo.getCartagoId());
         if (oldLoc != null) {
             this.remove(agentInfo.getAgentType(), oldLoc.x, oldLoc.y);
         }
 
-        this.agPos[agentInfo.getCartagoId()] = l;
-        this.add(agentInfo.getAgentType(), l.x, l.y);
+        this.agPos[agentInfo.getCartagoId()] = location;
+        this.add(agentInfo.getAgentType(), location.x, location.y);
+        obstacleMap.agentMoved(this, oldLoc, location);
     }
 
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {
@@ -237,5 +250,9 @@ public class GridModel extends GridWorldModel {
         }
 
         return objects;
+    }
+
+    public List<Integer> getObjectsAt(int x, int y) {
+        return getObjectsAt(new Location(x, y));
     }
 }
