@@ -13,6 +13,7 @@ public class DrivePositioner {
         //get position, where the swarm is to drive to        
         var swarmTargetLoc = swarm.getNextPositionTo(corral.center());
 
+        //TODO: use beliefs about other hound positions to choose strategie for positioning
         //position agent behind swarm
         int[] direction_swarm = {
                 swarmTargetLoc.x - swarm.center().x,

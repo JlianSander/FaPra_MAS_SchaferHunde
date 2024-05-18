@@ -39,7 +39,9 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
     .setof(S, pos_agent(_,_)[source(S)], L);                                                                                                 //DEBUG
     .sort(L, Sorted_L);                                                                                                                      //DEBUG
     .print("Sheep I know:", Sorted_L);                                                                                                       //DEBUG
-    !driveSwarmSingleton(Sorted_L).
+    !driveSwarmSingleton(Sorted_L);
+    .wait(100);
+    !!driveSwarm.   //DEBUG                                                                                                                  //DEBUG                 
     //TODO: if(swarm reached corral){ true} else { !!driveSwarm}.
 
 //------------------------------------------------------- driveSwarmSingleton -------------------------------------------------------
@@ -48,9 +50,14 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
     <- .print("Start driveSwarmSingleton");                                                                                                 //DEBUG
     !updateSwarmDataStart(LS);
     .print("Remembers swarm: ", LS);                                                                                                        //DEBUG
-    //TODO: drive this swarm for one round, next round evaluate anew which swarm to drive
-    .print("Forgot swarm: ", LS);                                                                                                           //DEBUG
-    -swarm_to_drive(_, _, _, _, _).
+    ?swarm_to_drive(LS, CX,CY, Size, R);
+    jia.get_pos_drive_swarm(CX, CY, R, ME_TARGET_X, ME_TARGET_Y);
+    .print("Swarm is at (",CX,",",CY,") position agent at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                                            //DEBUG
+    ?pos(ME_X, ME_Y);
+    jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
+    !reachDestination(ME_NXT_X, ME_NXT_Y);                                                                                                         //DEBUG
+    -swarm_to_drive(_, _, _, _, _);
+    .print("Forgot swarm: ", LS).
 
 //------------------------------------------------------- updateSwarmDataStart -------------------------------------------------------
 

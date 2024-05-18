@@ -44,6 +44,7 @@ mas mas_schafherde {
     }
 
     organisation animals : org.xml {
+        //TODO: roles of hounds
         group hounds : hounds_specs 
     }
 }
