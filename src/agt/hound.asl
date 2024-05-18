@@ -57,12 +57,9 @@ is_jammed :- jammed(J) & J > 10.
     .wait({+mapChanged});
     !makeStepTowards.     //retry making step 
 
-//------------------------------------------------------- observe -------------------------------------------------------
-@handle_new_sheep_fail[atomic]
-+!handle_new_sheep(A) : .desire(driveSwarm(_)) <- .print("I'm already driving a swarm."); .succeed_goal({handle_new_sheep(A)}).
-
-@handle_new_sheep_target[atomic]
-+!handle_new_sheep(A) <- .print("handle_new_sheep: ", A);  
+//------------------------------------------------------- handleNewSheep -------------------------------------------------------
+@handleNewSheep_target[atomic]
++!handleNewSheep(A) <- .print("handleNewSheep: ", A);  
     .setof(S, pos_agent(_,_)[source(S)], L);  
     .sort(L, Sorted_L);  
     .print("Sheep I know:", Sorted_L);                                                                                                
@@ -71,7 +68,7 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
     <- -+pos_agent(X ,Y)[source(S)];
-    !handle_new_sheep(S).
+    !handleNewSheep(S).
 
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
     <- -+pos_agent(X ,Y)[source(S)]. 
