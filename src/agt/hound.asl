@@ -59,11 +59,8 @@ is_jammed :- jammed(J) & J > 10.
 
 //------------------------------------------------------- handleNewSheep -------------------------------------------------------
 @handleNewSheep_target[atomic]
-+!handleNewSheep(A) <- .print("handleNewSheep: ", A);  
-    .setof(S, pos_agent(_,_)[source(S)], L);  
-    .sort(L, Sorted_L);  
-    .print("Sheep I know:", Sorted_L);                                                                                                
-    !!driveSwarm(Sorted_L). //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
++!handleNewSheep(A) <- .print("handleNewSheep: ", A);                                                                                         
+    !!driveSwarm. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep

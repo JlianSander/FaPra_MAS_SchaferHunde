@@ -16,7 +16,7 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
 +!driveSheep(S) : has_enough_info(S) & not is_in_corral(S) & not other_hound_is_closer(S) <- .print("driving: ", S); 
     ?pos_agent(SX,SY)[source(S)];
     jia.get_pos_drive_swarm(SX, SY, 0, ME_TARGET_X, ME_TARGET_Y);
-    .print("Sheep is at (",SX,",",SY,") position agent at (",ME_TARGET_X, ",", ME_TARGET_Y, ")");
+    .print("Sheep is at (",SX,",",SY,") position agent at (",ME_TARGET_X, ",", ME_TARGET_Y, ")");                                            //DEBUG
     ?pos(ME_X, ME_Y);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y);
@@ -31,43 +31,47 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
 
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
-+!driveSwarm(LS) : .desire(driveSwarmSingleton(_)) <- .print("I'm already driving a swarm."); .succeed_goal({handle_new_sheep(A)}).
++!driveSwarm : .desire(driveSwarmSingleton(_)) <- .print("I'm already driving a swarm."); .succeed_goal({handle_new_sheep(A)}).
 
-+!driveSwarm(LS) <- driveSwarmSingleton(LS).
++!driveSwarm <- 
+    //TODO: map sheep to swarms (use beliefs about pos of sheep)
+    //TODO: choose most desirable swarm
+    .setof(S, pos_agent(_,_)[source(S)], L);                                                                                                 //DEBUG
+    .sort(L, Sorted_L);                                                                                                                      //DEBUG
+    .print("Sheep I know:", Sorted_L);                                                                                                       //DEBUG
+    !driveSwarmSingleton(Sorted_L).
+    //TODO: if(swarm reached corral){ true} else { !!driveSwarm}.
 
 //------------------------------------------------------- driveSwarmSingleton -------------------------------------------------------
 
-+!driveSwarmSingleton(LS) : 
-    <- .length(LS, LS_length);
-    +swarm_to_drive(LS, -1,-1, 0, -1);
-    .print("Remembers swarm: ", LS);
-    !processKnownSwarm(LS);
-    .print("Forgot swarm: ", LS);
++!driveSwarmSingleton(LS) 
+    <- .print("Start driveSwarmSingleton");                                                                                                 //DEBUG
+    !updateSwarmDataStart(LS);
+    .print("Remembers swarm: ", LS);                                                                                                        //DEBUG
+    //TODO: drive this swarm for one round, next round evaluate anew which swarm to drive
+    .print("Forgot swarm: ", LS);                                                                                                           //DEBUG
     -swarm_to_drive(_, _, _, _, _).
 
-//------------------------------------------------------- processKnownSwarm -------------------------------------------------------
+//------------------------------------------------------- updateSwarmDataStart -------------------------------------------------------
 
-+!processKnownSwarm(LS)
++!updateSwarmDataStart(LS)
     <- 
-    // update swarm and create new list of current member and make recursive call with new list
-    !updateSwarmCenter(LS);
-    .wait(1000);
-    !processKnownSwarm(LS).
-    
+    if(swarm_to_drive(_, _, _, _, _)){
+        -swarm_to_drive(_, _, _, _, _);
+    }
+    +swarm_to_drive(LS, -1,-1, 0, -1);
+    .print("reset swarm: ", LS);                                                                                                            //DEBUG
+    !updateSwarmData(LS, LS).
 
+//------------------------------------------------------- updateSwarmData -------------------------------------------------------
++!updateSwarmData([], LS).
 
-//------------------------------------------------------- updateSwarmCenter -------------------------------------------------------
-+!updateSwarmCenter([], LS).
-
-+!updateSwarmCenter([S|Tail], LS)
-    <- .print(S);
++!updateSwarmData([S|Tail], LS)
+    <- .print("handle element: ", S, " in list: ", LS);                                                                                      //DEBUG
     ?pos_agent(SX,SY)[source(S)];
-    ?swarm(LS, CX,CY, LS_length, R);
-    if(LS_length == 0){
-        -swarm_to_drive(_, _, _, _, _);
-        +swarm_to_drive(LS, SX,SY, LS_length + 1, 0);
-    }else{
-        jia.get_new_swarm_data(CX, CY, LS_length, R, SX, SY, New_CX, New_CY, New_R);
-        -swarm_to_drive(_, _, _, _, _);
-        +swarm_to_drive(LS, New_CX,New_CY, LS_length + 1, New_R);
-    }.
+    ?swarm_to_drive(LS, CX,CY, Size, R);
+    jia.update_swarm_data(CX, CY, Size, R, SX, SY, New_CX, New_CY, New_Size, New_R);
+    -swarm_to_drive(_, _, _, _, _);
+    +swarm_to_drive(LS, New_CX,New_CY, New_Size, New_R);
+    .print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );                                     //DEBUG
+    !updateSwarmData(Tail, LS).
