@@ -44,4 +44,11 @@ public class AgentDB {
                 .findFirst()
                 .orElse(null);
     }
+
+    public AgentInfo getAgentByLocation(int x, int y) {
+        return agents.stream()
+                .filter(agent -> agent.getCartagoId() == GridModel.getInstance().getAgAtPos(x, y))
+                .findFirst()
+                .orElse(null);
+    }
 }

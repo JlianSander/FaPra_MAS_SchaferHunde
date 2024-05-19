@@ -51,6 +51,18 @@ public class GridView extends GridWorldView {
         drawCoordinate(g, x, y);
     }
 
+    @Override
+    public void drawAgent(Graphics g, int x, int y, Color c, int id) {
+        g.setColor(c);
+        g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
+        id = agentDB.getAgentByLocation(x, y).getShortName();
+        // if (id >= 0) {
+        g.setColor(Color.black);
+        this.drawString(g, x, y, this.defaultFont, String.valueOf(id));
+        // }
+
+    }
+
     public void drawFill(Graphics g, int x, int y, Color color) {
         g.setColor(color);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
