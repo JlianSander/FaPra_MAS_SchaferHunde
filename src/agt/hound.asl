@@ -6,7 +6,9 @@ jammed(0).
        .broadcast(tell, hound(Me));
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
-       .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")").
+       .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
+       !init_drive;
+       .print("Finished init hound").
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
@@ -60,7 +62,7 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- handleNewSheep -------------------------------------------------------
 @handleNewSheep_target[atomic]
 +!handleNewSheep(A) <- .print("handleNewSheep: ", A);                                                                                         
-    !!driveSwarm. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
+    !!prepareToDrive. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
