@@ -48,7 +48,10 @@ public class GridWorld extends Artifact {
     private void moveTo(AgentInfo agent, Location location, OpFeedbackParam<Integer> newX,
             OpFeedbackParam<Integer> newY) {
         GridModel model = GridModel.getInstance();
-        if (model.isFree(location)) {
+
+        // Technically the pathfinder should only calculate valid moves, but we might run into some concurrency issues
+        // if (model.isFree(location)) {
+        if (!model.getObstacleMap().isObstacle(location, agent.getAgentType())) {
             // logger.info("move successful");
             int agentCartagoId = agent.getCartagoId();
             model.setAgPos(agentDB.getAgentById(agentCartagoId), location);
