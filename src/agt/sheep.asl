@@ -16,22 +16,16 @@
     // !flock;
     .
 
-+!flock : not doflock
-    <- .print("Flocking disabled");
-    .my_name(Me);
-    // .print("killing agent ", Me);
-    // killAgent;
-    .print("internal kill called");
-    jia.kill_sheep(Me);
-    .print("Agent ", Me, " killed");
-    +doflock;
-    !!flock;
-    .
-
 +!setTarget(TargetX, TargetY) : true
     <-
     +destination(TargetX, TargetY);
     !takeStep;
+    .
+
++!takeStep : pos(AgX, AgY) & jia.is_in_corral_2(AgX, AgY)
+    <-
+    .print("I'm in the corral");
+    jia.kill_and_decommission_agent;
     .
 
 +!takeStep : pos(AgX, AgY) &

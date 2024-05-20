@@ -3,17 +3,20 @@ package jia;
 import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
 import jason.stdlib.kill_agent;
 import model.AgentInfo;
 import service.AgentDB;
 
-public class kill_sheep extends kill_agent {
+public class kill_and_decommission_agent extends kill_agent {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        String agentName = ts.getAgArch().getAgName();
+        args = new Term[] { new StringTermImpl(agentName) };
         GridModel model = GridModel.getInstance();
         AgentDB agentDB = model.getAgentDB();
-        AgentInfo agent = agentDB.getAgentByJasonId(args[0].toString());
+        AgentInfo agent = agentDB.getAgentByJasonId(agentName);
         GridModel.getInstance().removeAgent(agent);
         agentDB.removeAgent(agent.getCartagoId());
 
