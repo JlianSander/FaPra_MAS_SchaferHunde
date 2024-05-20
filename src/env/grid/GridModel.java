@@ -242,17 +242,23 @@ public class GridModel extends GridWorldModel {
 
         List<Integer> objects = new ArrayList<>();
         switch (obj) {
-            case GridModel.HOUND:
-            case GridModel.HOUND + GridModel.CORRAL:
-                objects.add(GridModel.HOUND);
+            case HOUND:
+                objects.add(HOUND);
                 break;
-            case GridModel.SHEEP:
-            case GridModel.SHEEP + GridModel.CORRAL:
-                objects.add(GridModel.SHEEP);
+            case HOUND + CORRAL:
+                objects.add(HOUND);
+                objects.add(CORRAL);
                 break;
-            case GridModel.OBSTACLE:
-            case GridModel.CLEAN:
-            case GridModel.CORRAL:
+            case SHEEP:
+                objects.add(SHEEP);
+                break;
+            case SHEEP + CORRAL:
+                objects.add(SHEEP);
+                objects.add(CORRAL);
+                break;
+            case OBSTACLE:
+            case CLEAN:
+            case CORRAL:
                 objects.add(obj);
                 break;
             default:
