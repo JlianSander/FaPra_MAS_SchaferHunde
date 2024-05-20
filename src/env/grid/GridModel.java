@@ -145,6 +145,16 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
+    public boolean removeAgent(AgentInfo agentInfo) {
+        Location loc = getAgPos(agentInfo.getCartagoId());
+        if (loc != null) {
+            remove(agentInfo.getAgentType(), loc.x, loc.y);
+            obstacleMap.agentMoved(this, loc, null);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isFree(Location l) {
         List<Integer> objects = getObjectsAt(l);
@@ -160,7 +170,7 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public void setAgPos(int ag, Location l) {
-        AgentInfo agentInfo = agentDB.getAgentById(ag);
+        AgentInfo agentInfo = agentDB.getAgentByCartagoId(ag);
         setAgPos(agentInfo, l);
     }
 

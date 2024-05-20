@@ -16,6 +16,18 @@
     // !flock;
     .
 
++!flock : not doflock
+    <- .print("Flocking disabled");
+    .my_name(Me);
+    // .print("killing agent ", Me);
+    // killAgent;
+    .print("internal kill called");
+    jia.kill_sheep(Me);
+    .print("Agent ", Me, " killed");
+    +doflock;
+    !!flock;
+    .
+
 +!setTarget(TargetX, TargetY) : true
     <-
     +destination(TargetX, TargetY);
