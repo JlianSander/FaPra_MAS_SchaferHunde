@@ -13,13 +13,13 @@ public class kill_and_decommission_agent extends kill_agent {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         String agentName = ts.getAgArch().getAgName();
-        args = new Term[] { new StringTermImpl(agentName) };
         GridModel model = GridModel.getInstance();
         AgentDB agentDB = model.getAgentDB();
         AgentInfo agent = agentDB.getAgentByJasonId(agentName);
+
         GridModel.getInstance().removeAgent(agent);
         agentDB.removeAgent(agent.getCartagoId());
 
-        return super.execute(ts, un, args);
+        return super.execute(ts, un, new Term[] { new StringTermImpl(agentName) });
     }
 }
