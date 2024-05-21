@@ -5,33 +5,50 @@
     //    +doflock;
        !!flock;
        .
+       
+is_in_corral :- pos(AgX, AgY) & jia.is_in_corral(AgX, AgY).
 
-+!flock : doflock & pos(AgX, AgY)
+target_not_reached(AgX, AgY, TargetX, TargetY) :- pos(AgX, AgY) &
+            destination(TargetX, TargetY) &
+            formerPos(FormerX, FormerY) &
+            not (AgX = TargetX  &  AgY = TargetY).
+
+is_stuck :- pos(AgX, AgY) &
+            formerPos(FormerAgX, FormerAgY) &
+            destination(TargetX, TargetY) &
+            (AgX = FormerAgX  &  AgY = FormerAgY) &
+            not ( AgX = TargetX  &  AgY = TargetY).
+
+is_done :- pos(AgX, AgY) &
+            formerPos(FormerAgX, FormerAgY) &
+            destination(TargetX, TargetY) &
+            ( AgX = TargetX  &  AgY = TargetY) &
+            not (AgX = FormerAgX  &  AgY = FormerAgY).
+
+do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
+
++!flock : do_flock(AgX, AgY)
     <- 
-    // pos(AgX, AgY);
     jia.flocking_pos(AgX, AgY, TargetX, TargetY);
     .my_name(Me);
     .print("Calculated new flocking pos. Start: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
-    !setTarget(TargetX, TargetY);
-    // !flock;
+    !!setTarget(TargetX, TargetY);
     .
 
-+!setTarget(TargetX, TargetY) : true
++!setTarget(TargetX, TargetY)
     <-
     +destination(TargetX, TargetY);
     !takeStep;
     .
 
-+!takeStep : pos(AgX, AgY) & jia.is_in_corral_2(AgX, AgY)
+
++!takeStep : is_in_corral
     <-
     .print("I'm in the corral");
     jia.kill_and_decommission_agent;
     .
 
-+!takeStep : pos(AgX, AgY) &
-            destination(TargetX, TargetY) &
-            formerPos(FormerX, FormerY) &
-            not (AgX = TargetX  &  AgY = TargetY)
++!takeStep : target_not_reached(AgX, AgY, TargetX, TargetY)
     <-
     .print("Destination not reached yet");
     // .print("before step:");
@@ -50,21 +67,13 @@
     !takeStep;
     .
 
-+!takeStep : pos(AgX, AgY) &
-            formerPos(FormerAgX, FormerAgY) &
-            destination(TargetX, TargetY) &
-            (AgX = FormerAgX  &  AgY = FormerAgY) &
-            not ( AgX = TargetX  &  AgY = TargetY)
++!takeStep : is_stuck 
     <-
     .print("IM STUCK!");
     -destination(X,Y);
     !!flock.
 
-+!takeStep : pos(AgX, AgY) &
-            formerPos(FormerAgX, FormerAgY) &
-            destination(TargetX, TargetY) &
-            ( AgX = TargetX  &  AgY = TargetY) &
-            not (AgX = FormerAgX  &  AgY = FormerAgY)
++!takeStep : is_done
     <-
     .print("Im Done!");
     -destination(X,Y);
