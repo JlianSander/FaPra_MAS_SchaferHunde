@@ -24,26 +24,19 @@ public class get_corral_area extends DefaultInternalAction {
     }
 
     @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        try {
-            List<Location> corralCells = new ArrayList<Location>();
-            GridModel model = GridModel.getInstance();
-            GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
-            gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.CORRAL, loc),
-                    loc -> corralCells.add(loc),
-                    c -> false);
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) {
+        List<Location> corralCells = new ArrayList<Location>();
+        GridModel model = GridModel.getInstance();
+        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
+        gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.CORRAL, loc),
+                loc -> corralCells.add(loc),
+                c -> false);
 
-            corral = new Area(corralCells.get(0), corralCells.get(corralCells.size() - 1));
+        corral = new Area(corralCells.get(0), corralCells.get(corralCells.size() - 1));
 
-            ts.getLogger().info(
-                    "--------------------------------------Corral area: " + this.corral.tl + " " + this.corral.br);
-
-            return un.unifies(args[0], new NumberTermImpl((double) this.corral.tl.x))
-                    && un.unifies(args[1], new NumberTermImpl((double) this.corral.tl.y))
-                    && un.unifies(args[2], new NumberTermImpl((double) this.corral.br.x))
-                    && un.unifies(args[3], new NumberTermImpl((double) this.corral.br.y));
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return un.unifies(args[0], new NumberTermImpl((double) this.corral.tl.x))
+                && un.unifies(args[1], new NumberTermImpl((double) this.corral.tl.y))
+                && un.unifies(args[2], new NumberTermImpl((double) this.corral.br.x))
+                && un.unifies(args[3], new NumberTermImpl((double) this.corral.br.y));
     }
 }
