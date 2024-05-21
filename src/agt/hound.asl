@@ -6,19 +6,25 @@ jammed(0).
        .broadcast(tell, hound(Me));
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
-       .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")").
+       .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
+       !search_sheep. // Initial sheep search
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
-in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y, 7).
+in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y, 7). //Radius 7
 
 is_jammed :- jammed(J) & J > 10.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//------------------------------------------------------- Initial Sheep Search -------------------------------------------------------
+
++!start_search <- .print("Starting initial sheep search.");
+                  !search_sheep(_, _, 7).
+                  
 //------------------------------------------------------- reachDestination -------------------------------------------------------
- 
+
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
     <- .print("drop intention of reaching (",L,",",M,")");
     .drop_desire(walkTowards(L,M));   //ensure only walking in one direction at the same time
@@ -47,14 +53,14 @@ is_jammed :- jammed(J) & J > 10.
 
 -!makeStepTowards(X,Y) : is_jammed
     <- -+jammed(0);
-    .print("end retrying");
-    //+last_step_not_OK;
-    false.
+       .print("end retrying");
+       //+last_step_not_OK;
+       false.
 
 -!makeStepTowards(X,Y) <- .print("waiting (jammed)");                                                                                                    
-    ?jammed(J);
-    -+jammed(J + 1);
-    .wait({+mapChanged});
+                          ?jammed(J);
+                          -+jammed(J + 1);
+                          .wait({+mapChanged});
     !makeStepTowards.     //retry making step 
 
 //------------------------------------------------------- observe -------------------------------------------------------
@@ -68,7 +74,7 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
     <- -+pos_agent(X ,Y)[source(S)];
-    !handle_new_sheep(S).
+       !handle_new_sheep(S).
 
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
     <- -+pos_agent(X ,Y)[source(S)]. 
