@@ -62,7 +62,7 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- handleNewSheep -------------------------------------------------------
 @handleNewSheep_target[atomic]
 +!handleNewSheep(A) <- .print("handleNewSheep: ", A);                                                                                         
-    !!prepareToDrive. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
+    !!startDrive. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
 
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep

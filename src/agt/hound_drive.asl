@@ -1,10 +1,12 @@
 +!init_drive <-
-    +limit_radius_swarm(7).
+    +limit_radius_swarm(5);
+    !!processDriving.                               //DEBUG
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
 has_enough_info(S) :- pos_agent(SX,SY)[source(S)] & corral_area(TLX,TLY,BRX,BRY).
+has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
 is_in_corral(S) :- pos_agent(SX,SY)[source(S)] & jia.is_in_corral(SX, SY).
 
@@ -18,7 +20,8 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
 
 //------------------------------------------------------- driveSheep -------------------------------------------------------
 
-+!driveSheep(S) : has_enough_info(S) & not is_in_corral(S) & not other_hound_is_closer(S) <- .print("driving: ", S); 
++!driveSheep(S) : has_enough_info(S) & not is_in_corral(S) & not other_hound_is_closer(S) 
+    <- .print("driving: ", S); 
     ?pos_agent(SX,SY)[source(S)];
     jia.get_pos_drive_swarm(SX, SY, 0, ME_TARGET_X, ME_TARGET_Y);
     .print("Sheep is at (",SX,",",SY,") position agent at (",ME_TARGET_X, ",", ME_TARGET_Y, ")");                                            //DEBUG
@@ -33,105 +36,126 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
 
 +!driveSheep(S) : has_enough_info(S) & is_in_corral(S) <- .print("sheep is in corral").
 
+//------------------------------------------------------- startDrive -------------------------------------------------------
 
-//------------------------------------------------------- driveSwarm -------------------------------------------------------
++!startDrive : has_enough_info & not .desire(processDriving)
+    <- !processDriving.
 
-+!prepareToDrive : .desire(driveSwarmSingleton(_)) <- .print("I'm already driving a swarm."); .succeed_goal({driveSwarm}).
++!startDrive : not has_enough_info <- .print("Not enough info to drive."); .fail_goal(startDrive).
 
-+!prepareToDrive <- 
-    !mapSwarms;
-    ?known_swarms(Swarms);
-    //TODO: if no swarm found .succeed_goal({prepareToDrive})
-    //TODO: choose most desirable swarm
-    /* .setof(S, pos_agent(_,_)[source(S)], L);                                                                                                 //DEBUG
-    .sort(L, Sorted_L);                                                                                                                      //DEBUG
-    .print("Sheep I know:", Sorted_L);                                                                                                       //DEBUG
-    !driveSwarmSingleton(Sorted_L); */
++!startDrive : .desire(processDriving) <- .print("Already started driving."); .fail_goal(startDrive).       
+
+//------------------------------------------------------- processDriving -------------------------------------------------------
+
++!processDriving : has_enough_info & not (.desire(driveSwarm(_)) | .desire(mapSwarms) )  
+    <- !mapSwarms;
+    .findall(Swarm, known_swarms(Swarm),Swarms);
+    .print("found known swarms: ", Swarms);
+    if(.length(Swarms, 0)){
+        //no swarm found
+        .print("no swarm found");
+       .fail_goal(processDriving);
+    }
     .nth(0,Swarms,Swarm_Chosen);
+    //TODO: choose most desirable swarm
     -known_swarms(_);
-    !driveSwarmSingleton(Swarm_Chosen);
+    !driveSwarm(Swarm_Chosen);
     .wait(100);   //DEBUG                                                                                                                    //DEBUG 
-    !!prepareToDrive.                
+    !processDriving.    
 
 //------------------------------------------------------- mapSwarms -------------------------------------------------------
 
-+!mapSwarms <-
-    .print("mapSwarms");
++!mapSwarms 
+    <- .print("mapSwarms");
     //get all known sheep, which are not in the corral, in one big swarm
     .setof(S, pos_agent(_,_)[source(S)] & not is_in_corral(S) , All_Sheep);
+    if(.length(All_Sheep, 0)){
+        //no swarm found
+        .print("no sheep found");
+        .fail_goal(mapSwarms);
+    }
     .print("All Sheeps not in Corral are: ", All_Sheep);
     !mapSetToSwarms(All_Sheep).
-    
 
-+!mapSetToSwarms(UnMapped_Set) <-
-    .print("mapSetToSwarms for ", UnMapped_Set);
+//------------------------------------------------------- mapSetToSwarms ------------------------------------------------------- 
+
++!mapSetToSwarms(UnMapped_Set) 
+    <- .print("mapSetToSwarms(", UnMapped_Set, ")");
     //only calculate swarm for more than one sheep in the set
     if(.length(UnMapped_Set) > 1){
-        //calculate center of swarm
-        !updateSwarmDataStart(UnMapped_Set);
-        ?swarm_to_drive(UnMapped_Set, CX,CY, Size, R);
-        //check if swarm is cohesive enough
-        ?limit_radius_swarm(Limit_rad);
-        .print("R: ", R, " Limit_rad: ", Limit_rad);
-        if(R < Limit_rad){
-            !addSwarmToBB(UnMapped_Set);
-        }else{
-            //get all sheep outside the limit for the radius
-            .setof(S, pos_agent(SX,SY)[source(S)] & .get_distance(SX,SY,CX,CY,D) & D > Limit_rad, Outsiders);
-            .difference(UnMapped_Set, Outsiders, New_Swarm);
-            .print("Of ", UnMapped_Set, " only ", New_Swarm, " are within the limit of ", Limit_rad, " tiles to the center: (", CX, ",", CY, ")");
-            !addSwarmToBB(New_Swarm);
+        !createSwarmWithoutOutsiders(UnMapped_Set);
+        ?swarm_in_focus(New_Swarm, CX,CY, Size, R);
+        +known_swarms(New_Swarm);
+        -swarm_in_focus(_, _, _, _, _);
+        
+        if(outsiders(Outsiders)){
+            -outsiders(_);
             !mapSetToSwarms(Outsiders);
         }
     } else{
-        .print("Set ", UnMapped_Set, "has only one element.");
+        .print("Set ", UnMapped_Set, " has only one element.");
+        +known_swarms(UnMapped_Set);
     }.
 
+//------------------------------------------------------- createSwarmWithoutOutsiders ------------------------------------------------------- 
 
-+!addSwarmToBB(NewSwarm) <-
-    .print("addSwarmToBB for ", NewSwarm);
-    if(known_swarms(Set_Swarms)){
-        .print("add NewSwarm: ", NewSwarm, " to Set_Swarms: ", Set_Swarms);
-        .set.add(Set_Swarms, NewSwarm);
-    }else{
-        +known_swarms(.set.create(Set_Swarms, NewSwarm));
-        .print("Created new Set_Swarms: ", Set_Swarms);
-    }.
-//------------------------------------------------------- driveSwarmSingleton -------------------------------------------------------
+    +!createSwarmWithoutOutsiders(Set_Sheep)
+        <- .print("createSwarmWithoutOutsiders(", Set_Sheep, ")"); 
+        ?limit_radius_swarm(Limit_rad);
+        for(.member(S, Set_Sheep)){
+            .print("createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");
+            ?pos_agent(SX,SY)[source(S)];
+            if(swarm_in_focus(_, _, _, _, _)){
+                ?swarm_in_focus(LS, CX,CY, Size, R);
+                if(jia.get_distance(SX,SY,CX,CY,D) & D > Limit_rad){
+                    if(outsiders(Outsiders)){
+                        .set.add(Outsiders, S);
+                    }else{
+                        .set.create(New_Outsiders);
+                        .set.add(New_Outsiders, S);
+                        +outsiders(New_Outsiders);
+                    }
+                }else{
+                    .print(LS);
+                    .set.add(LS,S);
+                    !updateSwarmData(LS);
+                }
+            }else{
+                .set.create(New_Swarm);
+                .set.add(New_Swarm, S);
+                !updateSwarmData(New_Swarm);
+            }
+        }.
+//------------------------------------------------------- driveSwarm -------------------------------------------------------
 
-+!driveSwarmSingleton(LS) 
-    <- .print("Start driveSwarmSingleton");                                                                                                 //DEBUG
-    !updateSwarmDataStart(LS);
++!driveSwarm(LS) 
+    <- .print("driveSwarm(", LS, ")");                                                                                                      //DEBUG
+    !updateSwarmData(LS);
     .print("Remembers swarm: ", LS);                                                                                                        //DEBUG
-    ?swarm_to_drive(LS, CX,CY, Size, R);
+    ?swarm_in_focus(LS, CX,CY, Size, R);
     jia.get_pos_drive_swarm(CX, CY, R, ME_TARGET_X, ME_TARGET_Y);
     .print("Swarm is at (",CX,",",CY,") position agent at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                                          //DEBUG
     ?pos(ME_X, ME_Y);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y);                                                                                                  //DEBUG
-    -swarm_to_drive(_, _, _, _, _);
+    -swarm_in_focus(_, _, _, _, _);
     .print("Forgot swarm: ", LS).
 
-//------------------------------------------------------- updateSwarmDataStart -------------------------------------------------------
-
-+!updateSwarmDataStart(LS)
-    <- 
-    if(swarm_to_drive(_, _, _, _, _)){
-        -swarm_to_drive(_, _, _, _, _);
-    }
-    +swarm_to_drive(LS, -1,-1, 0, -1);
-    .print("reset swarm: ", LS);                                                                                                            //DEBUG
-    !updateSwarmData(LS, LS).
-
 //------------------------------------------------------- updateSwarmData -------------------------------------------------------
-+!updateSwarmData([], LS).
 
-+!updateSwarmData([S|Tail], LS)
-    <- .print("handle element: ", S, " in list: ", LS);                                                                                      //DEBUG
-    ?pos_agent(SX,SY)[source(S)];
-    ?swarm_to_drive(LS, CX,CY, Size, R);
-    jia.update_swarm_data(CX, CY, Size, R, SX, SY, New_CX, New_CY, New_Size, New_R);
-    -swarm_to_drive(_, _, _, _, _);
-    +swarm_to_drive(LS, New_CX,New_CY, New_Size, New_R);
-    .print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );                                     //DEBUG
-    !updateSwarmData(Tail, LS).
++!updateSwarmData(LS)
+    <- .print("updateSwarmData(",LS,")");
+    if(swarm_in_focus(_, _, _, _, _)){
+        -swarm_in_focus(_, _, _, _, _);
+    }
+    +swarm_in_focus(LS, -1,-1, 0, -1);
+    .print("reset swarm: ", LS);                                                                                                            //DEBUG
+    for(.member(S,LS)){
+        .print("updateSwarmData(", S, " of ", LS, ")");                                                                                     //DEBUG
+        ?pos_agent(SX,SY)[source(S)];
+        ?swarm_in_focus(LS, CX,CY, Size, R);
+        jia.update_swarm_data(CX, CY, Size, R, SX, SY, New_CX, New_CY, New_Size, New_R);
+        -swarm_in_focus(_, _, _, _, _);
+        +swarm_in_focus(LS, New_CX,New_CY, New_Size, New_R);
+        .print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );
+    }.

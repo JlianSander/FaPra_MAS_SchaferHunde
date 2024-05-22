@@ -18,6 +18,8 @@ public class get_distance extends DefaultInternalAction {
 
         var loc = new Location(x1, y1);
         int distanceChebyshev = new Location(x2,y2).distanceChebyshev(loc);
+
+        //ts.getLogger().info("Result of jia 'get_distance' for (" + x1 + ", " + y1 + ") <-> (" + x2 + "," + y2 + "): " + distanceChebyshev);
         return un.unifies(args[4], new NumberTermImpl(distanceChebyshev));
     }
 }
