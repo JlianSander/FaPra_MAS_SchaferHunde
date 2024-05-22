@@ -1,20 +1,33 @@
-+!search_sheep(X,Y,R) <- .print("Starting sheep search within radius ", R); 
-                        ?pos(AgX, AgY);
-                        jia.get_nearest_sheep_in_range(AgX, AgY, X, Y, R); // finde nächstes Schaf
-                        .my_name(Me);
-                        .broadcast(achieve, driveTarget(Me));
-                        .print("Initiating drive towards sheep flock ", X, ",", Y).
+// Initialize the search for sheep
++!search_sheep(X,Y,R) <- 
+    .print("Starting sheep search within radius ", R); 
+    ?pos(AgX, AgY);
+    !find_sheep(AgX, AgY, R).
 
-+!search_sheep <- .print("No sheep flock in sight. Continuing search.").
+// Find sheep within the given radius
++!find_sheep(AgX, AgY, R) <- 
+    jia.get_nearest_sheep_in_range(AgX, AgY, X, Y, R); 
+    .print("Found sheep flock at (", X, ",", Y, "). Broadcasting to other hounds.");
+    .my_name(Me);
+    .broadcast(tell, found_sheep(X, Y)).
 
-+flock_target(X,Y,NbS,R) <- .print("Starting sheep chase towards flock at (", X, ",", Y, ").");
-                             +destination(X,Y);
-                             .my_name(Me);
-                             .broadcast(achieve, driveTarget(Me));
-                             .print("Initiating chase towards sheep flock at (", X, ",", Y, ").").
+// If no sheep found, continue the search
+-find_sheep(AgX, AgY, R) <- 
+    .print("No sheep flock in sight. Continuing search.");
+    !move_random(AgX, AgY, R);
+    !search_sheep(_, _, R).
 
-+flock_target(X,Y,NbS,R) <- .print("Flock of sheep at (", X, ",", Y, ") moved out of range. Continuing search.");
-                             !search_sheep.
+// Move to a random position to continue the search
++!move_random(AgX, AgY, R) <- 
+    randomStep(AgX, AgY, R, NewX, NewY);
+    !walkTowards(NewX, NewY).
 
-+!search_sheep[source(self)] <- .print("Starting sheep search.");
-                                 !search_sheep.
+// Walk towards the given coordinates
++!walkTowards(X,Y) : not pos(X,Y) <- 
+    .print("Walking towards: (",X,",",Y,")");
+    !makeStepTowards(X,Y);
+    .wait(100);
+    !walkTowards(X,Y).
+
++!walkTowards(X,Y) <- 
+    .print("Reached destination: (",X,",",Y,")").

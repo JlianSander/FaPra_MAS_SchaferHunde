@@ -7,7 +7,7 @@ is_in_corral(S) :- pos_agent(SX,SY)[source(S)] & jia.is_in_corral(SX, SY).
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- driveTarget -------------------------------------------------------
-
+/*
 +!driveTarget(S) : has_enough_info(S) & not is_in_corral(S) <- .print("driving: ", S); 
     ?pos_agent(SX,SY)[source(S)];
     jia.get_pos_drive_swarm(SX, SY, 0, ME_TARGET_X, ME_TARGET_Y);
@@ -20,5 +20,4 @@ is_in_corral(S) :- pos_agent(SX,SY)[source(S)] & jia.is_in_corral(SX, SY).
 +!driveTarget(S) : not has_enough_info(S) <- .print("Not enough info to drive target").
 
 +!driveTarget(S) : has_enough_info(S) & is_in_corral(S) <- .print("sheep is in corral").
-
-
+*/

@@ -7,7 +7,7 @@ jammed(0).
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
-       !search_sheep. // Initial sheep search
+       !start_search. // Initial sheep search
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
@@ -21,8 +21,8 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- Initial Sheep Search -------------------------------------------------------
 
 +!start_search <- .print("Starting initial sheep search.");
-                  !search_sheep(_, _, 7).
-                  
+                  !search_sheep(_, _, 1). // Call search_sheep with radius 7
+
 //------------------------------------------------------- reachDestination -------------------------------------------------------
 
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
