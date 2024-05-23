@@ -3,6 +3,7 @@ package jia;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 import java.util.*;
+import jason.bb.BeliefBase;
 
 public class get_nearest_sheep_in_range extends DefaultInternalAction {
 
@@ -19,11 +20,10 @@ public class get_nearest_sheep_in_range extends DefaultInternalAction {
         double nearestDistance = Double.MAX_VALUE;
 
         // Get the agent's belief base
-        Iterator<Literal> beliefsIterator = ts.getAg().getBB().getPercepts();
+        BeliefBase beliefBase = ts.getAg().getBB();
 
         // Iterate over all beliefs to find the nearest flock of sheep
-        while (beliefsIterator.hasNext()) {
-            Literal belief = beliefsIterator.next();
+        for (Literal belief : beliefBase) {
             if (belief.getFunctor().equals("sheep_flock") && belief.getArity() == 3) {
                 Term flockX = belief.getTerm(0);
                 Term flockY = belief.getTerm(1);
