@@ -1,18 +1,21 @@
 package grid;
 
+import java.util.logging.Logger;
+
 import cartago.*;
 import jason.environment.grid.Location;
+
 import grid.util.Pathfinder;
 import model.AgentInfo;
 import service.AgentDB;
-
-import java.util.logging.Logger;
+import simulations.Simulation;
 
 public class GridWorld extends Artifact {
     private static final Logger logger = Logger.getLogger(GridWorld.class.getName());
 
-    GridView view;
-    AgentDB agentDB;
+    private GridView view;
+    private AgentDB agentDB;
+    private Simulation simulation;
 
     void init(int size, int corralWidth, int corralHeight, boolean drawCoords) {
         agentDB = new AgentDB();
@@ -74,7 +77,13 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
+    private void startSimulation() {
+        simulation = new Simulation();
+        simulation.start();
+    }
+
+    @OPERATION
     private void endSimulation() {
-        // TODO
+        simulation.end();
     }
 }
