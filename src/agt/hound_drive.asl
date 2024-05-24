@@ -60,7 +60,7 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
     //TODO: choose most desirable swarm
     .abolish(known_swarms(_));
     !driveSwarm(Swarm_Chosen);
-    //.wait(100);   //DEBUG                                                                                                                    //DEBUG 
+    .wait(50);   //DEBUG                                                                                                                    //DEBUG 
     !processDriving.    
 
 //------------------------------------------------------- mapSwarms -------------------------------------------------------
@@ -117,8 +117,13 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
                         +outsiders(New_Outsiders);
                     }
                 }else{
-                    .set.add(LS,S);
-                    !updateSwarmData(LS);
+                    if(not .member(S, LS)){
+                        // shouldn't happen.. but it does: Bug?
+                        .print("LS: ", LS);
+                        .print("S: ", S);
+                        .set.add(LS,S);
+                        !updateSwarmData(LS);
+                    }
                 }
             }else{
                 .set.create(New_Swarm);
@@ -157,5 +162,5 @@ other_hound_is_closer(S) :- pos_agent(SX,SY)[source(S)] &
         jia.update_swarm_data(CX, CY, Size, R, SX, SY, New_CX, New_CY, New_Size, New_R);
         .abolish(swarm_in_focus(_,_,_,_,_));
         +swarm_in_focus(LS, New_CX,New_CY, New_Size, New_R);
-        .print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );
+        .print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );                                  //DEBUG
     }.

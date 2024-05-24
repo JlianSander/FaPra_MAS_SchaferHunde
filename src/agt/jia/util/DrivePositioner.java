@@ -1,13 +1,14 @@
 package jia.util;
 
 import jason.environment.grid.Location;
+import jason.asSemantics.TransitionSystem;
 
 import grid.GridModel;
 import jason.environment.grid.Area;
 
 public class DrivePositioner {
 
-    public static Location positionSingleAgent(SwarmManipulator swarm, Area corral) {
+    public static Location positionSingleAgent(TransitionSystem ts, SwarmManipulator swarm, Area corral) {
         GridModel model = GridModel.getInstance();
 
         //get position, where the swarm is to drive to        
@@ -26,8 +27,20 @@ public class DrivePositioner {
 
         //ensure to stay on map
         agentPos = new Location(
-                stay_within_limit(agentPos.x, model.getWidth() - 1),
-                stay_within_limit(agentPos.y, model.getHeight() - 1));
+            stay_within_limit(agentPos.x, model.getWidth() - 1),
+            stay_within_limit(agentPos.y, model.getHeight() - 1));
+        
+        //prevent to position agent on spot of swarm center in case the position got changed because of map limits
+        if(agentPos.equals(swarm.center())){
+            if(agentPos.x != model.getWidth() - 1){
+                agentPos = new Location(agentPos.x + 1, agentPos.y);
+            }else if(agentPos.y != model.getHeight() - 1){
+                agentPos = new Location(agentPos.x, agentPos.y + 1);
+            }else{
+                agentPos = new Location(agentPos.x - 1, agentPos.y - 1);
+            }
+        }
+        
         return agentPos;
     }
 
