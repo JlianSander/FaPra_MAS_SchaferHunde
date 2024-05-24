@@ -1,0 +1,41 @@
+mas mas_schafherde {
+    agent sheep: sheep.asl {
+        // ag-arch: arch.Sheep
+        join: world
+        instances: 2
+        focus: world.grid
+        beliefs: doflock
+    }
+    
+    agent nonMovingSheep: sheep.asl {
+        // ag-arch: arch.Sheep
+        join: world
+        instances: 0
+        focus: world.grid
+    }
+    
+    agent houndX: hound.asl {
+        join: world
+        instances: 5
+        focus: world.grid
+        roles: driver in hounds
+        //beliefs: destination(18,0)
+        //goals: explore
+    }
+    
+    agent simulator: simulator.asl {
+        join: world
+        focus: world.grid
+    }
+
+    workspace world {
+      // artifact grid: grid.GridWorld(20, 3, 2, "true")
+      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt", "true")
+      debug
+    }
+
+    organisation animals : org.xml {
+        group hounds : hounds_specs 
+    }
+}
+

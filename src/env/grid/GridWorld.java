@@ -72,4 +72,9 @@ public class GridWorld extends Artifact {
         Y.set(loc.y);
         moveTo(agent, loc, X, Y);
     }
+
+    @OPERATION
+    private void endSimulation() {
+        // TODO
+    }
 }

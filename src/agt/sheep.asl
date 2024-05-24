@@ -74,6 +74,4 @@
 +!trackMove(X, Y)
     <- true.
 
-{ include("$jacamo/templates/common-cartago.asl") }
-{ include("$jacamo/templates/common-moise.asl") }
 { include("agent.asl") }

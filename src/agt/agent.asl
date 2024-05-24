@@ -21,3 +21,7 @@
 +!updatePos(X,Y) : not last_step_not_OK <-  -+pos(X, Y).
 
 +!updatePos(X,Y) : last_step_not_OK <- -last_step_not_OK; .print("last step not ok").
+
+
+{ include("$jacamo/templates/common-cartago.asl") }
+{ include("$jacamo/templates/common-moise.asl") }
