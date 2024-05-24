@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class SimulationFileWriter {
+    private static FileWriter writer;
+
     public static void writeResults(String duration, Map<String, String> sheepCapturedTimes) {
         String jcm = System.getProperty("simName");
         if (jcm.indexOf('.') == -1) {
@@ -31,23 +33,30 @@ public class SimulationFileWriter {
         }
 
         String filePath = String.format("%s/%s_%d.txt", fullDir, simName, count);
-
-        System.out.println("Writing results to " + filePath);
-        try (FileWriter writer = new FileWriter(filePath)) {
-            writeLine(writer, "Simulation: " + jcm);
-            writeLine(writer, "Duration: " + duration);
-            writeLine(writer, "Sheeps: {");
+        try {
+            writer = new FileWriter(filePath);
+            writeLine("Simulation: " + jcm);
+            writeLine("Duration: " + duration);
+            writeLine("Sheeps: {");
             for (Map.Entry<String, String> entry : sheepCapturedTimes.entrySet()) {
-                writeLine(writer, entry.getKey() + ": " + entry.getValue());
+                writeLine(String.format("%s: %s", entry.getKey(), entry.getValue()));
             }
-            writeLine(writer, "}");
+            writeLine("}");
             System.out.println("Results written to " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private static void writeLine(FileWriter writer, String line) throws IOException {
+    private static void writeLine(String line) throws IOException {
         writer.write(line + "\n");
     }
 }
