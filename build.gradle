@@ -63,22 +63,42 @@ task run (type: JavaExec, dependsOn: 'classes') {
     }
     mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'mas_schafherde.jcm'
-    // jvmArgs '-Xss15m'
+    jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
     classpath sourceSets.main.runtimeClasspath
 }
 
-task runSimulations (dependsOn: 'classes') {
-    group       'JaCaMo'
-    description 'runs multiple JaCaMo simulations consecutively'
+task simSingle(type: JavaExec, dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs a single JaCaMo simulation'
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
 
-    def jcmFiles = fileTree(dir: 'simulation', include: '*.jcm')
+        def simulationName = project.hasProperty('s') ? project.s : null
+        if (simulationName == null) {
+            throw new GradleException("Please provide the simulation name using -Ps=<name>")
+        }
+
+        args = ["simulations/scenarios/${simulationName}.jcm"]
+        jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
+    }
+    mainClass = 'jacamo.infra.JaCaMoLauncher'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task simAll(dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs multiple JaCaMo simulations consecutively'
+
+    def jcmFiles = fileTree(dir: 'simulations/scenarios', include: '*.jcm')
 
     doFirst {
         mkdir 'log'
+        mkdir 'simulations/results'
     }
 
-    jcmFiles.each { File configFile ->
-        doLast {
+    doLast {
+        jcmFiles.each { File configFile ->
             println "Running simulation for ${configFile.name}"
             javaexec {
                 mainClass = 'jacamo.infra.JaCaMoLauncher'
