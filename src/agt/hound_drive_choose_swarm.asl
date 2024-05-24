@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////  
 
-other_hound_is_closer(Swarm) :- .member(S, Swarm) & other_hound_is_closer(S).
+other_hound_is_closer_to_swarm(Swarm) :- .member(S, Swarm) & other_hound_is_closer_to_sheep(S).
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ other_hound_is_closer(Swarm) :- .member(S, Swarm) & other_hound_is_closer(S).
             ?swarm_chosen_to_drive(Swarm_Chosen);
             //.print("Swarm_to_Evaluate: ", Swarm_to_Evaluate);                                                                                                               //DEBUG
             //.print("Swarm_Chosen: ", Swarm_Chosen);                                                                                                                         //DEBUG
-            if(.length(Swarm_to_Evaluate, Len_Eval) & .length(Swarm_Chosen, Len_Chosen) & Len_Eval > Len_Chosen & not other_hound_is_closer(Swarm_to_Evaluate)){
+            if(.length(Swarm_to_Evaluate, Len_Eval) & .length(Swarm_Chosen, Len_Chosen) & Len_Eval > Len_Chosen & not other_hound_is_closer_to_swarm(Swarm_to_Evaluate)){
                 -+swarm_chosen_to_drive(Swarm_to_Evaluate);
             }
         }

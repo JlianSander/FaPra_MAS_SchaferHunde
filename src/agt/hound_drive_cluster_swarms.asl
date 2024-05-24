@@ -8,8 +8,8 @@
 
 +!mapSwarms 
     <- //.print("mapSwarms");                                                                                                               //DEBUG
-    if(known_swarms(_)){
-        .abolish(known_swarms(_));  
+    if(swarm(_, _, _, _, _)){
+        .abolish(swarm(_, _, _, _, _));  
     }
 
     //get all known sheep, which are not in the corral, in one big swarm
@@ -29,17 +29,16 @@
     //only calculate swarm for more than one sheep in the set
     if(.length(UnMapped_Set) > 1){
         !createSwarmWithoutOutsiders(UnMapped_Set);
-        ?swarm_data_updated(New_Swarm, CX,CY, Size, R);
-        +known_swarms(New_Swarm);
-        .abolish(swarm_data_updated(_,_,_,_,_));
-        
+                
         if(outsiders(Outsiders)){
             -outsiders(_);
             !mapSetToSwarms(Outsiders);
         }
     } else{
         //.print("Set ", UnMapped_Set, " has only one element.");                                                                           //DEBUG
-        +known_swarms(UnMapped_Set);
+        !updateSwarmData(UnMapped_Set);
+        ?swarm_data_updated(UnMapped_Set, CX,CY, Size, R);
+        +swarm(UnMapped_Set, CX,CY, Size, R);
     }.
 
 //------------------------------------------------------- createSwarmWithoutOutsiders ------------------------------------------------------- 
@@ -79,6 +78,9 @@
                 .set.add(New_Swarm, S);
                 !updateSwarmData(New_Swarm);
             }
-        }.
+        }
+        ?swarm_data_updated(New_Swarm, CX,CY, Size, R);
+        +swarm(New_Swarm, CX,CY, Size, R);
+        .
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
