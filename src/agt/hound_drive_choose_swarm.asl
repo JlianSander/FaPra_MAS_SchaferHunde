@@ -14,7 +14,7 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
     D_ME < Limit_Distance_Driving.
 
 
-limit_distance_assumption_hound_driving(2).
+limit_distance_assumption_hound_driving(7).
 
 limit_number_agents_driving_swarm(3).
 
@@ -45,6 +45,10 @@ limit_number_agents_driving_swarm(3).
                 }
             }
         }
+    }
+    
+    if(not swarm_chosen_to_drive(_)){
+        .fail_goal(chooseSwarmToDrive(Swarms));
     }.
 
   +!guess_who_is_driving_what

@@ -56,10 +56,15 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
        .fail_goal(processDriving);
     }
     !chooseSwarmToDrive(Swarms);
-    ?swarm_chosen_to_drive(Swarm_Chosen);
-    !driveSwarm(Swarm_Chosen);
-    .wait(50);   //DEBUG                                                                                                                    //DEBUG 
-    !processDriving.    
+    if(swarm_chosen_to_drive(_)){
+        ?swarm_chosen_to_drive(Swarm_Chosen);
+        !driveSwarm(Swarm_Chosen);
+        .wait(50);   //DEBUG                                                                                                                    //DEBUG 
+        !processDriving;
+    }else{
+        .print("no swarm chosen");
+        .fail_goal(processDriving);
+    }.    
 
 
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
