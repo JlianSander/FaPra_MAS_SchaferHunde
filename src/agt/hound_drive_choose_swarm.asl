@@ -8,6 +8,12 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) &
     pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
     DH < D_ME.
 
+i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_Distance_Driving) &
+    swarm(Ss, CX, CY, Size, R) &
+    pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
+    D_ME < Limit_Distance_Driving.
+
+
 limit_distance_assumption_hound_driving(2).
 
 limit_number_agents_driving_swarm(3).
@@ -26,7 +32,7 @@ limit_number_agents_driving_swarm(3).
         .length(Drivers, Len_Drivers);
         ?limit_number_agents_driving_swarm(Limit_Num_Agts_Driving);
         //only choose swarm to drive if agent thinks agents driving this swarm are not too many
-        if(Len_Drivers < Limit_Num_Agts_Driving){
+        if(Len_Drivers < Limit_Num_Agts_Driving & i_am_close_enough_to_swarm(Ss)){
             if(not swarm_chosen_to_drive(_)){
                 +swarm_chosen_to_drive(Swarm_to_Evaluate);
             }else{
