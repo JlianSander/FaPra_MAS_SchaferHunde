@@ -1,4 +1,8 @@
-!wait_and_end_simulation(5000).
+!begin_simulation.
+
++!begin_simulation
+    <- startSimulation;
+        !wait_and_end_simulation(1000).
 
 +!wait_and_end_simulation(X)
     <- .print("Ending simulation after ", X, " seconds");

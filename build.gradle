@@ -67,7 +67,7 @@ task run (type: JavaExec, dependsOn: 'classes') {
     classpath sourceSets.main.runtimeClasspath
 }
 
-task simSingle(type: JavaExec, dependsOn: 'classes') {
+task simOne(type: JavaExec, dependsOn: 'classes') {
     group = 'JaCaMo'
     description = 'Runs a single JaCaMo simulation'
     doFirst {
@@ -80,7 +80,7 @@ task simSingle(type: JavaExec, dependsOn: 'classes') {
         }
 
         args = ["simulations/scenarios/${simulationName}.jcm"]
-        jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
+        jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${simulationName}"
     }
     mainClass = 'jacamo.infra.JaCaMoLauncher'
     classpath = sourceSets.main.runtimeClasspath
@@ -104,7 +104,7 @@ task simAll(dependsOn: 'classes') {
                 mainClass = 'jacamo.infra.JaCaMoLauncher'
                 args = [configFile.path]
                 classpath = sourceSets.main.runtimeClasspath
-                jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
+                jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${configFile.name}"
             }
             println "Finished simulation for ${configFile.name}"
         }

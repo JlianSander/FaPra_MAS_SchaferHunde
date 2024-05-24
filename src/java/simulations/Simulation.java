@@ -25,7 +25,7 @@ public class Simulation {
         logger.warning("--- Simulation ended ---");
         logger.info("Simulation duration: " + formattedDuration);
 
-        // SimulationFileWriter.writeResults(formattedDuration, sheepCapturedTimes);
+        SimulationFileWriter.writeResults(formattedDuration, sheepCapturedTimes);
     }
 
     public void sheepCaptured(AgentInfo sheep) {
