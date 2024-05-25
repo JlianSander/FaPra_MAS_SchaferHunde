@@ -2,7 +2,7 @@ package jia;
 
 import jason.asSemantics.*;
 import jason.asSyntax.*;
-import java.util.*;
+//import java.util.*;
 import jason.bb.BeliefBase;
 
 public class get_nearest_sheep_in_range extends DefaultInternalAction {
