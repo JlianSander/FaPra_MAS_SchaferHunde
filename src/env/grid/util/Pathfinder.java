@@ -67,13 +67,13 @@ public class Pathfinder {
         }
     }
 
-    public void excludeObjects(Location callerPosition, int object, int range) {
+    public void excludeObjects(Location callerPosition, int objectType, int range) {
         GridProcessor gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(),
                 GridModel.getInstance().getHeight());
         List<Location> objectLocations = new ArrayList<>();
         gridProcessor.processEntireGrid(
                 loc -> !loc.equals(callerPosition)
-                        && GridModel.getInstance().getObjectsAt(loc.x, loc.y).contains(object),
+                        && GridModel.getInstance().getObjectsAt(loc.x, loc.y).contains(objectType),
                 loc -> objectLocations.add(loc),
                 c -> false);
 
