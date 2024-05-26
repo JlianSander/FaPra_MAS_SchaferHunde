@@ -3,6 +3,7 @@ package grid;
 import grid.util.GridModelFileParser;
 import grid.util.GridProcessor;
 import grid.util.ObstacleMap;
+import jason.environment.grid.Area;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 import model.AgentInfo;
@@ -85,6 +86,9 @@ public class GridModel extends GridWorldModel {
         this.height = gridData.length;
         this.data = new int[width][height];
 
+        Location firstCorralPos = null;
+        Location lastCorralPos = null;
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 switch (gridData[y][x]) {
@@ -98,9 +102,31 @@ public class GridModel extends GridWorldModel {
                         break;
                     case 'C':
                         add(CORRAL, x, y);
+                        if (firstCorralPos == null) {
+                            firstCorralPos = new Location(x, y);
+                        }
+                        lastCorralPos = new Location(x, y);
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid object type in grid template file");
+                }
+            }
+        }
+
+        validateCorral(firstCorralPos, lastCorralPos);
+    }
+
+    private void validateCorral(Location firstCorralPos, Location lastCorralPos) {
+        if (firstCorralPos == null || lastCorralPos == null) {
+            throw new IllegalArgumentException("Corral area is not defined in the grid template file");
+        }
+        Area corralArea = new Area(firstCorralPos, lastCorralPos);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Location loc = new Location(x, y);
+                if (gridData[y][x] == 'C' && !corralArea.contains(loc)) {
+                    throw new IllegalArgumentException("Corral area is not contiguous");
                 }
             }
         }
