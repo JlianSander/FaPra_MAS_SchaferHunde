@@ -28,10 +28,15 @@ public class ObstacleMap {
     }
 
     public void agentMoved(GridModel model, Location oldLoc, Location newLoc) {
+        if (oldLoc == null && newLoc == null) {
+            throw new IllegalArgumentException("Both oldLoc and newLoc cannot be null");
+        }
         if (oldLoc != null) {
             data[oldLoc.x][oldLoc.y] = locIsBlocked(model.getObjectsAt(oldLoc.x, oldLoc.y), -1);
         }
-        data[newLoc.x][newLoc.y] = locIsBlocked(model.getObjectsAt(newLoc.x, newLoc.y), -1);
+        if (newLoc != null) {
+            data[newLoc.x][newLoc.y] = locIsBlocked(model.getObjectsAt(newLoc.x, newLoc.y), -1);
+        }
     }
 
     private boolean locIsBlocked(List<Integer> objects, int user) {

@@ -145,6 +145,16 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
+    public boolean removeAgent(AgentInfo agentInfo) {
+        Location loc = getAgPos(agentInfo.getCartagoId());
+        if (loc != null) {
+            remove(agentInfo.getAgentType(), loc.x, loc.y);
+            obstacleMap.agentMoved(this, loc, null);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean isFree(Location l) {
         List<Integer> objects = getObjectsAt(l);
@@ -160,7 +170,7 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public void setAgPos(int ag, Location l) {
-        AgentInfo agentInfo = agentDB.getAgentById(ag);
+        AgentInfo agentInfo = agentDB.getAgentByCartagoId(ag);
         setAgPos(agentInfo, l);
     }
 
@@ -232,17 +242,23 @@ public class GridModel extends GridWorldModel {
 
         List<Integer> objects = new ArrayList<>();
         switch (obj) {
-            case GridModel.HOUND:
-            case GridModel.HOUND + GridModel.CORRAL:
-                objects.add(GridModel.HOUND);
+            case HOUND:
+                objects.add(HOUND);
                 break;
-            case GridModel.SHEEP:
-            case GridModel.SHEEP + GridModel.CORRAL:
-                objects.add(GridModel.SHEEP);
+            case HOUND + CORRAL:
+                objects.add(HOUND);
+                objects.add(CORRAL);
                 break;
-            case GridModel.OBSTACLE:
-            case GridModel.CLEAN:
-            case GridModel.CORRAL:
+            case SHEEP:
+                objects.add(SHEEP);
+                break;
+            case SHEEP + CORRAL:
+                objects.add(SHEEP);
+                objects.add(CORRAL);
+                break;
+            case OBSTACLE:
+            case CLEAN:
+            case CORRAL:
                 objects.add(obj);
                 break;
             default:
