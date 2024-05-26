@@ -221,8 +221,11 @@ public class GridModel extends GridWorldModel {
     }
 
     public List<Location> getNeighborhood(Location loc, int range, int maxAmount, Predicate<Location> filter) {
-        range = Math.clamp(range, 1, getWidth());
         List<Location> neighbors = new ArrayList<>();
+        if (range == 0) {
+            return neighbors;
+        }
+        range = Math.clamp(range, 1, getWidth());
         for (int dx = -range; dx <= range; dx++) {
             for (int dy = -range; dy <= range; dy++) {
                 if (dx == 0 && dy == 0) {
