@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import dstarlite.DStarLite;
 import jason.environment.grid.Location;
-import model.AgentInfo;
 import grid.GridModel;
 
 public class Pathfinder {
@@ -68,14 +67,13 @@ public class Pathfinder {
         }
     }
 
-    public void excludeObjects(AgentInfo caller, int object, int range) {
-        Location agPos = GridModel.getInstance().getAgPos(caller.getCartagoId());
-
+    public void excludeObjects(Location callerPosition, int object, int range) {
         GridProcessor gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(),
                 GridModel.getInstance().getHeight());
         List<Location> objectLocations = new ArrayList<>();
         gridProcessor.processEntireGrid(
-                loc -> !loc.equals(agPos) && GridModel.getInstance().getObjectsAt(loc.x, loc.y).contains(object),
+                loc -> !loc.equals(callerPosition)
+                        && GridModel.getInstance().getObjectsAt(loc.x, loc.y).contains(object),
                 loc -> objectLocations.add(loc),
                 c -> false);
 
@@ -84,7 +82,7 @@ public class Pathfinder {
             customExcludedObjects.addAll(GridModel.getInstance().getNeighborhood(location, range, loc -> true));
         }
 
-        customExcludedObjects.remove(agPos);
+        customExcludedObjects.remove(callerPosition);
     }
 
     public Location getNextPosition(Location start, Location target) {
