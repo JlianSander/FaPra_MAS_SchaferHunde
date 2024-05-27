@@ -36,7 +36,7 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        AgentInfo agent = agentDB.getAgentById(this.getCurrentOpAgentId().getLocalId());
+        AgentInfo agent = agentDB.getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
         Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
         Location startPos = model.getAgPos(agent.getCartagoId());
@@ -57,7 +57,7 @@ public class GridWorld extends Artifact {
         if (!model.getObstacleMap().isObstacle(location, agent.getAgentType())) {
             // logger.info("move successful");
             int agentCartagoId = agent.getCartagoId();
-            model.setAgPos(agentDB.getAgentById(agentCartagoId), location);
+            model.setAgPos(agentDB.getAgentByCartagoId(agentCartagoId), location);
             newX.set(location.x);
             newY.set(location.y);
             signal("mapChanged");

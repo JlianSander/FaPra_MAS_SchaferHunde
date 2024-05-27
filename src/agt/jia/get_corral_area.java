@@ -1,6 +1,7 @@
 package jia;
 
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 
 import grid.GridModel;
 import grid.util.GridProcessor;
@@ -17,42 +18,24 @@ public class get_corral_area extends DefaultInternalAction {
 
     private Area corral;
 
-    @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        try {
-            init();
-
-            return un.unifies(args[0], new NumberTermImpl((double) this.corral.tl.x))
-                    && un.unifies(args[1], new NumberTermImpl((double) this.corral.tl.y))
-                    && un.unifies(args[2], new NumberTermImpl((double) this.corral.br.x))
-                    && un.unifies(args[3], new NumberTermImpl((double) this.corral.br.y));
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+    public Area getCorral() {
+        return corral;
     }
 
-    public void init() throws NoSuchElementException {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) {
+        List<Location> corralCells = new ArrayList<Location>();
         GridModel model = GridModel.getInstance();
         GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
-        // get random start point of corral
-        Location startCorral = gridProcessor.getFirstCell(loc -> model.hasObject(GridModel.CORRAL, loc));
-
-        //cover all corral cells with square
-        this.corral = new Area(startCorral, startCorral);
-        gridProcessor.processEntireGrid(loc -> !this.corral.contains(loc) && model.hasObject(GridModel.CORRAL, loc),
-                loc -> this.updateCorral(loc),
+        gridProcessor.processEntireGrid(loc -> model.hasObject(GridModel.CORRAL, loc),
+                loc -> corralCells.add(loc),
                 c -> false);
-    }
 
-    public Area corral() {
-        return this.corral;
-    }
+        corral = new Area(corralCells.get(0), corralCells.get(corralCells.size() - 1));
 
-    private void updateCorral(Location locToProcess) {
-        Location topLeft = (locToProcess.x < this.corral.tl.x) || (locToProcess.y < this.corral.tl.y) ? locToProcess
-                : this.corral.tl;
-        Location bottomRight = (locToProcess.x > this.corral.br.x) || (locToProcess.y > this.corral.br.y) ? locToProcess
-                : this.corral.br;
-        corral = new Area(topLeft, bottomRight);
+        return un.unifies(args[0], new NumberTermImpl((double) this.corral.tl.x))
+                && un.unifies(args[1], new NumberTermImpl((double) this.corral.tl.y))
+                && un.unifies(args[2], new NumberTermImpl((double) this.corral.br.x))
+                && un.unifies(args[3], new NumberTermImpl((double) this.corral.br.y));
     }
 }
