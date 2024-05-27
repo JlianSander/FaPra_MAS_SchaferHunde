@@ -21,6 +21,11 @@ public class SimulationFileWriter {
             new File(fullDir).mkdir();
         }
 
+        writeTxtFile(jcm, simName, fullDir, duration, sheepCapturedTimes);
+    }
+
+    private static void writeTxtFile(String jcm, String simName, String fullDir, String duration,
+            Map<String, String> sheepCapturedTimes) {
         int count = 1;
         File dir = new File(fullDir);
         File[] files = dir.listFiles();

@@ -1,8 +1,8 @@
 !begin_simulation.
 
-+!begin_simulation
++!begin_simulation : timeout(T)
     <- startSimulation;
-        !wait_and_end_simulation(1000).
+        !wait_and_end_simulation(T).
 
 +!wait_and_end_simulation(X)
     <- .print("Ending simulation after ", X, " seconds");

@@ -14,7 +14,7 @@ public class Simulation {
 
     public void start() {
         startTime = System.currentTimeMillis();
-        logger.warning("--- Simulation started ---");
+        logger.info("--- Simulation started ---");
     }
 
     public void end() {
@@ -22,7 +22,7 @@ public class Simulation {
         long duration = endTime - startTime;
 
         String formattedDuration = formatDuration(duration);
-        logger.warning("--- Simulation ended ---");
+        logger.info("--- Simulation ended ---");
         logger.info("Simulation duration: " + formattedDuration);
 
         SimulationFileWriter.writeResults(formattedDuration, sheepCapturedTimes);
