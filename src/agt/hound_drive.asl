@@ -73,8 +73,10 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     <- .print("driveSwarm(", LS, ")");                                                                                                      //DEBUG
     !updateSwarmData(LS);
     ?swarm_data_updated(LS, CX,CY, Size, R);
-    jia.get_pos_drive_swarm(CX, CY, R, ME_TARGET_X, ME_TARGET_Y);
-    //.print("Swarm is at (",CX,",",CY,") position agent at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                                          //DEBUG
+    !planPositionToDrive;
+    ?driving_position(Driving_Position);
+    jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
+    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                                          //DEBUG
     ?pos(ME_X, ME_Y);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y).
@@ -100,5 +102,6 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-{ include("hound_drive_cluster_swarms.asl")}
-{ include("hound_drive_choose_swarm.asl")}
+{ include("./hound_drive/hound_drive_cluster_swarms.asl")}
+{ include("./hound_drive/hound_drive_choose_swarm.asl")}
+{ include("./hound_drive/hound_drive_plan_position.asl")}

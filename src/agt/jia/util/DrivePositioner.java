@@ -1,29 +1,51 @@
 package jia.util;
 
+
+import java.lang.Math.*;
+
 import jason.environment.grid.Location;
 import jason.asSemantics.TransitionSystem;
+import jason.asSyntax.Literal;
+import jason.asSyntax.PredicateIndicator;
 
 import grid.GridModel;
 import jason.environment.grid.Area;
 
+import util.PropertiesLoader;
+import linearalgebra.Vector;
+
 public class DrivePositioner {
 
-    public static Location positionSingleAgent(TransitionSystem ts, SwarmManipulator swarm, Area corral) {
+    public static Location positionAgent(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
         GridModel model = GridModel.getInstance();
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer hound_distance_to_swarm = loader.getProperty("hound_distance_to_swarm", Integer.class);
+        Double angle_incr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
 
         //get position, where the swarm is to drive to        
         var swarmTargetLoc = swarm.getNextPositionTo(corral.center());
 
-        //TODO: use beliefs about other hound positions to choose strategie for positioning
-        //position agent behind swarm
-        int[] direction_swarm = {
+        //get direction of the swarms desired movements
+        Vector direction_swarm = new Vector(
                 swarmTargetLoc.x - swarm.center().x,
                 swarmTargetLoc.y - swarm.center().y
-        };
+        );
+        Vector direction_swarm_normalized = direction_swarm.normalize();
 
+        //calculate angle depending on the positionNumber
+        double angle = (positionNumber - 3) * angle_incr;
+
+        //rotate direction according to angle
+        double[] direction_swarm_rotated = {
+            direction_swarm_normalized.get(0) * Math.cos(angle) - direction_swarm_normalized.get(1) * Math.sin(angle),
+            direction_swarm_normalized.get(0) * Math.sin(angle) + direction_swarm_normalized.get(1) * Math.cos(angle) 
+        };
+        
+        //calculate agents position behind the swarm
         var agentPos = new Location(
-                swarm.center().x - direction_swarm[0] * (swarm.radius() + 1),
-                swarm.center().y - direction_swarm[1] * (swarm.radius() + 1));
+            swarm.center().x - (int) Math.round(direction_swarm_rotated[0] * (swarm.radius() + hound_distance_to_swarm)),
+            swarm.center().y - (int) Math.round(direction_swarm_rotated[1] * (swarm.radius() + hound_distance_to_swarm))
+        );
 
         //ensure to stay on map
         agentPos = new Location(
