@@ -13,6 +13,7 @@ import jason.environment.grid.Area;
 
 import util.PropertiesLoader;
 import linearalgebra.Vector;
+import linearalgebra.Matrix;
 
 public class DrivePositioner {
 
@@ -30,21 +31,25 @@ public class DrivePositioner {
                 swarmTargetLoc.x - swarm.center().x,
                 swarmTargetLoc.y - swarm.center().y
         );
-        Vector direction_swarm_normalized = direction_swarm.normalize();
+        direction_swarm.normalize();
 
         //calculate angle depending on the positionNumber
-        double angle = (positionNumber - 3) * angle_incr;
+        double angle = (3 - positionNumber) * angle_incr;
+        
+        //create rotation matrix
+        double[][] rotation_entries = {
+            { Math.cos(angle), -1 * Math.sin(angle)},
+            { Math.sin(angle), Math.cos(angle)}
+        };
+        Matrix rotation = new Matrix(rotation_entries);
 
         //rotate direction according to angle
-        double[] direction_swarm_rotated = {
-            direction_swarm_normalized.get(0) * Math.cos(angle) - direction_swarm_normalized.get(1) * Math.sin(angle),
-            direction_swarm_normalized.get(0) * Math.sin(angle) + direction_swarm_normalized.get(1) * Math.cos(angle) 
-        };
+        Vector direction_swarm_rotated = rotation.multiply(direction_swarm);
         
         //calculate agents position behind the swarm
         var agentPos = new Location(
-            swarm.center().x - (int) Math.round(direction_swarm_rotated[0] * (swarm.radius() + hound_distance_to_swarm)),
-            swarm.center().y - (int) Math.round(direction_swarm_rotated[1] * (swarm.radius() + hound_distance_to_swarm))
+            swarm.center().x - (int) Math.round(direction_swarm_rotated.get(0) * (swarm.radius() + hound_distance_to_swarm)),
+            swarm.center().y - (int) Math.round(direction_swarm_rotated.get(1) * (swarm.radius() + hound_distance_to_swarm))
         );
 
         //ensure to stay on map
