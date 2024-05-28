@@ -9,12 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.AgentInfo;
+import model.ScenarioInfo;
 
 public class Simulation {
     private static final Logger logger = Logger.getLogger(Simulation.class.getName());
     private long startTime;
-    // private Map<String, String> sheepCapturedTimes = new HashMap<>();
     private List<Pair<String, String>> sheepCapturedTimes = new ArrayList<>();
+    private ScenarioInfo scenarioInfo;
+
+    public Simulation(ScenarioInfo scenarioInfo) {
+        this.scenarioInfo = scenarioInfo;
+    }
 
     public int getSheepCapturedCount() {
         return sheepCapturedTimes.size();
@@ -25,10 +30,10 @@ public class Simulation {
         logger.info("--- Simulation started ---");
     }
 
-    public void end(int totalSheepCount) {
+    public void end() {
         String formattedElapsed = "";
         // Bypassing the time needed to actually end the sim if we caught all sheep
-        if (totalSheepCount == sheepCapturedTimes.size()) {
+        if (scenarioInfo.getTotalSheepCount() == sheepCapturedTimes.size()) {
             formattedElapsed = sheepCapturedTimes.get(sheepCapturedTimes.size() - 1).getValue1();
         } else {
             long endTime = System.currentTimeMillis();
@@ -39,7 +44,7 @@ public class Simulation {
         logger.info("--- Simulation ended ---");
         logger.info("Simulation duration: " + formattedElapsed);
 
-        SimulationFileWriter.writeResults(formattedElapsed, sheepCapturedTimes, totalSheepCount);
+        SimulationFileWriter.writeResults(scenarioInfo, sheepCapturedTimes, formattedElapsed);
     }
 
     public void sheepCaptured(AgentInfo sheep) {

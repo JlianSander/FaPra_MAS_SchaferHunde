@@ -1,24 +1,32 @@
 package model;
 
-public class SimulationInfo {
+import grid.GridModel;
+import grid.GridWorld;
+
+public class ScenarioInfo {
     private int totalSheepCount;
     private int totalHoundCount;
     private int sheepWaitTime;
     private int houndWaitTime;
     private double houndRelativeWaitTime;
 
-    public SimulationInfo(int sheepWaitTime, int houndWaitTime, double houndRelativeWaitTime) {
+    public ScenarioInfo(int sheepWaitTime, int houndWaitTime, double houndRelativeWaitTime) {
         this.sheepWaitTime = sheepWaitTime;
         this.houndWaitTime = houndWaitTime;
         this.houndRelativeWaitTime = houndRelativeWaitTime;
     }
 
-    public void addSheep() {
-        totalSheepCount++;
-    }
-
-    public void addHound() {
-        totalHoundCount++;
+    public void addAgent(AgentInfo agent) {
+        switch (agent.getAgentType()) {
+            case GridModel.SHEEP:
+                totalSheepCount++;
+                break;
+            case GridModel.HOUND:
+                totalHoundCount++;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid agent type: " + agent.getAgentType());
+        }
     }
 
     public int getTotalSheepCount() {

@@ -248,4 +248,6 @@ clean {
     delete 'bin'
     delete 'build'
     delete 'log'
+    delete 'simulations/results'
+    delete '.gradle'
 }

@@ -12,10 +12,13 @@ import java.util.ArrayList;
 
 import org.javatuples.Pair;
 
+import model.ScenarioInfo;
+
 public class SimulationFileWriter {
     private static FileWriter writer;
 
-    public static void writeResults(String duration, List<Pair<String, String>> sheepCapturedTimes, int sheepCount) {
+    public static void writeResults(ScenarioInfo scenarioInfo, List<Pair<String, String>> sheepCapturedTimes,
+            String duration) {
         String jcm = System.getProperty("simName");
         if (jcm.indexOf('.') == -1) {
             jcm += ".jcm";
@@ -28,12 +31,12 @@ public class SimulationFileWriter {
             new File(fullDir).mkdir();
         }
 
-        writeTxtFile(jcm, simName, fullDir, duration, sheepCapturedTimes);
-        writeCsvFile(jcm, simName, fullDir, duration, sheepCapturedTimes, sheepCount);
+        writeTxtFile(jcm, simName, fullDir, duration, scenarioInfo, sheepCapturedTimes);
+        writeCsvFile(jcm, simName, fullDir, duration, scenarioInfo, sheepCapturedTimes);
     }
 
     private static void writeTxtFile(String jcm, String simName, String fullDir, String duration,
-            List<Pair<String, String>> sheepCapturedTimes) {
+            ScenarioInfo scenarioInfo, List<Pair<String, String>> sheepCapturedTimes) {
         int count = 1;
         File dir = new File(fullDir);
         File[] files = dir.listFiles();
@@ -49,6 +52,11 @@ public class SimulationFileWriter {
         try {
             writer = new FileWriter(filePath);
             writeLine("Simulation: " + jcm);
+            writeLine("Sheep amount: " + scenarioInfo.getTotalSheepCount());
+            writeLine("Hound amount: " + scenarioInfo.getTotalHoundCount());
+            writeLine("Sheep wait time: " + scenarioInfo.getSheepWaitTime());
+            writeLine("Hound wait time: " + scenarioInfo.getHoundWaitTime());
+            writeLine("Hound wait ratio: " + scenarioInfo.getHoundRelativeWaitTime());
             writeLine("Duration: " + duration);
             writeLine("Sheeps: {");
             for (Pair<String, String> pair : sheepCapturedTimes) {
@@ -70,7 +78,7 @@ public class SimulationFileWriter {
     }
 
     private static void writeCsvFile(String jcm, String simName, String fullDir, String duration,
-            List<Pair<String, String>> sheepCapturedTimes, int sheepCount) {
+            ScenarioInfo scenarioInfo, List<Pair<String, String>> sheepCapturedTimes) {
         String filePath = String.format("%s/%s.csv", fullDir, simName);
         File csvFile = new File(filePath);
         boolean fileExists = csvFile.exists();
@@ -87,32 +95,41 @@ public class SimulationFileWriter {
                 e.printStackTrace();
             }
         } else {
-            lines.add("Simulation:, " + jcm);
-            lines.add("Duration:, " + duration);
+            lines.add("Szenario:, " + jcm);
+            lines.add("Schafe:, " + scenarioInfo.getTotalSheepCount());
+            lines.add("Hunde:, " + scenarioInfo.getTotalHoundCount());
+            lines.add("Schafe Timeout:, " + scenarioInfo.getSheepWaitTime());
+            lines.add("Hunde Timeout:, " + scenarioInfo.getHoundWaitTime());
+            lines.add("Hunde Timeout relativ:, " + scenarioInfo.getHoundRelativeWaitTime());
             lines.add("");
             lines.add("");
             lines.add("");
+            lines.add("Zeitpunkt:");
+            lines.add("Laufzeit:");
         }
 
         int headerEndIndex = lines.size();
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).startsWith("Sheep count")) {
+            if (lines.get(i).startsWith("Anzahl Schafe")) {
                 headerEndIndex = i;
                 break;
             }
         }
 
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM HH:mm:ss");
         String currentTime = dtf.format(now);
 
+        lines.set(9, lines.get(9) + ", " + currentTime);
+        lines.set(10, lines.get(10) + ", " + duration);
+
         if (headerEndIndex < lines.size()) {
-            lines.set(headerEndIndex, lines.get(headerEndIndex) + ", " + currentTime);
+            lines.set(headerEndIndex, "Anzahl Schafe,");
         } else {
-            lines.add("Sheep count, " + currentTime);
+            lines.add("Anzahl Schafe,");
         }
 
-        for (int i = 0; i < sheepCount; i++) {
+        for (int i = 0; i < scenarioInfo.getTotalSheepCount(); i++) {
             String capturedTime = i < sheepCapturedTimes.size() ? sheepCapturedTimes.get(i).getValue1() : "-";
             if (headerEndIndex + 1 + i < lines.size()) {
                 lines.set(headerEndIndex + 1 + i, lines.get(headerEndIndex + 1 + i) + ", " + capturedTime);
@@ -126,7 +143,6 @@ public class SimulationFileWriter {
             for (String line : lines) {
                 writer.write(line + "\n");
             }
-            System.out.println("Results appended to " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
