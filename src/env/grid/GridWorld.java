@@ -8,7 +8,10 @@ import jason.environment.grid.Location;
 import grid.util.Pathfinder;
 import model.AgentInfo;
 import service.AgentDB;
+import util.PropertiesLoader;
 import simulations.Simulation;
+
+import java.util.logging.Logger;
 
 public class GridWorld extends Artifact {
     private static final Logger logger = Logger.getLogger(GridWorld.class.getName());
@@ -69,14 +72,21 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y,
+            OpFeedbackParam<Integer> waitTime) {
         AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
+<<<<<<< HEAD
         totalSheepCount += agent.getAgentType() == GridModel.SHEEP ? 1 : 0;
+=======
+        waitTime.set(loadAgentWaitTime(agent));
+>>>>>>> main
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);
         moveTo(agent, loc, X, Y);
     }
+
+    <<<<<<<HEAD
 
     @OPERATION
     void sheepCaptured() {
@@ -100,5 +110,20 @@ public class GridWorld extends Artifact {
     @OPERATION
     private void endSimulation() {
         simulation.end(totalSheepCount);
-    }
+    }=======
+
+    private Integer loadAgentWaitTime(AgentInfo agent) {
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
+        switch (agent.getAgentType()) {
+            case GridModel.SHEEP:
+                return sheepWaitTime;
+            case GridModel.HOUND:
+                Double houndWaitRatio = loader.getProperty("hound_wait_ratio", Double.class);
+                Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
+                return houndWaitTime;
+            default:
+                throw new IllegalArgumentException("Invalid agent type: " + agent.getAgentType());
+        }
+    }>>>>>>>main
 }
