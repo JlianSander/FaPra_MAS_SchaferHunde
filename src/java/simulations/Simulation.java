@@ -2,30 +2,40 @@ package simulations;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.javatuples.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import model.AgentInfo;
 
 public class Simulation {
     private static final Logger logger = Logger.getLogger(Simulation.class.getName());
     private long startTime;
-    private Map<String, String> sheepCapturedTimes = new HashMap<>();
+    // private Map<String, String> sheepCapturedTimes = new HashMap<>();
+    private List<Pair<String, String>> sheepCapturedTimes = new ArrayList<>();
 
     public void start() {
         startTime = System.currentTimeMillis();
         logger.info("--- Simulation started ---");
     }
 
-    public void end() {
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
+    public void end(boolean finishedInTime) {
+        String formattedElapsed = "";
+        // Bypassing the time needed to actually end the sim if we caught all sheep
+        if (finishedInTime) {
+            formattedElapsed = sheepCapturedTimes.get(sheepCapturedTimes.size() - 1).getValue1();
+        } else {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            formattedElapsed = formatDuration(duration);
+        }
 
-        String formattedDuration = formatDuration(duration);
         logger.info("--- Simulation ended ---");
-        logger.info("Simulation duration: " + formattedDuration);
+        logger.info("Simulation duration: " + formattedElapsed);
 
-        SimulationFileWriter.writeResults(formattedDuration, sheepCapturedTimes);
+        SimulationFileWriter.writeResults(formattedElapsed, sheepCapturedTimes);
     }
 
     public void sheepCaptured(AgentInfo sheep) {
@@ -33,7 +43,7 @@ public class Simulation {
         long elapsed = currentTime - startTime;
 
         String formattedElapsed = formatDuration(elapsed);
-        sheepCapturedTimes.put(sheep.getJasonId(), formattedElapsed);
+        sheepCapturedTimes.add(new Pair<String, String>(sheep.getJasonId(), formattedElapsed));
 
         logger.info("Sheep " + sheep.getJasonId() + " captured at " + formattedElapsed);
     }

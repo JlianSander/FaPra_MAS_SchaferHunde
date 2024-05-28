@@ -18,7 +18,7 @@ mas mas_schafherde {
     agent simulator: simulator.asl {
         join: world
         focus: world.grid
-        beliefs: timeout(1000)
+        beliefs: timeout(10000)
     }
 
     workspace world {

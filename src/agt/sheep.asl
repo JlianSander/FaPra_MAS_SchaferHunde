@@ -45,6 +45,7 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
 +!takeStep : is_in_corral
     <-
     .print("I'm in the corral");
+    sheepCaptured;
     jia.kill_and_decommission_agent;
     .
 

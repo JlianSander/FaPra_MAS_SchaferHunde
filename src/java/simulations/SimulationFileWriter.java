@@ -3,12 +3,14 @@ package simulations;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
+
+import org.javatuples.Pair;
 
 public class SimulationFileWriter {
     private static FileWriter writer;
 
-    public static void writeResults(String duration, Map<String, String> sheepCapturedTimes) {
+    public static void writeResults(String duration, List<Pair<String, String>> sheepCapturedTimes) {
         String jcm = System.getProperty("simName");
         if (jcm.indexOf('.') == -1) {
             jcm += ".jcm";
@@ -25,7 +27,7 @@ public class SimulationFileWriter {
     }
 
     private static void writeTxtFile(String jcm, String simName, String fullDir, String duration,
-            Map<String, String> sheepCapturedTimes) {
+            List<Pair<String, String>> sheepCapturedTimes) {
         int count = 1;
         File dir = new File(fullDir);
         File[] files = dir.listFiles();
@@ -43,12 +45,14 @@ public class SimulationFileWriter {
             writeLine("Simulation: " + jcm);
             writeLine("Duration: " + duration);
             writeLine("Sheeps: {");
-            for (Map.Entry<String, String> entry : sheepCapturedTimes.entrySet()) {
-                writeLine(String.format("%s: %s", entry.getKey(), entry.getValue()));
+            for (Pair<String, String> pair : sheepCapturedTimes) {
+                writeLine(String.format("%s: %s", pair.getValue0(), pair.getValue1()));
             }
             writeLine("}");
             System.out.println("Results written to " + filePath);
-        } catch (IOException e) {
+        } catch (
+
+        IOException e) {
             e.printStackTrace();
         } finally {
             try {

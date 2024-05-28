@@ -4,9 +4,9 @@
     <- startSimulation;
         !wait_and_end_simulation(T).
 
-+!wait_and_end_simulation(X)
-    <- .print("Ending simulation after ", X, " seconds");
-        .wait(X);
++!wait_and_end_simulation(T)
+    <- .print("Ending simulation after ", T, " seconds");
+        .wait({+simulationEnded}, T, E);
         endSimulation;
         .stopMAS.
 
