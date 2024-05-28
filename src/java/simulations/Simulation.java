@@ -16,15 +16,19 @@ public class Simulation {
     // private Map<String, String> sheepCapturedTimes = new HashMap<>();
     private List<Pair<String, String>> sheepCapturedTimes = new ArrayList<>();
 
+    public int getSheepCapturedCount() {
+        return sheepCapturedTimes.size();
+    }
+
     public void start() {
         startTime = System.currentTimeMillis();
         logger.info("--- Simulation started ---");
     }
 
-    public void end(boolean finishedInTime) {
+    public void end(int totalSheepCount) {
         String formattedElapsed = "";
         // Bypassing the time needed to actually end the sim if we caught all sheep
-        if (finishedInTime) {
+        if (totalSheepCount == sheepCapturedTimes.size()) {
             formattedElapsed = sheepCapturedTimes.get(sheepCapturedTimes.size() - 1).getValue1();
         } else {
             long endTime = System.currentTimeMillis();
@@ -35,7 +39,7 @@ public class Simulation {
         logger.info("--- Simulation ended ---");
         logger.info("Simulation duration: " + formattedElapsed);
 
-        SimulationFileWriter.writeResults(formattedElapsed, sheepCapturedTimes);
+        SimulationFileWriter.writeResults(formattedElapsed, sheepCapturedTimes, totalSheepCount);
     }
 
     public void sheepCaptured(AgentInfo sheep) {

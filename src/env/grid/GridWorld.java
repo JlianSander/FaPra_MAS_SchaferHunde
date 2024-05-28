@@ -16,7 +16,7 @@ public class GridWorld extends Artifact {
     private GridView view;
     private AgentDB agentDB;
     private Simulation simulation;
-    private int sheepCount;
+    private int totalSheepCount;
 
     void init(int size, int corralWidth, int corralHeight, boolean drawCoords) {
         agentDB = new AgentDB();
@@ -71,7 +71,7 @@ public class GridWorld extends Artifact {
     @OPERATION
     private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
-        sheepCount += agent.getAgentType() == GridModel.SHEEP ? 1 : 0;
+        totalSheepCount += agent.getAgentType() == GridModel.SHEEP ? 1 : 0;
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);
@@ -86,8 +86,7 @@ public class GridWorld extends Artifact {
 
         AgentInfo agent = agentDB.getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         simulation.sheepCaptured(agent);
-        sheepCount--;
-        if (sheepCount == 0) {
+        if (totalSheepCount == simulation.getSheepCapturedCount()) {
             signal("simulationEnded");
         }
     }
@@ -100,6 +99,6 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     private void endSimulation() {
-        simulation.end(sheepCount == 0);
+        simulation.end(totalSheepCount);
     }
 }
