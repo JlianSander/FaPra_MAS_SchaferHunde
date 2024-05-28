@@ -91,7 +91,7 @@ public class flocking_pos extends DefaultInternalAction {
         switch (object) {
             case GridModel.HOUND:
                 // System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
-                weight = -1;
+                weight = -100;
                 break;
             case GridModel.SHEEP:
                 // System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
@@ -104,7 +104,7 @@ public class flocking_pos extends DefaultInternalAction {
                 weight = 10;
                 break;
             case GridModel.CORRAL:
-                weight = 100000000;
+                weight = 1;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid object type");

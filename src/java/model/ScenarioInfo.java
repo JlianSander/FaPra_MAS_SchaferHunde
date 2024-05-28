@@ -1,7 +1,6 @@
 package model;
 
 import grid.GridModel;
-import grid.GridWorld;
 
 public class ScenarioInfo {
     private int totalSheepCount;
