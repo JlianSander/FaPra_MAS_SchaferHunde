@@ -1,5 +1,7 @@
 package jia;
 
+import java.lang.*;
+
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -17,24 +19,10 @@ public class is_in_corral extends DefaultInternalAction {
         int AgY = (int) ((NumberTerm) args[1]).solve();
         Location agLoc = new Location(AgX, AgY);
 
-        return model.getObjectsAt(agLoc).contains(GridModel.CORRAL);
+        boolean result = model.getObjectsAt(agLoc).contains(GridModel.CORRAL);
 
-        try {
-            int locX = (int) ((NumberTerm) args[0]).solve();
-            int locY = (int) ((NumberTerm) args[1]).solve();
-            var loc = new Location(locX, locY);
+        //ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
 
-            var get_corral = new get_corral_area();
-            get_corral.init();
-            var corral = get_corral.corral();
-
-            boolean result = corral.contains(loc);
-
-            //ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
-
-            return result;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
+        return result;  
     }
 }
