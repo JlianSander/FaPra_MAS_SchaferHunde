@@ -5,6 +5,7 @@ import jason.environment.grid.Location;
 import grid.util.Pathfinder;
 import model.AgentInfo;
 import service.AgentDB;
+import util.PropertiesLoader;
 
 import java.util.logging.Logger;
 
@@ -33,7 +34,7 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        AgentInfo agent = agentDB.getAgentById(this.getCurrentOpAgentId().getLocalId());
+        AgentInfo agent = agentDB.getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
         Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
         Location startPos = model.getAgPos(agent.getCartagoId());
@@ -54,7 +55,7 @@ public class GridWorld extends Artifact {
         if (!model.getObstacleMap().isObstacle(location, agent.getAgentType())) {
             // logger.info("move successful");
             int agentCartagoId = agent.getCartagoId();
-            model.setAgPos(agentDB.getAgentById(agentCartagoId), location);
+            model.setAgPos(agentDB.getAgentByCartagoId(agentCartagoId), location);
             newX.set(location.x);
             newY.set(location.y);
             signal("mapChanged");
@@ -65,11 +66,28 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
+    private void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y,
+            OpFeedbackParam<Integer> waitTime) {
         AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
+        waitTime.set(loadAgentWaitTime(agent));
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);
         moveTo(agent, loc, X, Y);
+    }
+
+    private Integer loadAgentWaitTime(AgentInfo agent) {
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
+        switch (agent.getAgentType()) {
+            case GridModel.SHEEP:
+                return sheepWaitTime;
+            case GridModel.HOUND:
+                Double houndWaitRatio = loader.getProperty("hound_wait_ratio", Double.class);
+                Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
+                return houndWaitTime;
+            default:
+                throw new IllegalArgumentException("Invalid agent type: " + agent.getAgentType());
+        }
     }
 }

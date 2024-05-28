@@ -21,8 +21,8 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         var swarm = new SwarmManipulator(swarmCenter, radius);
 
         var get_corral = new get_corral_area();
-        get_corral.init();
-        var corral = get_corral.corral();
+        get_corral.execute(ts, un, args);
+        var corral = get_corral.getCorral();
 
         var agentLoc = DrivePositioner.positionSingleAgent(ts, swarm, corral);
 
