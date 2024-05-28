@@ -59,7 +59,7 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
     nextStep(TargetX, TargetY, NewX, NewY);
     .print("Old pos: (", AgX, " , ", AgY, ") - New pos: (", NewX, " , ", NewY, ")");
     -+pos(NewX, NewY);
-    .wait(100);
+    !waitToMove;
     // .print("after step:");
     // .print("destination: (", TargetX, " , ", TargetY, ")");
     // .print("current pos: (", NewX, " , ", NewY, ")");
