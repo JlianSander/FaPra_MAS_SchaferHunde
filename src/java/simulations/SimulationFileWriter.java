@@ -134,7 +134,7 @@ public class SimulationFileWriter {
             if (headerEndIndex + 1 + i < lines.size()) {
                 lines.set(headerEndIndex + 1 + i, lines.get(headerEndIndex + 1 + i) + ", " + capturedTime);
             } else {
-                lines.add(i + ", " + capturedTime);
+                lines.add((scenarioInfo.getTotalSheepCount() - 1 - i) + ", " + capturedTime);
             }
         }
 
