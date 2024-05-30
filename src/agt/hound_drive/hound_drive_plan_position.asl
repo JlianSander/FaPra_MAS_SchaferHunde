@@ -2,75 +2,131 @@
 
 driving_position(3).
 
+distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
+
+distance_other_to_pos(X,Y,H, DH):- 
+    pos_agent(HX,HY)[source(H)] & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
+
 is_closer_to_pos(X,Y,H) :- 
-    pos_agent(HX,HY)[source(H)] & hound(H) & jia.get_distance(X,Y,HX,HY,DH) & 
-    pos(ME_X, ME_Y)  & jia.get_distance(X,Y,ME_X,ME_Y,D_ME) &
-    DH < D_ME.
+    distance_other_to_pos(X,Y,H, DH) & 
+    distance_me_to_pos(X,Y, D_Me) &
+    DH < D_Me.
+
+is_farerAway_to_pos(X,Y,H) :- 
+    distance_other_to_pos(X,Y,H, DH) & 
+    distance_me_to_pos(X,Y, D_Me) &
+    DH > D_Me.
+
+is_equal_away_to_pos(X,Y,H) :- 
+    distance_other_to_pos(X,Y,H, DH) & 
+    distance_me_to_pos(X,Y, D_Me) &
+    DH = D_Me.
+
+i_am_lower_than(H):- .my_name(Me) & Me < H.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//------------------------------------------------------- planPositionToDrive ------------------------------------------------------- 
+
+/* +!planPositionToDrive(Swarm) 
+    <- .print("planPositionToDrive(", Swarm, ")");                                                                                                      //DEBUG
+    ?swarm_data_updated(Swarm, CX,CY, Size, R);
+    jia.get_pos_drive_swarm(CX, CY, R, 1, POS_1_X, POS_1_Y);
+    jia.get_pos_drive_swarm(CX, CY, R, 2, POS_2_X, POS_2_Y);
+    jia.get_pos_drive_swarm(CX, CY, R, 3, POS_3_X, POS_3_Y);
+    jia.get_pos_drive_swarm(CX, CY, R, 4, POS_4_X, POS_4_Y);
+    jia.get_pos_drive_swarm(CX, CY, R, 5, POS_5_X, POS_5_Y);
+    .print("Swarm: (", CX, ",", CY, ") Pos_1: (", POS_1_X, ",", POS_1_Y, ")");
+    .print("Swarm: (", CX, ",", CY, ") Pos_2: (", POS_2_X, ",", POS_2_Y, ")");
+    .print("Swarm: (", CX, ",", CY, ") Pos_3: (", POS_3_X, ",", POS_3_Y, ")");
+    .print("Swarm: (", CX, ",", CY, ") Pos_4: (", POS_4_X, ",", POS_4_Y, ")");
+    .print("Swarm: (", CX, ",", CY, ") Pos_5: (", POS_5_X, ",", POS_5_Y, ")");
+    -+driving_position(3);
+    .print("driving_position(3)"). */
+
+
 +!planPositionToDrive(Swarm) 
-    <- .print("planPositionToDrive(", Swarm, ")");                                                                                          //DEBUG
+    <- //.print("planPositionToDrive(", Swarm, ")");                                                                                                    //DEBUG
     !guess_who_is_driving_what;
-    .findall(H, hound_drives(H, Swarm), Drivers);
-    .length(Drivers, Len_Drivers);
-    .print("Other hound driving same swarm: ", Drivers);                                                                                    //DEBUG
-    if(Len_Drivers < 1){
+    .findall(H, hound_drives(H, Swarm), Other_Drivers);
+    .length(Other_Drivers, Len_Other_Drivers);
+    //.print("Other hound driving same swarm: ", Other_Drivers);                                                                                        //DEBUG
+    if(Len_Other_Drivers < 1){
         //I'm the only hound driving this swarm
         -+driving_position(3);
-        .print("driving_position(3)");                                                                                                      //DEBUG
-    }elif(Len_Drivers < 2){
+        //.print("driving_position(3)");                                                                                                                //DEBUG
+    }elif(Len_Other_Drivers < 2){
         //there is another hound driving the swarm
-        !updateSwarmData(Swarm);
-        ?swarm_data_updated(Swarm, CX,CY, Size, R);
-        jia.get_pos_drive_swarm(CX, CY, R, 2, POS_2_X, POS_2_Y);
-        .nth(0, Drivers, H2);
-        ?pos(ME_X, ME_Y);                                                                                                                   //DEBUG
-        ?pos_agent(H2X,H2Y)[source(H2)];                                                                                                    //DEBUG
-        .print("Pos_ME:", ME_X, "|", ME_Y, " Pos_", H2, ":", H2X, "|", H2Y, " POS_2:", POS_2_X, "|", POS_2_Y);                               //DEBUG
-        if(is_closer_to_pos(POS_2_X, POS_2_Y,H2)){
-            //other hound takes pos 2
-            -+driving_position(4);
-            .print("driving_position(4)");                                                                                                  //DEBUG
-        }else{
-            //I'm closer to pos 2
+        !getHoundClosestToPos(Swarm, Other_Drivers, 2);
+        ?closest(C);
+        if(.my_name(C)){
             -+driving_position(2);
-            .print("driving_position(2)");                                                                                                  //DEBUG
+            //.print("driving_position(", 2, ")");                                                                                                      //DEBUG
+        }else{
+            -+driving_position(4);
+            //.print("driving_position(", 4, ")");                                                                                                      //DEBUG
         }
     }else{
         // there are two other hounds driving the same swarm
-        !updateSwarmData(Swarm);
-        ?swarm_data_updated(Swarm, CX,CY, Size, R);
-        jia.get_pos_drive_swarm(CX, CY, R, 1, POS_1_X, POS_1_Y);
-        for(.member(H3_tmp, Drivers)){                                                                                                          //DEBUG
-            ?pos(ME_X, ME_Y);                                                                                                                   //DEBUG
-            ?pos_agent(H3X,H3Y)[source(H3_tmp)];                                                                                                //DEBUG
-            .print("Pos_ME:", ME_X, "|", ME_Y, " Pos_", H3_tmp, ":", H3X, "|", H3Y, " POS_1:", POS_1_X, "|", POS_1_Y);                           //DEBUG
-        }                                                                                                                                       //DEBUG
-        if(.member(H3, Drivers) & is_closer_to_pos(POS_1_X, POS_1_Y, H3)){
-            //other driving hound is taking pos 1
-            jia.get_pos_drive_swarm(CX, CY, R, 3, POS_3_X, POS_3_Y);
-            for(.member(H3_tmp2, Drivers)){                                                                                                     //DEBUG
-                ?pos(ME_X, ME_Y);                                                                                                               //DEBUG
-                ?pos_agent(H3X_2,H3Y_2)[source(H3_tmp2)];                                                                                       //DEBUG
-                .print("Pos_ME:", ME_X, "|", ME_Y, " Pos_", H3_tmp2, ":", H3X_2, "|", H3Y_2, " POS_3:", POS_3_X, "|", POS_3_Y);                  //DEBUG
-            }  
-            if(.member(H4, Drivers) & is_closer_to_pos(POS_3_X, POS_3_Y, H4)){
-                //other driving hound is taking pos 3
-                -+driving_position(5);
-                .print("driving_position(5)");                                                                                              //DEBUG
-            }else{
-                //I'm closest to pos 3
+        !getHoundClosestToPos(Swarm, Other_Drivers, 1);
+        ?closest(C);
+        if(.my_name(C)){
+            -+driving_position(1);
+            //.print("driving_position(", 1, ")");                                                                                                      //DEBUG
+        }else{
+            .delete(C, Other_Drivers, New_Other_Drivers);
+            !getHoundClosestToPos(Swarm, New_Other_Drivers, 3);
+            ?closest(C1);
+            if(.my_name(C1)){
                 -+driving_position(3);
-                .print("driving_position(3)");                                                                                              //DEBUG
+                //.print("driving_position(", 3, ")");                                                                                                  //DEBUG
+            }else{
+                -+driving_position(5);
+                //.print("driving_position(", 5, ")");                                                                                                  //DEBUG
+            }
+        }   
+    }
+.
+
++!getHoundClosestToPos(Swarm, Other_Drivers, I)
+    <- //.print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", I, ")");                                                                       //DEBUG
+    !updateSwarmData(Swarm);
+    ?swarm_data_updated(Swarm, CX,CY, Size, R);
+    jia.get_pos_drive_swarm(CX, CY, R, I, POS_I_X, POS_I_Y);
+    /* .print("Position to reach POS_I:(", POS_I_X, ", ", POS_I_Y, ")");                                                                                //DEBUG
+    .findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp)[source(H_tmp)], List_tmp);                                                 //DEBUG
+    print("List_tmp: ", List_temp);                                                                                                                     //DEBUG */
+    .findall(D, .member(H2, Other_Drivers) & pos_agent(HX,HY)[source(H2)] & jia.get_distance(POS_I_X, POS_I_Y, HX, HY, D), List_Distances);
+    //.print("Distances to Pos", I, ": ", List_Distances);                                                                                              //DEBUG
+    .min(List_Distances, Min_D);
+    .findall(H2, .member(H2, Other_Drivers) & pos_agent(HX,HY)[source(H2)] & jia.get_distance(POS_I_X, POS_I_Y,HX,HY,D) & D == Min_D, List_temp);
+    .nth(0, List_temp, H);
+    /*.print("Other Hound with minimal distance to Pos", I, " is ", H);                                                                                 //DEBUG
+    .my_name(Me);                                                                                                                                       //DEBUG
+    ?pos(ME_X, ME_Y);                                                                                                                                   //DEBUG
+    jia.get_distance(POS_I_X, POS_I_Y, ME_X, ME_Y, D_ME);                                                                                               //DEBUG
+    ?pos_agent(HX,HY)[source(H)];                                                                                                                       //DEBUG
+    jia.get_distance(POS_I_X, POS_I_Y, HX, HY, DH);                                                                                                     //DEBUG
+    .print("My distance: ", D_ME, " Other hound ", H, "'s distance: ", DH);                                                                             //DEBUG */
+    if(is_closer_to_pos(POS_I_X, POS_I_Y, H)){
+        //.print(H, " is closer.");                                                                                                                     //DEBUG
+        -+closest(H);
+    }else{
+        //.print("I'm closer.");                                                                                                                        //DEBUG
+        if(is_equal_away_to_pos(POS_I_X, POS_I_Y, H)){
+            if(i_am_lower_than(H)){
+                -+closest(Me);
+            }
+            else{
+                -+closest(H);
             }
         }else{
-            //I'm closest to pos 1
-            -+driving_position(1);
-            .print("driving_position(1)");                                                                                                  //DEBUG
+            -+closest(Me);
         }
-    }.
-
+    }
+    ?closest(C);
+    //.print("Hound with minimal distance to Pos", I, " is ", C);                                                                                       //DEBUG
+.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

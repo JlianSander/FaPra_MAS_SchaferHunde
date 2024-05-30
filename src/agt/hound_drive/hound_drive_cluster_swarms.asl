@@ -44,17 +44,17 @@ limit_radius_swarm(5).
 //------------------------------------------------------- createSwarmWithoutOutsiders ------------------------------------------------------- 
 
     +!createSwarmWithoutOutsiders(Set_Sheep)
-        <- //.print("createSwarmWithoutOutsiders(", Set_Sheep, ")");                                                                      //DEBUG
+        <- //.print("createSwarmWithoutOutsiders(", Set_Sheep, ")");                                                                        //DEBUG
         ?limit_radius_swarm(Limit_rad);
         if(swarm_data_updated(_, _, _, _, _)){
             .abolish(swarm_data_updated(_,_,_,_,_));
         }
         for(.member(S, Set_Sheep)){
-            //.print("createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");                                                          //DEBUG
+            //.print("createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");                                                            //DEBUG
             ?pos_agent(SX,SY)[source(S)];
             if(swarm_data_updated(_, _, _, _, _)){
                 ?swarm_data_updated(LS, CX,CY, Size, R);
-                //.print("swarm_data_updated:",LS,CX,CY, Size, R);                                                                                //DEBUG
+                //.print("swarm_data_updated:",LS,CX,CY, Size, R);                                                                          //DEBUG
                 if(jia.get_distance(SX,SY,CX,CY,D) & D > Limit_rad){
                     if(outsiders(Outsiders)){
                         .set.add(Outsiders, S);
