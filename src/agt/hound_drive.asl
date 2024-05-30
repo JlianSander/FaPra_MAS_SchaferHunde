@@ -17,28 +17,10 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//------------------------------------------------------- driveSheep -------------------------------------------------------
-
-+!driveSheep(S) : has_enough_info(S) & not is_in_corral(S) & not other_hound_is_closer_to_sheep(S) 
-    <- .print("driving: ", S); 
-    ?pos_agent(SX,SY)[source(S)];
-    jia.get_pos_drive_swarm(SX, SY, 0, ME_TARGET_X, ME_TARGET_Y);
-    .print("Sheep is at (",SX,",",SY,") position agent at (",ME_TARGET_X, ",", ME_TARGET_Y, ")");                                            //DEBUG
-    ?pos(ME_X, ME_Y);
-    jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
-    !reachDestination(ME_NXT_X, ME_NXT_Y);
-    !driveSheep(S).
-
-+!driveSheep(S) : other_hound_is_closer_to_sheep(S) <- .print("Other hound is closer").
-
-+!driveSheep(S) : not has_enough_info(S) <- .print("Not enough info to drive target").
-
-+!driveSheep(S) : has_enough_info(S) & is_in_corral(S) <- .print("sheep is in corral").
-
 //------------------------------------------------------- startDrive -------------------------------------------------------
 
 +!startDrive : has_enough_info & not .desire(processDriving)
-    <- !processDriving.
+    <- !!processDriving.
 
 +!startDrive : not has_enough_info <- .print("Not enough info to drive."); .fail_goal(startDrive).
 
@@ -46,7 +28,7 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
-+!processDriving : has_enough_info & not (.desire(driveSwarm(_)) | .desire(mapSwarms) )  
++!processDriving  
     <- !mapSwarms;
     .findall(Swarm, swarm(Swarm,_,_,_,_),Swarms);
     .print("found swarms: ", Swarms);                                                                                                           //DEBUG
@@ -59,13 +41,13 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     if(swarm_chosen_to_drive(_)){
         ?swarm_chosen_to_drive(Swarm_Chosen);
         !driveSwarm(Swarm_Chosen);
-        .wait(50);   //DEBUG                                                                                                                    //DEBUG 
         !processDriving;
     }else{
         .print("no swarm chosen");
         .fail_goal(processDriving);
     }.    
 
+//TODO wenn processDriving failed dann starte Suchen  (z.B. weil no swarm found)
 
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
@@ -73,10 +55,10 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     <- .print("driveSwarm(", LS, ")");                                                                                                      //DEBUG
     !updateSwarmData(LS);
     ?swarm_data_updated(LS, CX,CY, Size, R);
-    !planPositionToDrive;
+    !planPositionToDrive(LS);
     ?driving_position(Driving_Position);
     jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
-    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                                          //DEBUG
+    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                         //DEBUG
     ?pos(ME_X, ME_Y);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y).
@@ -84,21 +66,18 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 //------------------------------------------------------- updateSwarmData -------------------------------------------------------
 
 +!updateSwarmData(LS)
-    <- //.print("updateSwarmData(",LS,")");                                                                                                     //DEBUG
-    if(swarm_data_updated(_, _, _, _, _)){
-        .abolish(swarm_data_updated(_,_,_,_,_));
-    }
-    +swarm_data_updated(LS, -1,-1, 0, -1);
-    //.print("reset swarm: ", LS);                                                                                                            //DEBUG
-    for(.member(S,LS)){
-        //.print("updateSwarmData(", S, " of ", LS, ")");                                                                                     //DEBUG
-        ?pos_agent(SX,SY)[source(S)];
-        ?swarm_data_updated(LS, CX,CY, Size, R);
-        jia.update_swarm_data(CX, CY, Size, R, SX, SY, New_CX, New_CY, New_Size, New_R);
-        .abolish(swarm_data_updated(_,_,_,_,_));
-        +swarm_data_updated(LS, New_CX,New_CY, New_Size, New_R);
-        //.print("Swarm updated: Center (", New_CX, ",", New_CY, "); Size: ", New_Size, "; Radius: ", New_R );                                  //DEBUG
-    }.
+    <- //.print("updateSwarmData(",LS,")");                                                                                                 //DEBUG
+    .findall(X, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_X);
+    .findall(Y, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_Y);
+    CX = math.round(math.mean(List_of_X));
+    CY = math.round(math.mean(List_of_Y));
+    .length(LS, Len_LS);
+    .findall(R, pos_agent(X,Y)[source(S)] & .member(S,LS) & jia.get_distance(CX,CY,X,Y,R), List_of_R);   
+    R = math.round(math.max(List_of_R));
+    .abolish(swarm_data_updated(_,_,_,_,_));
+    +swarm_data_updated(LS, CX, CY, Len_LS, R);
+    //.print("Updated swarm: (", LS, ", ", CX, ", ", CY, ", ", Len_LS, ", ", R, ")");                                                       //DEBUG
+    .
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

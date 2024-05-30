@@ -16,7 +16,7 @@ mas mas_schafherde {
     agent sheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 5
+        instances: 0
         focus: world.grid
         beliefs: doflock
     }
@@ -24,16 +24,17 @@ mas mas_schafherde {
     agent nonMovingSheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 0
+        instances: 3
         focus: world.grid
+        goals: repeatPos
     }
     
-    agent houndX: hound.asl {
+    agent hound: hound.asl {
         join: world
-        instances: 5
+        instances: 3
         focus: world.grid
         roles: driver in hounds
-        //beliefs: destination(18,0)
+        goals: repeatPos
         //goals: explore
     }
 
