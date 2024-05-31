@@ -63,8 +63,52 @@ task run (type: JavaExec, dependsOn: 'classes') {
     }
     mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'mas_schafherde.jcm'
-    // jvmArgs '-Xss15m'
+    jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
     classpath sourceSets.main.runtimeClasspath
+}
+
+task simOne(type: JavaExec, dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs a single JaCaMo simulation'
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
+
+        def simulationName = project.hasProperty('s') ? project.s : null
+        if (simulationName == null) {
+            throw new GradleException("Please provide the simulation name using -Ps=<name>")
+        }
+
+        args = ["simulations/scenarios/${simulationName}.jcm"]
+        jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${simulationName}"
+    }
+    mainClass = 'jacamo.infra.JaCaMoLauncher'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task simAll(dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs multiple JaCaMo simulations consecutively'
+
+    def jcmFiles = fileTree(dir: 'simulations/scenarios', include: '*.jcm')
+
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
+    }
+
+    doLast {
+        jcmFiles.each { File configFile ->
+            println "Running simulation for ${configFile.name}"
+            javaexec {
+                mainClass = 'jacamo.infra.JaCaMoLauncher'
+                args = [configFile.path]
+                classpath = sourceSets.main.runtimeClasspath
+                jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${configFile.name}"
+            }
+            println "Finished simulation for ${configFile.name}"
+        }
+    }
 }
 
 task buildJCMDeps (type: JavaExec, dependsOn: 'classes') {
@@ -204,4 +248,6 @@ clean {
     delete 'bin'
     delete 'build'
     delete 'log'
+    delete 'simulations/results'
+    delete '.gradle'
 }
