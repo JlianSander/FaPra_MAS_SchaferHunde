@@ -4,6 +4,7 @@
 **/bin/
 **/log/
 !src/**/build/
+simulations/results/
 
 # Ignore Gradle GUI config
 gradle-app.setting
