@@ -35,9 +35,6 @@ repeated_pos(0).
 
 +!waitToMove : waitTime(Wait) <- .wait(Wait).
 
-{ include("$jacamo/templates/common-cartago.asl") }
-{ include("$jacamo/templates/common-moise.asl") }
-
 //------------------------------------------------------- repeatPos -------------------------------------------------------  
 //DEBUG: this plan should become obsolete, once the agents can actively perceive the environment they move to
 // needed to tell hounds position of non-moving sheep
@@ -54,3 +51,6 @@ repeated_pos(0).
 +!repeatPos <- true.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{ include("$jacamo/templates/common-cartago.asl") }
+{ include("$jacamo/templates/common-moise.asl") }
