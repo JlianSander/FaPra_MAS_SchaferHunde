@@ -35,7 +35,8 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-       .fail_goal(processDriving);
+        //!!search_sheep;
+        .fail_goal(processDriving);
     }
     !chooseSwarmToDrive(Swarms);
     if(swarm_chosen_to_drive(_)){
@@ -46,6 +47,7 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
         !processDriving;
     }else{
         .print("no swarm chosen");
+        //!!search_sheep;
         .fail_goal(processDriving);
     }.    
 
