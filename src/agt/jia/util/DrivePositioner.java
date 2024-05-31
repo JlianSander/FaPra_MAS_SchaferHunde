@@ -26,8 +26,9 @@ public class DrivePositioner {
         //ts.getLogger().info("--------------'positionAgent' angle_incr: " + angle_incr);                                                                               //DEBUG
 
         //get position, where the swarm is to drive to        
+        ts.getLogger().info("--------------'positionAgent' Swarm.Center: (" + swarm.center().x + "," + swarm.center().y + ")");                                     //DEBUG
         var swarmTargetLoc = swarm.getNextPositionTo(corral.center());
-        //ts.getLogger().info("--------------'positionAgent' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
+        ts.getLogger().info("--------------'positionAgent' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
 
         //get direction of the swarms desired movements
         Vector direction_swarm = new Vector(

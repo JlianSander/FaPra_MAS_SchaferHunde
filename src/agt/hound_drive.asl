@@ -3,6 +3,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
+spacing_to_sheep(2).
+
 has_enough_info(S) :- pos_agent(SX,SY)[source(S)] & corral_area(TLX,TLY,BRX,BRY).
 
 has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
@@ -43,7 +45,7 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
         ?swarm_chosen_to_drive(Swarm_Chosen);
         .print("Swarm chosen to drive: ", Swarm_Chosen);
         !driveSwarm(Swarm_Chosen);
-        .wait(50);
+        .wait(10);
         !processDriving;
     }else{
         .print("no swarm chosen");
@@ -62,8 +64,9 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     !planPositionToDrive(LS);
     ?driving_position(Driving_Position);
     jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
-    //.print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                         //DEBUG
+    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                         //DEBUG
     ?pos(ME_X, ME_Y);
+    //?spacing_to_sheep(Spacing);
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     !reachDestination(ME_NXT_X, ME_NXT_Y).
 

@@ -1,6 +1,10 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////  
 
+limit_distance_assumption_hound_driving(7).
+
+limit_number_agents_driving_swarm(3).
+
 other_hound_is_closer_to_swarm(Swarm) :- .member(S, Swarm) & other_hound_is_closer_to_sheep(S).
 
 is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) & 
@@ -12,11 +16,6 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
     swarm(Ss, CX, CY, Size, R) &
     pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
     D_ME < Limit_Distance_Driving.
-
-
-limit_distance_assumption_hound_driving(7).
-
-limit_number_agents_driving_swarm(3).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
