@@ -17,16 +17,19 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         int centerX = (int) ((NumberTerm) args[0]).solve();
         int centerY = (int) ((NumberTerm) args[1]).solve();
         int radius = (int) ((NumberTerm) args[2]).solve();
+        int positionNumber = (int) ((NumberTerm) args[3]).solve();
         var swarmCenter = new Location(centerX, centerY);
         var swarm = new SwarmManipulator(swarmCenter, radius);
+
+        
 
         var get_corral = new get_corral_area();
         get_corral.execute(ts, un, args);
         var corral = get_corral.getCorral();
 
-        var agentLoc = DrivePositioner.positionSingleAgent(swarm, corral);
+        var agentLoc = DrivePositioner.positionAgent(ts, swarm, corral, positionNumber);
 
-        return un.unifies(args[3], new NumberTermImpl(agentLoc.x))
-                && un.unifies(args[4], new NumberTermImpl(agentLoc.y));
+        return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
+                && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
     }
 }

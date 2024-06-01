@@ -37,6 +37,7 @@ repositories {
 dependencies {
     implementation('org.jacamo:jacamo:1.2')
     implementation('org.javatuples:javatuples:1.2')
+    implementation('org.apache.commons:commons-math3:3.6.1')
     implementation fileTree(dir: 'lib', include: ['*.jar'])
 }
 
