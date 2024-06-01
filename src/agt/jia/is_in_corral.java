@@ -1,7 +1,5 @@
 package jia;
 
-import java.lang.*;
-
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -23,6 +21,6 @@ public class is_in_corral extends DefaultInternalAction {
 
         //ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
 
-        return result;  
+        return result;
     }
 }
