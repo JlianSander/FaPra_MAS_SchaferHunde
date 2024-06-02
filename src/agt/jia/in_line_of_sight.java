@@ -6,6 +6,8 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Term;
 
+import util.PropertiesLoader;
+
 public class in_line_of_sight extends DefaultInternalAction {
 
     @Override
@@ -14,7 +16,8 @@ public class in_line_of_sight extends DefaultInternalAction {
         int AgY = (int) ((NumberTerm) args[1]).solve();
         int TargetX = (int) ((NumberTerm) args[2]).solve();
         int TargetY = (int) ((NumberTerm) args[3]).solve();
-        int range = (int) ((NumberTerm) args[4]).solve();
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer range = loader.getProperty("vision_range", Integer.class);
 
         // TODO: actual line of sight (respect obstacles)
 

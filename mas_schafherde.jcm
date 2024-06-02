@@ -26,24 +26,26 @@ mas mas_schafherde {
         join: world
         instances: 0
         focus: world.grid
+        goals: repeatPos
     }
     
-    agent houndX: hound.asl {
+    agent hound: hound.asl {
         join: world
-        instances: 1
+        instances: 3
         focus: world.grid
         roles: driver in hounds
-        //beliefs: destination(18,0)
+        goals: repeatPos
         //goals: explore
     }
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2, "true")
-      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt", "true")
+      artifact grid: grid.GridWorld("src/env/grid/templates/Hound_Drive_Test_7.txt", "true")
       debug
     }
 
     organisation animals : org.xml {
+        //TODO: roles of hounds
         group hounds : hounds_specs 
     }
 }

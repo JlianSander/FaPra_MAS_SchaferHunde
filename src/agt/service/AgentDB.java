@@ -13,7 +13,7 @@ public class AgentDB {
         this.agents = new ArrayList<>();
     }
 
-    public AgentInfo addAgent(int id, String name) {
+    public AgentInfo addAgent(int cartagoId, String name) {
         int agentType = -1;
         if (name.toLowerCase().contains("sheep")) {
             agentType = GridModel.SHEEP;
@@ -22,16 +22,20 @@ public class AgentDB {
         } else {
             throw new IllegalArgumentException("Invalid agent name");
         }
-        AgentInfo agent = new AgentInfo(agentType, id, name);
+        AgentInfo agent = new AgentInfo(agentType, cartagoId, name);
         agents.add(agent);
         return agent;
+    }
+
+    public boolean removeAgent(int cartagoId) {
+        return agents.removeIf(agent -> agent.getCartagoId() == cartagoId);
     }
 
     public List<AgentInfo> getAllAgents() {
         return agents;
     }
 
-    public AgentInfo getAgentById(int cartagoId) {
+    public AgentInfo getAgentByCartagoId(int cartagoId) {
         return agents.stream()
                 .filter(agent -> agent.getCartagoId() == cartagoId)
                 .findFirst()
