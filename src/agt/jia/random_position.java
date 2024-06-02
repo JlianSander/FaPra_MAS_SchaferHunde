@@ -27,6 +27,6 @@ public class random_position extends DefaultInternalAction {
             loc = new Location(x, y);
         }
 
-        return un.unifies(args[0], new NumberTermImpl(x)) && un.unifies(args[1], new NumberTermImpl(y));
+        return un.unifies(args[0], new NumberTermImpl(loc.x)) && un.unifies(args[1], new NumberTermImpl(loc.y));
     }
 }

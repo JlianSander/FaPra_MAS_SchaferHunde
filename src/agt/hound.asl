@@ -7,7 +7,8 @@ jammed(0).
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
-       !init_drive;
+       //!init_drive;
+       !start_search.
        .print("Finished init hound").
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message

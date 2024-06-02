@@ -17,7 +17,8 @@
        .wait(100);
        !reachRandomDestination(X, Y).
 
-//searching flock > 3 sheeps
+/*
+searching flock > 3 sheeps
 +!reachRandomDestination(X, Y) : pos(X, Y) 
     <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
        ?pos(AgX, AgY);
@@ -40,11 +41,12 @@
     <- .print("Reached destination: (", X, ",", Y, "), starting search for new flock.");
        !random_walk.
 
-//end searching flock >3 sheeps
+end searching flock >3 sheeps
+*/
 
-//+!reachRandomDestination(X, Y) : pos(X, Y) // reached target coordinates
-//    <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
-//       !random_walk.
++!reachRandomDestination(X, Y) : pos(X, Y) // reached target coordinates
+    <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
+       !random_walk.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Helper Actions ////////////////////////////////////////////////////////////////////////////////////////////////////
 
