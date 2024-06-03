@@ -11,13 +11,10 @@ import jason.bb.BeliefBase;
 import util.PropertiesLoader;
 
 public class init_agent extends DefaultInternalAction {
-    private static BeliefBase bb;
-    private static PropertiesLoader loader;
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) {
-        bb = ts.getAg().getBB();
-        loader = PropertiesLoader.getInstance();
+        PropertiesLoader loader = PropertiesLoader.getInstance();
 
         int waitTime = loader.getProperty("sheep_wait_duration", Integer.class);
 
@@ -28,13 +25,13 @@ public class init_agent extends DefaultInternalAction {
             case GridModel.HOUND:
                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
-                addBelief("limit_distance_assumption_hound_driving",
+                addBelief(ts, "limit_distance_assumption_hound_driving",
                         loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
 
-                addBelief("limit_number_agents_driving_swarm",
+                addBelief(ts, "limit_number_agents_driving_swarm",
                         loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
 
-                addBelief("limit_radius_swarm",
+                addBelief(ts, "limit_radius_swarm",
                         loader.getProperty("hound_limit_radius_swarm", Integer.class));
                 break;
 
@@ -42,13 +39,14 @@ public class init_agent extends DefaultInternalAction {
                 throw new RuntimeException("Invalid agent type");
         }
 
-        addBelief("waitTime", waitTime);
+        addBelief(ts, "waitTime", waitTime);
 
         return true;
     }
 
-    private static void addBelief(String name, Object... terms) {
+    private void addBelief(TransitionSystem ts, String name, Object... terms) {
         try {
+            BeliefBase bb = ts.getAg().getBB();
             LiteralImpl literal = new LiteralImpl(name);
 
             for (Object object : terms) {
