@@ -74,12 +74,9 @@ public class GridWorld extends Artifact {
     }
 
     @OPERATION
-    void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y,
-            OpFeedbackParam<Integer> waitTime) {
+    void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
         AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
         scenarioInfo.addAgent(agent);
-        waitTime.set(agent.getAgentType() == GridModel.SHEEP ? scenarioInfo.getSheepWaitTime()
-                : scenarioInfo.getHoundWaitTime());
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);

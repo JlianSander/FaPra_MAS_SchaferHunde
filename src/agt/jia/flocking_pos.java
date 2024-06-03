@@ -16,6 +16,7 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import util.PropertiesLoader;
 
 public class flocking_pos extends DefaultInternalAction {
     @Override
@@ -26,7 +27,8 @@ public class flocking_pos extends DefaultInternalAction {
         Location agLoc = new Location(AgX, AgY);
 
         // collect all neighboring cells
-        int range = 7;
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer range = loader.getProperty("vision_range", Integer.class);
         List<Location> reachableNeighbors = model.getNeighborhood(agLoc, range, loc -> {
             return model.inGrid(loc);
         });

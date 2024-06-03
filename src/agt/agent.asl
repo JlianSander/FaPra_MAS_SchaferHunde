@@ -3,10 +3,13 @@
 
 repeated_pos(0).
 
-+!start : .my_name(Me)
-    <- initAgent(Me, AgX, AgY, Wait);
++!start
+    <-
+        .my_name(Me);
+        initAgent(Me, AgX, AgY);
+        jia.util.init_agent;
         +pos(AgX,AgY);
-        +waitTime(Wait);
+        ?waitTime(Wait);
         .print(Me, " initialized at (", AgX, " , ", AgY, ") with wait time: ", Wait);
         !init.
 
