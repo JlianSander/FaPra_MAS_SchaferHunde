@@ -9,7 +9,6 @@ repeated_pos(0).
         initAgent(Me, AgX, AgY);
         +pos(AgX,AgY);
         jia.util.init_agent;
-        +doflock;
         !initBeliefs;
         .print(Me, " initialized at (", AgX, " , ", AgY, ") with wait time: ", Wait);
         !init.
