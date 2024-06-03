@@ -12,13 +12,6 @@ public class GridModelFileParser {
         }
     }
 
-    // Exception to throw when grid is not square
-    public static class NonSquareGridException extends Exception {
-        public NonSquareGridException(String message) {
-            super(message);
-        }
-    }
-
     // Reads the grid file and returns the grid content
     public static char[][] parseGridFile(String filepath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
@@ -39,18 +32,12 @@ public class GridModelFileParser {
             }
             reader.close();
 
-            if (lineCount != width) {
-                throw new NonSquareGridException(String.format(
-                        "Could not load grid template file.\nGrid is not square. Line count: %d, width: %d", lineCount,
-                        width));
-            }
-
             char[][] grid = new char[lineCount][width];
             for (int i = 0; i < lineCount; i++) {
                 grid[i] = lines.substring(i * width, (i + 1) * width).toCharArray();
             }
             return grid;
-        } catch (IOException | InconsistentGridWidthException | NonSquareGridException e) {
+        } catch (IOException | InconsistentGridWidthException e) {
             throw new RuntimeException("Error while parsing grid file", e);
         }
     }
