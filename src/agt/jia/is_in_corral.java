@@ -17,6 +17,10 @@ public class is_in_corral extends DefaultInternalAction {
         int AgY = (int) ((NumberTerm) args[1]).solve();
         Location agLoc = new Location(AgX, AgY);
 
-        return model.getObjectsAt(agLoc).contains(GridModel.CORRAL);
+        boolean result = model.getObjectsAt(agLoc).contains(GridModel.CORRAL);
+
+        //ts.getLogger().info("Result of jia 'is_in_corral' for (" + locX + ", " + locY + "): " + result);
+
+        return result;
     }
 }
