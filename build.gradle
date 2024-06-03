@@ -37,6 +37,7 @@ repositories {
 dependencies {
     implementation('org.jacamo:jacamo:1.2')
     implementation('org.javatuples:javatuples:1.2')
+    implementation('org.apache.poi:poi-ooxml:5.2.5')
     implementation fileTree(dir: 'lib', include: ['*.jar'])
 }
 
