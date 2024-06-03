@@ -1,9 +1,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////  
 
-limit_distance_assumption_hound_driving(7).
+// limit_distance_assumption_hound_driving(7).
 
-limit_number_agents_driving_swarm(3).
+// limit_number_agents_driving_swarm(3).
 
 other_hound_is_closer_to_swarm(Swarm) :- .member(S, Swarm) & other_hound_is_closer_to_sheep(S).
 
