@@ -2,20 +2,13 @@
 jammed(0).
 
 +!init : true
-    <- !initHoundBeliefs;
-       .my_name(Me);
+    <- .my_name(Me);
        .broadcast(tell, hound(Me));
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
        !init_drive;
        .print("Finished init hound").
-
-+!initHoundBeliefs
-    <- ?limit_distance_assumption_hound_driving(Limit_Distance_Driving);
-       ?limit_number_agents_driving_swarm(Limit_Num_Agts_Driving);
-       ?limit_radius_swarm(Limit_rad);
-    .
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    

@@ -8,15 +8,10 @@ repeated_pos(0).
         .my_name(Me);
         initAgent(Me, AgX, AgY);
         jia.util.init_agent;
-        !initBeliefs;
         +pos(AgX,AgY);
         ?waitTime(Wait);
         .print(Me, " initialized at (", AgX, " , ", AgY, ") with wait time: ", Wait);
         !init.
-
-+!initBeliefs
-    <- ?waitTime(Wait);
-    .
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////
 
