@@ -84,5 +84,7 @@
 
 +!get_random_position(X, Y) <- jia.random_position(X, Y). // Versuch java random_position
 
-+!get_nearest_sheep_in_range(AgX, AgY, Arg3, Arg4, Range, NearestX, NearestY) 
-    <- .external("jia.get_nearest_sheep_in_range", [AgX, AgY, Arg3, Arg4, Range, NearestX, NearestY]).
+//+!get_nearest_sheep_in_range(AgX, AgY, Arg3, Arg4, Range, NearestX, NearestY) 
+//    <- .print("Benni Attempting to find nearest sheep in range.");
+//       jia.get_nearest_sheep_in_range(AgX, AgY, Arg3, Arg4, Range, NearestX, NearestY);
+//       .print("Benni Nearest sheep coordinates: ", NearestX, ", ", NearestY).
