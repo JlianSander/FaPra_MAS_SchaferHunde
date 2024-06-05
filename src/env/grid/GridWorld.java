@@ -6,6 +6,7 @@ import cartago.*;
 import jason.environment.grid.Location;
 
 import grid.util.Pathfinder;
+import grid.util.Pathfinder.UnwalkableTargetCellException;
 import model.AgentInfo;
 import model.ScenarioInfo;
 import service.AgentDB;
@@ -15,26 +16,22 @@ import simulations.Simulation;
 public class GridWorld extends Artifact {
     private static final Logger logger = Logger.getLogger(GridWorld.class.getName());
 
-    private GridView view;
-    private AgentDB agentDB;
     private Simulation simulation;
     private ScenarioInfo scenarioInfo;
 
     void init(int size, int corralWidth, int corralHeight, boolean drawCoords) {
-        agentDB = new AgentDB();
-        GridModel.create(size, corralWidth, corralHeight, agentDB);
+        GridModel.create(size, corralWidth, corralHeight);
         commonInit(drawCoords);
     }
 
     void init(String filePath, boolean drawCoords) {
-        agentDB = new AgentDB();
-        GridModel.create(filePath, agentDB);
+        GridModel.create(filePath);
         commonInit(drawCoords);
     }
 
     private void commonInit(boolean drawCoords) {
         GridModel model = GridModel.getInstance();
-        view = new GridView(model, agentDB, drawCoords);
+        new GridView(model, drawCoords);
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
@@ -45,16 +42,22 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
-        AgentInfo agent = agentDB.getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
+        AgentInfo agent = AgentDB.getInstance().getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
         Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
         Location startPos = model.getAgPos(agent.getCartagoId());
         Location targetPos = new Location(targetX, targetY);
-        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
-        logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
-                + " calced next move -> "
-                + nextPos);
-        moveTo(agent, nextPos, newX, newY);
+        try {
+            Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+            logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
+                    + " calced next move -> "
+                    + nextPos);
+            moveTo(agent, nextPos, newX, newY);
+        } catch (UnwalkableTargetCellException e) {
+            logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
+                    + " - NO PATH FOUND. Destination is unwalkable.");
+            failed("move_failed");
+        }
     }
 
     private void moveTo(AgentInfo agent, Location location, OpFeedbackParam<Integer> newX,
@@ -63,7 +66,7 @@ public class GridWorld extends Artifact {
 
         if (!model.getObstacleMap().isObstacle(location, agent.getAgentType())) {
             int agentCartagoId = agent.getCartagoId();
-            model.setAgPos(agentDB.getAgentByCartagoId(agentCartagoId), location);
+            model.setAgPos(AgentDB.getInstance().getAgentByCartagoId(agentCartagoId), location);
             newX.set(location.x);
             newY.set(location.y);
             signal("mapChanged");
@@ -75,7 +78,7 @@ public class GridWorld extends Artifact {
 
     @OPERATION
     void initAgent(String name, OpFeedbackParam<Integer> X, OpFeedbackParam<Integer> Y) {
-        AgentInfo agent = agentDB.addAgent(this.getCurrentOpAgentId().getLocalId(), name);
+        AgentInfo agent = AgentDB.getInstance().addAgent(this.getCurrentOpAgentId().getLocalId(), name);
         scenarioInfo.addAgent(agent);
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
@@ -89,7 +92,7 @@ public class GridWorld extends Artifact {
             return;
         }
 
-        AgentInfo agent = agentDB.getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
+        AgentInfo agent = AgentDB.getInstance().getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         simulation.sheepCaptured(agent);
         if (scenarioInfo.getTotalSheepCount() == simulation.getSheepCapturedCount()) {
             signal("simulationEnded");

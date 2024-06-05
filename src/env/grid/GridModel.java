@@ -1,19 +1,23 @@
 package grid;
 
-import grid.util.GridModelFileParser;
-import grid.util.GridProcessor;
-import grid.util.ObstacleMap;
-import jason.environment.grid.Area;
-import jason.environment.grid.GridWorldModel;
-import jason.environment.grid.Location;
-import model.AgentInfo;
-import service.AgentDB;
-
+import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
+import jason.environment.grid.Area;
+import jason.environment.grid.GridWorldModel;
+import jason.environment.grid.Location;
+
+import grid.util.GridModelFileParser;
+import grid.util.GridProcessor;
+import grid.util.ObstacleMap;
+import model.AgentInfo;
+import service.AgentDB;
+
 public class GridModel extends GridWorldModel {
+    private static final Logger logger = Logger.getLogger(GridModel.class.getName());
+
     public static final int CORRAL = 16;
     public static final int SHEEP = 32;
     public static final int HOUND = 64;
@@ -21,7 +25,6 @@ public class GridModel extends GridWorldModel {
     private static GridProcessor gridProcessor;
     private static GridModel model = null;
     private ObstacleMap obstacleMap;
-    private AgentDB agentDB;
     private char[][] gridData;
 
     // Private constructor for singleton
@@ -38,10 +41,9 @@ public class GridModel extends GridWorldModel {
     }
 
     // Factory method to create the singleton instance from parameters
-    public static synchronized GridModel create(int size, int corralWidth, int corralHeight, AgentDB agentDB) {
+    public static synchronized GridModel create(int size, int corralWidth, int corralHeight) {
         model = new GridModel(size, size);
         model.obstacleMap = new ObstacleMap(size, size);
-        model.agentDB = agentDB;
 
         // Define corral
         int startX = 1;
@@ -58,20 +60,19 @@ public class GridModel extends GridWorldModel {
                 && Math.random() < obstacleDensity,
                 loc -> {
                     model.add(OBSTACLE, loc);
-                    model.obstacleMap.addObstacle(model, loc.x, loc.y);
+                    model.obstacleMap.addObstacle(loc.x, loc.y);
                 },
                 c -> false);
         return getInstance();
     }
 
     // Factory method to create the singleton instance from file
-    public static synchronized GridModel create(String filePath, AgentDB agentDB) {
+    public static synchronized GridModel create(String filePath) {
         char[][] gridData = GridModelFileParser.parseGridFile(filePath);
         int width = gridData[0].length;
         int height = gridData.length;
         model = new GridModel(width, height);
         model.obstacleMap = new ObstacleMap(width, height);
-        model.agentDB = agentDB;
         model.loadFromFile(gridData);
         return getInstance();
     }
@@ -98,7 +99,7 @@ public class GridModel extends GridWorldModel {
                         break;
                     case 'X':
                         add(OBSTACLE, x, y);
-                        obstacleMap.addObstacle(model, x, y);
+                        obstacleMap.addObstacle(x, y);
                         break;
                     case 'C':
                         add(CORRAL, x, y);
@@ -136,10 +137,6 @@ public class GridModel extends GridWorldModel {
         return obstacleMap;
     }
 
-    public AgentDB getAgentDB() {
-        return agentDB;
-    }
-
     public Location initAgent(AgentInfo agentInfo) {
         if (gridData != null) {
             for (int y = 0; y < height; y++) {
@@ -171,14 +168,10 @@ public class GridModel extends GridWorldModel {
         return location;
     }
 
-    public boolean removeAgent(AgentInfo agentInfo) {
-        Location loc = getAgPos(agentInfo.getCartagoId());
-        if (loc != null) {
-            remove(agentInfo.getAgentType(), loc.x, loc.y);
-            obstacleMap.agentMoved(this, loc, null);
-            return true;
-        }
-        return false;
+    public void removeAgent(AgentInfo agentInfo) {
+        Location oldLoc = getAgPos(agentInfo.getCartagoId());
+        remove(agentInfo.getAgentType(), oldLoc.x, oldLoc.y);
+        obstacleMap.removeAgent(oldLoc);
     }
 
     @Override
@@ -196,7 +189,7 @@ public class GridModel extends GridWorldModel {
 
     @Override
     public void setAgPos(int ag, Location l) {
-        AgentInfo agentInfo = agentDB.getAgentByCartagoId(ag);
+        AgentInfo agentInfo = AgentDB.getInstance().getAgentByCartagoId(ag);
         setAgPos(agentInfo, l);
     }
 
@@ -208,12 +201,12 @@ public class GridModel extends GridWorldModel {
     public void setAgPos(AgentInfo agentInfo, Location location) {
         Location oldLoc = this.getAgPos(agentInfo.getCartagoId());
         if (oldLoc != null) {
-            this.remove(agentInfo.getAgentType(), oldLoc.x, oldLoc.y);
+            remove(agentInfo.getAgentType(), oldLoc.x, oldLoc.y);
         }
 
-        this.agPos[agentInfo.getCartagoId()] = location;
-        this.add(agentInfo.getAgentType(), location.x, location.y);
-        obstacleMap.agentMoved(this, oldLoc, location);
+        agPos[agentInfo.getCartagoId()] = location;
+        add(agentInfo.getAgentType(), location.x, location.y);
+        obstacleMap.agentMoved(oldLoc, location);
     }
 
     public List<Location> getNeighborhood(Location loc, int range, Predicate<Location> filter) {

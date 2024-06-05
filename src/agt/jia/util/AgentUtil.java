@@ -4,6 +4,7 @@ import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Location;
 import model.AgentInfo;
+import service.AgentDB;
 
 public class AgentUtil {
     public static Location getAgentPositionFromTs(TransitionSystem ts) {
@@ -12,6 +13,6 @@ public class AgentUtil {
     }
 
     public static AgentInfo getAgentInfoFromTs(TransitionSystem ts) {
-        return GridModel.getInstance().getAgentDB().getAgentByJasonId(ts.getAgArch().getAgName());
+        return AgentDB.getInstance().getAgentByJasonId(ts.getAgArch().getAgName());
     }
 }

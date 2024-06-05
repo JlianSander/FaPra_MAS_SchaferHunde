@@ -1,4 +1,4 @@
-package jia;
+package jia.util;
 
 import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
@@ -12,13 +12,11 @@ import service.AgentDB;
 public class kill_and_decommission_agent extends kill_agent {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        String agentName = ts.getAgArch().getAgName();
-        GridModel model = GridModel.getInstance();
-        AgentDB agentDB = model.getAgentDB();
-        AgentInfo agent = agentDB.getAgentByJasonId(agentName);
+        AgentInfo agent = AgentUtil.getAgentInfoFromTs(ts);
+        String agentName = agent.getJasonId();
 
         GridModel.getInstance().removeAgent(agent);
-        agentDB.removeAgent(agent.getCartagoId());
+        AgentDB.getInstance().removeAgent(agent.getCartagoId());
 
         return super.execute(ts, un, new Term[] { new StringTermImpl(agentName) });
     }
