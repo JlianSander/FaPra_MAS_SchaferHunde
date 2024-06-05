@@ -48,7 +48,7 @@
 +!reachRandomDestination(X, Y) : pos(X, Y)   //Abruf Position des Hundes 
     <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");  
        ?pos(AgX, AgY);
-       !jia.get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);   //Abfrage ob Schwarm im Umkreis von 7 Felder ist.
+       !get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);   //Abfrage ob Schwarm im Umkreis von 7 Felder ist.
        if ( (NearestX \== -1) & (NearestY \== -1) ) {   // -1 Schwarm gefunden, nicht -1 kein Schwarm gefunden
            .print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
            !start_drive; //Schwarm gefunden und hound_drive wird 
