@@ -29,7 +29,7 @@
        !jia.get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);
        if ( (NearestX \== -1) & (NearestY \== -1) ) {
            .print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
-           !move_to_sheep(NearestX, NearestY);
+           !start_drive;
        } else {
            !random_walk
        }.
