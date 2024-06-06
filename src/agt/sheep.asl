@@ -78,10 +78,4 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
     -formerPos(X,Y);
     !!flock.
 
-+!works
-    <- .print("YEA IT WORKED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!").
-
-+!trackMove(X, Y)
-    <- true.
-
 { include("agent.asl") }
