@@ -1,8 +1,5 @@
 package jia;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -23,6 +20,7 @@ public class in_line_of_sight extends DefaultInternalAction {
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer range = loader.getProperty("vision_range", Integer.class);
 
+        // Out of range
         if (Math.abs(TargetX - AgX) > range || Math.abs(TargetY - AgY) > range) {
             return false;
         }
