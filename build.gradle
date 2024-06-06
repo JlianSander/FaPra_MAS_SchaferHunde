@@ -71,6 +71,10 @@ test {
     useJUnitPlatform()
 }
 
+tasks.processTestResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 task run (type: JavaExec, dependsOn: 'classes') {
     group       ' JaCaMo'
     description 'runs the JaCaMo application'
