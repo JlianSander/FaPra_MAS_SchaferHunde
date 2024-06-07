@@ -6,19 +6,34 @@ import service.AgentDB;
 import jason.environment.grid.GridWorldModel;
 
 import java.awt.Graphics;
+import java.awt.Image;
+import java.io.File;
 import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
+
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 
 public class GridView extends GridWorldView {
     private static final Logger logger = Logger.getLogger(GridModel.class.getName());
 
+    private Image sheepImage, houndImage;
     private boolean drawCoords;
 
     public GridView(GridWorldModel model, boolean drawCoords) {
         super(model, "Grid World", 800);
         this.drawCoords = drawCoords;
         setVisible(true);
+
+        try {
+            sheepImage = ImageIO.read(new File("src/resources/sheep.png"));
+            houndImage = ImageIO.read(new File("src/resources/hound.png"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         repaint();
         drawInitialCoordinates();
     }
@@ -55,19 +70,44 @@ public class GridView extends GridWorldView {
 
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        g.setColor(c);
-        g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
+        // g.setColor(c);
+        // g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
 
         AgentInfo agent = AgentDB.getInstance().getAgentByLocation(x, y);
         // No idea why this is needed, but a sheep is (sometimes) null, when it lands on a corral that a another sheep previously occupied
         // In any case, we just forego drawing the agent in this case, it's just for one frame anyhow
         if (agent != null) {
+            switch (agent.getAgentType()) {
+                case GridModel.SHEEP:
+                    g.drawImage(sheepImage, x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
+                            (int) (this.cellSizeH * 0.8),
+                            null);
+                    break;
+                case GridModel.HOUND:
+                    g.drawImage(houndImage, x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
+                            (int) (this.cellSizeH * 0.8),
+                            null);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid agent type");
+            }
             id = agent.getShortName();
             // if (id >= 0) {
             g.setColor(Color.black);
             this.drawString(g, x, y, this.defaultFont, String.valueOf(id));
             // }
         }
+    }
+
+    @Override
+    public void drawString(Graphics g, int x, int y, Font f, String s) {
+        g.setFont(f);
+        FontMetrics metrics = g.getFontMetrics();
+        int width = metrics.stringWidth(s);
+        int height = metrics.getHeight();
+        g.drawString(s, x * this.cellSizeW + (this.cellSizeW / 2 - width / 2),
+                // (int) ((y * this.cellSizeH + this.cellSizeH / 2 + height / 2) * 0.8));
+                y * this.cellSizeH + this.cellSizeH / 2 + height / 2);
     }
 
     public void drawFill(Graphics g, int x, int y, Color color) {
