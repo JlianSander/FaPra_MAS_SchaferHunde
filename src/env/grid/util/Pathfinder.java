@@ -40,18 +40,21 @@ public class Pathfinder {
         gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(), GridModel.getInstance().getHeight());
     }
 
-    public synchronized static Pathfinder getInstance(Integer user) {
+    public static Pathfinder getInstance(Integer user) {
         for (var entry : instances.entrySet()) {
             if (entry.getValue().compareAndSet(false, true)) {
-                entry.getKey().user = user;
-                return entry.getKey();
+                Pathfinder instance = entry.getKey();
+                instance.user = user;
+                return instance;
             }
         }
 
-        Pathfinder pf = new Pathfinder();
-        instances.put(pf, new AtomicBoolean(true));
-        pf.user = user;
-        return pf;
+        synchronized (Pathfinder.class) {
+            Pathfinder pf = new Pathfinder();
+            instances.put(pf, new AtomicBoolean(true));
+            pf.user = user;
+            return pf;
+        }
     }
 
     private void releaseInstance() {
