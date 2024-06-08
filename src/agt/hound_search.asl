@@ -34,26 +34,30 @@
            !random_walk
        }.
 
-+!reachRandomDestination(X, Y) : pos(X, Y) 
-    <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
+// Plan für das Finden der Herde und das Starten von hound_drive
++!reachRandomDestination(X, Y) : pos(X, Y)   //Abruf Position des Hundes 
+    <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");  
        ?pos(AgX, AgY);
-       !get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);
-        +!Found( (NearestX \== -1) & (NearestY \== -1) ) 
-           .print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
-           !start_drive;
-       +!random_walk. 
+       jia.get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);   //Abfrage ob Schwarm im Umkreis von 7 Felder ist.
+       if ( (NearestX \== -1) & (NearestY \== -1) ) {   // -1 kein Schwarm gefunden, nicht -1 Schwarm gefunden
+           !random_walk //Kein Schwarm gefunden und hound_drive wird 
+       } else {
+            .print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
+            !start_drive; //Schwarm gefunden und hound_drive wird 
+       }.
 */
 
 // Plan für das Finden der Herde und das Starten von hound_drive
 +!reachRandomDestination(X, Y) : pos(X, Y)   //Abruf Position des Hundes 
     <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");  
        ?pos(AgX, AgY);
-       !get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);   //Abfrage ob Schwarm im Umkreis von 7 Felder ist.
-       if ( (NearestX \== -1) & (NearestY \== -1) ) {   // -1 Schwarm gefunden, nicht -1 kein Schwarm gefunden
-           .print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
-           !start_drive; //Schwarm gefunden und hound_drive wird 
+       jia.get_nearest_sheep_in_range(AgX, AgY, 0, 0, 7, NearestX, NearestY);   //Abfrage ob Schwarm im Umkreis von 7 Felder ist.
+       .print("Benni Nearest sheep flock coordinates: (", NearestX, ", ", NearestY, ") // Result from jia.get_nearest_sheep_in_range: NearestX=", NearestX, ", NearestY=", NearestY);
+       if ( (NearestX \== -1) & (NearestY \== -1) ) {   // -1 kein Schwarm gefunden, nicht -1 Schwarm gefunden
+           !random_walk; //Kein Schwarm gefunden und hound_drive wird 
        } else {
-           !random_walk
+            //.print("Benni Found sheep flock at: (", NearestX, ",", NearestY, ")");
+            !start_drive; //Schwarm gefunden und hound_drive wird 
        }.
 
 // Plan zum Erreichen des Ziels
