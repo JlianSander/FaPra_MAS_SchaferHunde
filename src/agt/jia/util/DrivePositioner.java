@@ -15,7 +15,7 @@ public class DrivePositioner {
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
-        Integer hound_distance_to_swarm = loader.getProperty("hound_distance_to_swarm", Integer.class);
+        Integer hound_distance_to_swarm = loader.getProperty("hound_keep_distance_to_swarm", Integer.class);
         Double angle_incr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
         //ts.getLogger().info("--------------'positionAgent' angle_incr: " + angle_incr);                                                                               //DEBUG
 
@@ -34,8 +34,12 @@ public class DrivePositioner {
                 swarmTargetLoc.x - swarm.center().x,
                 swarmTargetLoc.y - swarm.center().y
         });
-        direction_swarm = direction_swarm.unitVector();
-        //ts.getLogger().info("--------------'positionAgent' swarm_direction: [" + direction_swarm.get(0) + "][" + direction_swarm.get(1) + "]");                      //DEBUG
+        //ts.getLogger().info("--------------'positionAgent' swarm_direction not normalized: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");         //DEBUG
+        if( direction_swarm.getEntry(0) != 0 || direction_swarm.getEntry(1) != 0){
+            direction_swarm = direction_swarm.unitVector();
+            //ts.getLogger().info("--------------'positionAgent' swarm_direction: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");                      //DEBUG
+        }
+        
 
         //calculate angle depending on the positionNumber
         double angle = (3 - positionNumber) * angle_incr;
@@ -54,14 +58,14 @@ public class DrivePositioner {
         //rotate direction according to angle
         // Vector direction_swarm_rotated = rotation.multiply(direction_swarm);
         RealVector direction_swarm_rotated = rotation.operate(direction_swarm);
-        //ts.getLogger().info("--------------'positionAgent' swarm_direction rotated: [" + direction_swarm_rotated.get(0) + "][" + direction_swarm_rotated.get(1) + "]");                 //DEBUG
+        //ts.getLogger().info("--------------'positionAgent' swarm_direction rotated: [" + direction_swarm_rotated.getEntry(0) + "][" + direction_swarm_rotated.getEntry(1) + "]");                 //DEBUG
 
         //calculate agents position behind the swarm
         // var agentPos = new Location(
         //         swarm.center().x
-        //                 - (int) Math.round(direction_swarm_rotated.get(0) * (swarm.radius() + hound_distance_to_swarm)),
+        //                 - (int) Math.round(direction_swarm_rotated.getEntry(0) * (swarm.radius() + hound_distance_to_swarm)),
         //         swarm.center().y - (int) Math
-        //                 .round(direction_swarm_rotated.get(1) * (swarm.radius() + hound_distance_to_swarm)));
+        //                 .round(direction_swarm_rotated.getEntry(1) * (swarm.radius() + hound_distance_to_swarm)));
         var agentPos = new Location(
                 swarm.center().x
                         - (int) Math.round(

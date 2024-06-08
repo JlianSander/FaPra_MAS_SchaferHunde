@@ -24,9 +24,9 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 +!startDrive : has_enough_info & not .desire(processDriving)
     <- !processDriving.
 
-+!startDrive : not has_enough_info <- .print("Not enough info to drive."); false. //.fail_goal(startDrive).
++!startDrive : not has_enough_info <- .print("Not enough info to drive."). //.fail_goal(startDrive).
 
-+!startDrive : .desire(processDriving) <- .print("Already started driving."); false. //.fail_goal(startDrive).       
++!startDrive : .desire(processDriving) <- .print("Already started driving."). //.fail_goal(startDrive).       
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
