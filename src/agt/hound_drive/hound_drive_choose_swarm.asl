@@ -86,7 +86,7 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
     for(.member(H_in_focus, All_Hounds)){
         ?pos_agent(HX,HY)[source(H_in_focus)];
         for(.member(Ss_2, Swarms)){
-            ?swarm(Ss_2, CX_2, CY_2, Size, R);
+            ?swarm(Ss_2, CX_2, CY_2, Size_2, R_2);
             jia.get_distance(HX,HY,CX_2,CY_2,D_Ss_2);
 
             //check if hound is within limit to drive, otherwise suspect that hound is not driving the swarm
@@ -96,7 +96,7 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
                 }else{
                     // suspect hound to drive the swarm he's closer to
                     ?hound_drives(H_in_focus, Ss_3);
-                    ?swarm(Ss_3, CX_3, CY_3, Size, R);
+                    ?swarm(Ss_3, CX_3, CY_3, Size_3, R_3);
                     jia.get_distance(HX,HY,CX_3,CY_3,D_Ss_3);
                     if(D_Ss_2 < D_Ss_3){
                         -+hound_drives(H_in_focus, Ss_2);
