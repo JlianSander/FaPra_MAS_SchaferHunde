@@ -66,9 +66,9 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                         //DEBUG
     ?pos(ME_X, ME_Y);
     ?keep_distance_to_swarm(Spacing);
-    .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing);                                              //DEBUG
+    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing);                                              //DEBUG
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, Spacing, ME_NXT_X, ME_NXT_Y);
-    .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing, " Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                     //DEBUG
+    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing, " Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                     //DEBUG
     !reachDestination(ME_NXT_X, ME_NXT_Y).
 
 -!driveSwarm(LS) <- true.

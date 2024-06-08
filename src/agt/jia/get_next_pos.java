@@ -23,12 +23,12 @@ public class get_next_pos extends DefaultInternalAction {
         var targetLoc = new Location(targetX, targetY);
 
         int spacing = (int) ((NumberTerm) args[4]).solve();
-        ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                     //DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                     //DEBUG
         Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
-        ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
         pathfinder.excludeObjects(myLoc, GridModel.SHEEP, spacing);
         Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
-        ts.getLogger().info("--------------'get_next_pos' Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                     //DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                     //DEBUG
 
         return un.unifies(args[5], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[6], new NumberTermImpl(nextPos.y));
