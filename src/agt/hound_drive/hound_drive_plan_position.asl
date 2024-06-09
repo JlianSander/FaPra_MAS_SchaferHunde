@@ -3,7 +3,7 @@
 distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
 
 distance_other_to_pos(X,Y,H, DH):- 
-    pos_agent(HX,HY)[source(H)] & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
+    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
 
 is_closer_to_pos(X,Y,H) :- 
     distance_other_to_pos(X,Y,H, DH) & 
@@ -92,18 +92,18 @@ i_am_lower_than(H):- .my_name(Me) & Me < H.
     ?swarm_data_updated(Swarm, CX,CY, Size, R);
     jia.get_pos_drive_swarm(CX, CY, R, I, POS_I_X, POS_I_Y);
     /* .print("Position to reach POS_I:(", POS_I_X, ", ", POS_I_Y, ")");                                                                                //DEBUG
-    .findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp)[source(H_tmp)], List_tmp);                                                 //DEBUG
+    .findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp, H_tmp), List_tmp);                                                 //DEBUG
     print("List_tmp: ", List_temp);                                                                                                                     //DEBUG */
-    .findall(D, .member(H2, Other_Drivers) & pos_agent(HX,HY)[source(H2)] & jia.get_distance(POS_I_X, POS_I_Y, HX, HY, D), List_Distances);
+    .findall(D, .member(H2, Other_Drivers) & pos_agent(HX2,HY2, H2) & jia.get_distance(POS_I_X, POS_I_Y, HX2, HY2, D), List_Distances);
     //.print("Distances to Pos", I, ": ", List_Distances);                                                                                              //DEBUG
     .min(List_Distances, Min_D);
-    .findall(H2, .member(H2, Other_Drivers) & pos_agent(HX,HY)[source(H2)] & jia.get_distance(POS_I_X, POS_I_Y,HX,HY,D) & D == Min_D, List_temp);
+    .findall(H3, .member(H3, Other_Drivers) & pos_agent(HX3,HY3) & jia.get_distance(POS_I_X, POS_I_Y,HX3,HY3,D3) & D3 == Min_D, List_temp);
     .nth(0, List_temp, H);
     /*.print("Other Hound with minimal distance to Pos", I, " is ", H);                                                                                 //DEBUG
     .my_name(Me);                                                                                                                                       //DEBUG
     ?pos(ME_X, ME_Y);                                                                                                                                   //DEBUG
     jia.get_distance(POS_I_X, POS_I_Y, ME_X, ME_Y, D_ME);                                                                                               //DEBUG
-    ?pos_agent(HX,HY)[source(H)];                                                                                                                       //DEBUG
+    ?pos_agent(HX,HY, H);                                                                                                                       //DEBUG
     jia.get_distance(POS_I_X, POS_I_Y, HX, HY, DH);                                                                                                     //DEBUG
     .print("My distance: ", D_ME, " Other hound ", H, "'s distance: ", DH);                                                                             //DEBUG */
     if(is_closer_to_pos(POS_I_X, POS_I_Y, H)){

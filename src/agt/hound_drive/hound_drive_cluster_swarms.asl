@@ -13,7 +13,7 @@
     }
 
     //get all known sheep, which are not in the corral, in one big swarm
-    .setof(S, pos_agent(_,_)[source(S)] & not is_in_corral(S) & sheep(S) , All_Sheep);
+    .setof(S, pos_agent(_,_, S) & not is_in_corral(S) & sheep(S) , All_Sheep);
     if(.length(All_Sheep, 0)){
         //no swarm found
         .print("no sheep found");                                                                                                            //DEBUG
@@ -51,7 +51,7 @@
         }
         for(.member(S, Set_Sheep)){
             //.print("createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");                                                            //DEBUG
-            ?pos_agent(SX,SY)[source(S)];
+            ?pos_agent(SX,SY, S);
             if(swarm_data_updated(_, _, _, _, _)){
                 ?swarm_data_updated(LS, CX,CY, Size, R);
                 //.print("swarm_data_updated:",LS,CX,CY, Size, R);                                                                          //DEBUG

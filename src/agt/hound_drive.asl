@@ -3,14 +3,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
-has_enough_info(S) :- pos_agent(SX,SY)[source(S)] & corral_area(TLX,TLY,BRX,BRY).
+has_enough_info(S) :- pos_agent(SX,SY, S) & corral_area(TLX,TLY,BRX,BRY).
 
 has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
-is_in_corral(S) :- pos_agent(SX,SY)[source(S)] & jia.is_in_corral(SX, SY).
+is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
-other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] & 
-    pos_agent(HX,HY)[source(H)] & hound(H) & jia.get_distance(SX,SY,HX,HY,DH) & 
+other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) & 
+    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(SX,SY,HX,HY,DH) & 
     pos(ME_X, ME_Y)  & jia.get_distance(SX,SY,ME_X,ME_Y,D_ME) &
     DH < D_ME.
 
@@ -84,12 +84,12 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 
 +!updateSwarmData(LS)
     <- //.print("updateSwarmData(",LS,")");                                                                                                 //DEBUG
-    .findall(X, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_X);
-    .findall(Y, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_Y);
+    .findall(X, pos_agent(X,Y, S) & .member(S,LS), List_of_X);
+    .findall(Y, pos_agent(X,Y, S) & .member(S,LS), List_of_Y);
     CX = math.round(math.mean(List_of_X));
     CY = math.round(math.mean(List_of_Y));
     .length(LS, Len_LS);
-    .findall(R, pos_agent(X,Y)[source(S)] & .member(S,LS) & jia.get_distance(CX,CY,X,Y,R), List_of_R);   
+    .findall(R, pos_agent(X,Y, S) & .member(S,LS) & jia.get_distance(CX,CY,X,Y,R), List_of_R);   
     R = math.round(math.max(List_of_R));
     .abolish(swarm_data_updated(_,_,_,_,_));
     +swarm_data_updated(LS, CX, CY, Len_LS, R);
