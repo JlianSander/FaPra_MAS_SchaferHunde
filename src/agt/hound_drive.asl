@@ -67,7 +67,7 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) &
     ?pos(ME_X, ME_Y);
     ?keep_distance_to_swarm(Spacing);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing);                                              //DEBUG
-    jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, Spacing, ME_NXT_X, ME_NXT_Y);
+    jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, Spacing, 0, ME_NXT_X, ME_NXT_Y);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing, " Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);             //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 

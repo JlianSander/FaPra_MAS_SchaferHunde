@@ -25,6 +25,7 @@ public class get_next_pos extends DefaultInternalAction {
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer hound_distance_to_swarm = loader.getProperty("hound_keep_distance_to_swarm", Integer.class);
+        Integer maxNumberCalls = loader.getProperty("hound_max_calls_new_target_pos", Integer.class);
 
         int myX = (int) ((NumberTerm) args[0]).solve();
         int myY = (int) ((NumberTerm) args[1]).solve();
@@ -35,12 +36,13 @@ public class get_next_pos extends DefaultInternalAction {
         var targetLoc = new Location(targetX, targetY);
 
         int spacing = (int) ((NumberTerm) args[4]).solve();
+        int numberCalls = (int) ((NumberTerm) args[5]).solve();
 
         //TERMINATION condition
-        if(targetLoc.equals(myLoc) || !model.inGrid(targetLoc)){
+        if(targetLoc.equals(myLoc) || !model.inGrid(targetLoc) || numberCalls > maxNumberCalls){
             // return start location, so that agent does not move
-            return un.unifies(args[5], new NumberTermImpl(myX))
-                && un.unifies(args[6], new NumberTermImpl(myY));
+            return un.unifies(args[6], new NumberTermImpl(myX))
+                && un.unifies(args[7], new NumberTermImpl(myY));
         }
 
         var sheepNearBy = model.getNeighborhood(targetLoc, hound_distance_to_swarm, loc -> {
@@ -104,6 +106,7 @@ public class get_next_pos extends DefaultInternalAction {
             Term[] newArgs = Arrays.copyOf(args, args.length);
             newArgs[2] = new NumberTermImpl(targetLoc.x);
             newArgs[3] = new NumberTermImpl(targetLoc.y);
+            newArgs[5] = new NumberTermImpl(numberCalls + 1);
 
             //RECURSIVE CALL
             //call method again to check new target position
@@ -117,8 +120,8 @@ public class get_next_pos extends DefaultInternalAction {
         Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
         //ts.getLogger().info("--------------'get_next_pos' Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                     //DEBUG
 
-        return un.unifies(args[5], new NumberTermImpl(nextPos.x))
-                && un.unifies(args[6], new NumberTermImpl(nextPos.y));
+        return un.unifies(args[6], new NumberTermImpl(nextPos.x))
+                && un.unifies(args[7], new NumberTermImpl(nextPos.y));
     }
 
 }
