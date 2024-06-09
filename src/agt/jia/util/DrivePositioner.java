@@ -25,11 +25,6 @@ public class DrivePositioner {
         //ts.getLogger().info("--------------'positionAgent' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
 
         //get direction of the swarms desired movements
-        // Vector direction_swarm = new Vector(
-        //         swarmTargetLoc.x - swarm.center().x,
-        //         swarmTargetLoc.y - swarm.center().y
-        // );
-        // direction_swarm.normalize();
         RealVector direction_swarm = MatrixUtils.createRealVector(new double[] {
                 swarmTargetLoc.x - swarm.center().x,
                 swarmTargetLoc.y - swarm.center().y
@@ -56,16 +51,10 @@ public class DrivePositioner {
         //ts.getLogger().info("--------------'positionAgent' rotation: [" + rotation_entries[0][0] + " " + rotation_entries[0][1] + "][" + rotation_entries[1][0] + " " + rotation_entries[1][1] + "]");   //DEBUG
 
         //rotate direction according to angle
-        // Vector direction_swarm_rotated = rotation.multiply(direction_swarm);
         RealVector direction_swarm_rotated = rotation.operate(direction_swarm);
         //ts.getLogger().info("--------------'positionAgent' swarm_direction rotated: [" + direction_swarm_rotated.getEntry(0) + "][" + direction_swarm_rotated.getEntry(1) + "]");                 //DEBUG
 
         //calculate agents position behind the swarm
-        // var agentPos = new Location(
-        //         swarm.center().x
-        //                 - (int) Math.round(direction_swarm_rotated.getEntry(0) * (swarm.radius() + hound_distance_to_swarm)),
-        //         swarm.center().y - (int) Math
-        //                 .round(direction_swarm_rotated.getEntry(1) * (swarm.radius() + hound_distance_to_swarm)));
         var agentPos = new Location(
                 swarm.center().x
                         - (int) Math.round(

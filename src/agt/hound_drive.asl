@@ -68,8 +68,15 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
     ?keep_distance_to_swarm(Spacing);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing);                                              //DEBUG
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, Spacing, ME_NXT_X, ME_NXT_Y);
-    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing, " Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                     //DEBUG
-    !reachDestination(ME_NXT_X, ME_NXT_Y).
+    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , " Keep distance to herd: ", Spacing, " Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);             //DEBUG
+    if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
+        //can't reach desired target 
+        //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
+        .print("Can't reach target position.");                                                                                                                                 //DEBUG
+        .wait(500); //DEBUG
+    }else{
+        !reachDestination(ME_NXT_X, ME_NXT_Y);
+    }.    
 
 -!driveSwarm(LS) <- true.
 
