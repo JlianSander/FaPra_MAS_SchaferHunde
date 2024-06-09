@@ -21,6 +21,7 @@ public class get_next_pos extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        //ts.getLogger().info("--------------'get_next_pos' ");                                                                     //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer hound_distance_to_swarm = loader.getProperty("hound_keep_distance_to_swarm", Integer.class);

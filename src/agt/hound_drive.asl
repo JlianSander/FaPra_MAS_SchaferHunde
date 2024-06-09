@@ -84,8 +84,8 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) &
 
 +!updateSwarmData(LS)
     <- //.print("updateSwarmData(",LS,")");                                                                                                 //DEBUG
-    .findall(X, pos_agent(X,Y, S) & .member(S,LS), List_of_X);
-    .findall(Y, pos_agent(X,Y, S) & .member(S,LS), List_of_Y);
+    .findall(X, pos_agent(X, Y, S) & .member(S,LS), List_of_X);
+    .findall(Y, pos_agent(X, Y, S) & .member(S,LS), List_of_Y);
     CX = math.round(math.mean(List_of_X));
     CY = math.round(math.mean(List_of_Y));
     .length(LS, Len_LS);
