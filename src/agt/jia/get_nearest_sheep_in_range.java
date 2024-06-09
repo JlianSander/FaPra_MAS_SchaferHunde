@@ -6,6 +6,11 @@ import jason.bb.BeliefBase;
 
 public class get_nearest_sheep_in_range extends DefaultInternalAction {
 
+
+    //*********** 
+    //searching for flock
+    //***********
+
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         // Get agent's current position and search range
@@ -29,7 +34,7 @@ public class get_nearest_sheep_in_range extends DefaultInternalAction {
 
         // Iterate over all beliefs to find the nearest flock of sheep
         for (Literal belief : beliefBase) {
-            if (belief.getFunctor().equals("sheep_flock") && belief.getArity() == 3) {  // Überprüft ob belief ein flock >3 und im gültigen Umkreis ist
+            if (belief.getFunctor().equals("sheep_flock") && belief.getArity() == 1) {  // Überprüft ob belief ein flock >3 und im gültigen Umkreis ist
                 Term flockX = belief.getTerm(0);  // Get X- und Y-Koordinate des flocks
                 Term flockY = belief.getTerm(1);
                 Term flockSizeTerm = belief.getTerm(2);  // Get Größe des flocks
@@ -58,12 +63,13 @@ public class get_nearest_sheep_in_range extends DefaultInternalAction {
         ts.getAg().getLogger().info("Benni Nearest flock coordinates to return: (" + nearestX + ", " + nearestY + ")");
 
         // Return nearest flock coordinates
-        boolean unifiedX = un.unifies(args[2], new NumberTermImpl(nearestX));
-        boolean unifiedY = un.unifies(args[3], new NumberTermImpl(nearestY));
+        boolean unifiedX = un.unifies(args[5], new NumberTermImpl(nearestX));
+        boolean unifiedY = un.unifies(args[6], new NumberTermImpl(nearestY));
 
         ts.getAg().getLogger().info("Benni Unification of NearestX: " + unifiedX + ", NearestX value: " + nearestX);
         ts.getAg().getLogger().info("Benni Unification of NearestY: " + unifiedY + ", NearestY value: " + nearestY);
 
-        return unifiedX && unifiedY;
+        return unifiedX && unifiedY && un.unifies(args[5], new NumberTermImpl(nearestX))
+        && un.unifies(args[6], new NumberTermImpl(nearestY));
     }
 }
