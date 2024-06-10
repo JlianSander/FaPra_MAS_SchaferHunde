@@ -75,7 +75,7 @@ public class Pathfinder {
 
     private void excludeCustomObjects() {
         for (Location location : customExcludedObjects) {
-            System.out.println("Excluding custom object at: " + location);
+            //System.out.println("Excluding custom object at: " + location);
             ds.updateCell(location.x, location.y, -1);
         }
     }
