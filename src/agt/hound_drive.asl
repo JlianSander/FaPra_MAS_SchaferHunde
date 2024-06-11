@@ -1,4 +1,4 @@
-/*
+
 +!init_drive <-
     !!processDriving.                               //DEBUG
 
@@ -102,4 +102,3 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) &
 { include("./hound_drive/hound_drive_cluster_swarms.asl")}
 { include("./hound_drive/hound_drive_choose_swarm.asl")}
 { include("./hound_drive/hound_drive_plan_position.asl")}
-*/

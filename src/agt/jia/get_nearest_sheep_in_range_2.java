@@ -1,5 +1,6 @@
 package jia;
 
+import jason.NoValueException;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 import jason.bb.BeliefBase;
@@ -39,7 +40,6 @@ public class get_nearest_sheep_in_range_2 extends DefaultInternalAction {
             if (belief.getFunctor().equals("sheep") && belief.getArity() == 1) {  // Überprüft ob belief ein Schaf ist
                 String sheepID = belief.getTerm(0).toString();
                 int[] sheepPos = getSheepPosition(ts, sheepID); // Holt die Position des Schafes
-                //int[] sheepPos = getSheepPosition(sheepID);
                 int sheepX = sheepPos[0];
                 int sheepY = sheepPos[1];
 
@@ -63,7 +63,7 @@ public class get_nearest_sheep_in_range_2 extends DefaultInternalAction {
         ts.getAg().getLogger().info("Benni Number of sheep in range: " + sheepInRangeCount);
         ts.getAg().getLogger().info("Benni Nearest sheep coordinates to return: (" + nearestX + ", " + nearestY + ")");
 
-        // If there are at least 3 sheep in range, initiate the drive (or similar logic)
+        // If there are at least 3 sheep in range,
         if (sheepInRangeCount >= 3) {
             ts.getAg().getLogger().info("Benni At least 3 sheep found in range. Initiating drive.");
         }
@@ -77,18 +77,24 @@ public class get_nearest_sheep_in_range_2 extends DefaultInternalAction {
 
         return unifiedX && unifiedY;
     }
-private int[] getSheepPosition(TransitionSystem ts, String sheepID) {
-        // Example belief representation: sheep_position(sheepID, X, Y)
+
+    private int[] getSheepPosition(TransitionSystem ts, String sheepID) {
+        //pos_agent(X, Y, sheepID)
         BeliefBase beliefBase = ts.getAg().getBB();
         for (Literal belief : beliefBase) {
-            if (belief.getFunctor().equals("sheep_position") && belief.getArity() == 3) {  // Assuming positions are stored with this functor
-                if (belief.getTerm(0).toString().equals(sheepID)) {
-                    //int posX = (int)((NumberTerm)belief.getTerm(1)).solve();
-                    //int posY = (int)((NumberTerm)belief.getTerm(2)).solve();
-                    //return new int[]{posX, posY};
+            if (belief.getFunctor().equals("pos_agent") && belief.getArity() == 3) {  //Position Schaf
+                try {
+                    int posX = (int)((NumberTerm)belief.getTerm(0)).solve();
+                    int posY = (int)((NumberTerm)belief.getTerm(1)).solve();
+                    String agentID = belief.getTerm(2).toString();
+                    if (agentID.equals(sheepID)) {
+                        return new int[]{posX, posY};
+                    }
+                } catch (NoValueException e) {
+                    ts.getAg().getLogger().info("Benni Error retrieving position for sheep " + sheepID + ": " + e.getMessage());  //Abfangbedingung
                 }
             }
         }
-        return new int[]{0, 0};  // Default value if sheep position is not found
+        return new int[]{0, 0};  // Wenn Schaf nicht gefunden wurden
     }
 }
