@@ -47,7 +47,7 @@
             !start_drive; //Schwarm gefunden und hound_drive wird 
        }.
 
-*/
+
 
 // Aufrufen get_nearest_sheep_in_range => searching sheep flock
 +!reachRandomDestination(X, Y) : pos(X, Y)   //Abruf Position des Hundes 
@@ -62,7 +62,9 @@
             !start_drive; //Schwarm gefunden und hound_drive wird 
        }.
 
-/*
+*/
+
+
 +!reachRandomDestination(X, Y) : pos(X, Y) 
     <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
        ?pos(AgX, AgY);  // Aktuelle Position des Agenten abfragen
@@ -75,7 +77,7 @@
            .print("Benni Found sheep at: (", NearestX, ",", NearestY, "), starting drive.");
            !start_drive;  // Start zum Treiben der Schafe
        }.
-*/
+
 
 
 // Plan zum Erreichen des Ziels
