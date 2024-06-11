@@ -1,5 +1,6 @@
 package grid.util;
 
+import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.ArrayList;
@@ -8,8 +9,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import dstarlite.DStarLite;
 import jason.environment.grid.Location;
+
+import dstarlite.DStarLite;
 import grid.GridModel;
 
 public class Pathfinder {
@@ -18,6 +20,14 @@ public class Pathfinder {
             super(message);
         }
     }
+
+    public class NoPathFoundException extends RuntimeException {
+        public NoPathFoundException(String message) {
+            super(message);
+        }
+    }
+
+    private static final Logger logger = Logger.getLogger(Pathfinder.class.getName());
 
     private DStarLite ds;
     private GridProcessor gridProcessor;
@@ -30,18 +40,21 @@ public class Pathfinder {
         gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(), GridModel.getInstance().getHeight());
     }
 
-    public synchronized static Pathfinder getInstance(Integer user) {
+    public static Pathfinder getInstance(Integer user) {
         for (var entry : instances.entrySet()) {
             if (entry.getValue().compareAndSet(false, true)) {
-                entry.getKey().user = user;
-                return entry.getKey();
+                Pathfinder instance = entry.getKey();
+                instance.user = user;
+                return instance;
             }
         }
 
-        Pathfinder pf = new Pathfinder();
-        instances.put(pf, new AtomicBoolean(true));
-        pf.user = user;
-        return pf;
+        synchronized (Pathfinder.class) {
+            Pathfinder pf = new Pathfinder();
+            instances.put(pf, new AtomicBoolean(true));
+            pf.user = user;
+            return pf;
+        }
     }
 
     private void releaseInstance() {
@@ -62,7 +75,7 @@ public class Pathfinder {
 
     private void excludeCustomObjects() {
         for (Location location : customExcludedObjects) {
-            System.out.println("Excluding custom object at: " + location);
+            //System.out.println("Excluding custom object at: " + location);
             ds.updateCell(location.x, location.y, -1);
         }
     }
@@ -85,13 +98,22 @@ public class Pathfinder {
         customExcludedObjects.remove(callerPosition);
     }
 
-    public Location getNextPosition(Location start, Location target) {
-        List<Location> path = getPath(start, target);
-        releaseInstance();
-        return path.size() > 1 ? path.get(1) : path.get(0);
+    public Location getNextPosition(Location start, Location target)
+            throws UnwalkableTargetCellException, NoPathFoundException {
+        try {
+            List<Location> path = getPath(start, target);
+            return path.size() > 1 ? path.get(1) : path.get(0);
+        } catch (UnwalkableTargetCellException | NoPathFoundException e) {
+            logger.info(e.getMessage());
+            logger.info("Returning start location instead");
+            return start;
+        } finally {
+            releaseInstance();
+        }
     }
 
-    private List<Location> getPath(Location start, Location target) throws UnwalkableTargetCellException {
+    private List<Location> getPath(Location start, Location target)
+            throws UnwalkableTargetCellException, NoPathFoundException {
         if (start.equals(target)) {
             return List.of(start);
         }
@@ -103,7 +125,9 @@ public class Pathfinder {
 
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
-        ds.replan();
+        if (!ds.replan()) {
+            throw new NoPathFoundException("No path found");
+        }
         return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
     }
 }

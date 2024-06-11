@@ -10,6 +10,7 @@ import java.util.List;
 
 import model.AgentInfo;
 import model.ScenarioInfo;
+import simulations.Writer.SimulationFileWriter;
 
 public class Simulation {
     private static final Logger logger = Logger.getLogger(Simulation.class.getName());

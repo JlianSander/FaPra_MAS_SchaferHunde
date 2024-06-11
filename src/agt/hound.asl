@@ -73,11 +73,13 @@ is_jammed :- jammed(J) & J > 10.
 
 //------------------------------------------------------- trackMove -------------------------------------------------------
 +!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
-    <- -+pos_agent(X ,Y)[source(S)];
+    <- .abolish(pos_agent(_ ,_, S));
+    +pos_agent(X ,Y, S);
     !handleNewSheep(S).
 
-+!trackMove(X, Y)[source(S)] : in_sight(X, Y) & hound(S)
-    <- -+pos_agent(X, Y)[source(S)].
++!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
+    <- .abolish(pos_agent(_ ,_, S));
+    +pos_agent(X ,Y, S). 
 
 +!trackMove(X, Y) <- true.
 

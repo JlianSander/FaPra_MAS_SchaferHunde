@@ -1,20 +1,22 @@
 package grid;
 
 import jason.environment.grid.GridWorldView;
+import model.AgentInfo;
 import service.AgentDB;
 import jason.environment.grid.GridWorldModel;
 
 import java.awt.Graphics;
+import java.util.logging.Logger;
 import java.awt.Color;
 import java.awt.Font;
 
 public class GridView extends GridWorldView {
-    private AgentDB agentDB; // todo
+    private static final Logger logger = Logger.getLogger(GridModel.class.getName());
+
     private boolean drawCoords;
 
-    public GridView(GridWorldModel model, AgentDB agentDB, boolean drawCoords) {
+    public GridView(GridWorldModel model, boolean drawCoords) {
         super(model, "Grid World", 800);
-        this.agentDB = agentDB;
         this.drawCoords = drawCoords;
         setVisible(true);
         repaint();
@@ -55,12 +57,17 @@ public class GridView extends GridWorldView {
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         g.setColor(c);
         g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
-        id = agentDB.getAgentByLocation(x, y).getShortName();
-        // if (id >= 0) {
-        g.setColor(Color.black);
-        this.drawString(g, x, y, this.defaultFont, String.valueOf(id));
-        // }
 
+        AgentInfo agent = AgentDB.getInstance().getAgentByLocation(x, y);
+        // No idea why this is needed, but a sheep is (sometimes) null, when it lands on a corral that a another sheep previously occupied
+        // In any case, we just forego drawing the agent in this case, it's just for one frame anyhow
+        if (agent != null) {
+            id = agent.getShortName();
+            // if (id >= 0) {
+            g.setColor(Color.black);
+            this.drawString(g, x, y, this.defaultFont, String.valueOf(id));
+            // }
+        }
     }
 
     public void drawFill(Graphics g, int x, int y, Color color) {

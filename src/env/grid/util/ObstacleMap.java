@@ -23,20 +23,23 @@ public class ObstacleMap {
         return isObstacle(loc.x, loc.y, user);
     }
 
-    public void addObstacle(GridModel model, int x, int y) {
+    public void addObstacle(int x, int y) {
         data[x][y] = true;
     }
 
-    public void agentMoved(GridModel model, Location oldLoc, Location newLoc) {
-        if (oldLoc == null && newLoc == null) {
-            throw new IllegalArgumentException("Both oldLoc and newLoc cannot be null");
+    public void agentMoved(Location oldLoc, Location newLoc) {
+        if (newLoc == null) {
+            throw new IllegalArgumentException("New location cannot be null");
         }
+        GridModel model = GridModel.getInstance();
         if (oldLoc != null) {
             data[oldLoc.x][oldLoc.y] = locIsBlocked(model.getObjectsAt(oldLoc.x, oldLoc.y), -1);
         }
-        if (newLoc != null) {
-            data[newLoc.x][newLoc.y] = locIsBlocked(model.getObjectsAt(newLoc.x, newLoc.y), -1);
-        }
+        data[newLoc.x][newLoc.y] = locIsBlocked(model.getObjectsAt(newLoc.x, newLoc.y), -1);
+    }
+
+    public void removeAgent(Location loc) {
+        data[loc.x][loc.y] = false;
     }
 
     private boolean locIsBlocked(List<Integer> objects, int user) {
