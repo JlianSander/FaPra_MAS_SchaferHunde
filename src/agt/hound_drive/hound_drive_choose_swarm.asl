@@ -12,11 +12,6 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) &
     pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
     DH < D_ME.
 
-i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_Distance_Driving) &
-    swarm(Ss, CX, CY, Size, R) &
-    pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
-    D_ME < Limit_Distance_Driving.
-
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- chooseSwarmToDrive -------------------------------------------------------
@@ -37,7 +32,7 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
         //.print("Drivers closer to swarm: ", Drivers, " Length: ", Len_Drivers, " All Drivers: ", Drivers_Debug);                                                                //DEBUG                                                                                                                                                     //DEBUG
         ?limit_number_agents_driving_swarm(Limit_Num_Agts_Driving);
         //only choose swarm to drive if agent thinks agents driving this swarm are not enough
-        if(Len_Drivers < Limit_Num_Agts_Driving & i_am_close_enough_to_swarm(Swarm_to_Evaluate)){
+        if(Len_Drivers < Limit_Num_Agts_Driving){
             if(not swarm_chosen_to_drive(_)){
                 +swarm_chosen_to_drive(Swarm_to_Evaluate);
             }else{
@@ -46,6 +41,7 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
                 //.print("Swarm_Chosen: ", Swarm_Chosen);                                                                                                                       //DEBUG
                 //choose new swarm if it contains more sheep
                 if(.length(Swarm_to_Evaluate, Len_Eval) & .length(Swarm_Chosen, Len_Chosen) & Len_Eval > Len_Chosen){
+                    //TODO Nähe zum Schwarm in Entscheidung einfließen lassen
                     -+swarm_chosen_to_drive(Swarm_to_Evaluate);
                     //.print("Driving new swarm, since this one has more members.");                                                                                            //DEBUG
                 }else{
