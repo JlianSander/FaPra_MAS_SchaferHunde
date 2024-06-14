@@ -24,8 +24,8 @@ public class get_next_pos extends DefaultInternalAction {
         //ts.getLogger().info("--------------'get_next_pos' ");                                                                     //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
-        Integer hound_distance_to_swarm = loader.getProperty("hound_keep_distance_to_swarm", Integer.class);
         Integer maxNumberCalls = loader.getProperty("hound_max_calls_new_target_pos", Integer.class);
+        Integer keepDistanceToSheep = loader.getProperty("hound_keep_distance_to_sheep", Integer.class);
 
         int myX = (int) ((NumberTerm) args[0]).solve();
         int myY = (int) ((NumberTerm) args[1]).solve();
@@ -35,17 +35,16 @@ public class get_next_pos extends DefaultInternalAction {
         int targetY = (int) ((NumberTerm) args[3]).solve();
         var targetLoc = new Location(targetX, targetY);
 
-        int spacing = (int) ((NumberTerm) args[4]).solve();
-        int numberCalls = (int) ((NumberTerm) args[5]).solve();
+        int numberCalls = (int) ((NumberTerm) args[4]).solve();
 
         //TERMINATION condition
         if(targetLoc.equals(myLoc) || !model.inGrid(targetLoc) || numberCalls > maxNumberCalls){
             // return start location, so that agent does not move
-            return un.unifies(args[6], new NumberTermImpl(myX))
-                && un.unifies(args[7], new NumberTermImpl(myY));
+            return un.unifies(args[5], new NumberTermImpl(myX))
+                && un.unifies(args[6], new NumberTermImpl(myY));
         }
 
-        var sheepNearBy = model.getNeighborhood(targetLoc, hound_distance_to_swarm, loc -> {
+        var sheepNearBy = model.getNeighborhood(targetLoc, keepDistanceToSheep, loc -> {
             List<Integer> objects = model.getObjectsAt(loc);
             return objects.contains(GridModel.SHEEP) ;
         });
@@ -103,25 +102,24 @@ public class get_next_pos extends DefaultInternalAction {
             }
 
             //change arguments for recursive call
-            Term[] newArgs = Arrays.copyOf(args, args.length);
-            newArgs[2] = new NumberTermImpl(targetLoc.x);
-            newArgs[3] = new NumberTermImpl(targetLoc.y);
-            newArgs[5] = new NumberTermImpl(numberCalls + 1);
+            args[2] = new NumberTermImpl(targetLoc.x);
+            args[3] = new NumberTermImpl(targetLoc.y);
+            args[5] = new NumberTermImpl(numberCalls + 1);
 
             //RECURSIVE CALL
             //call method again to check new target position
-            return execute(ts, un, newArgs);
+            return execute(ts, un, args);
+        }else{
+            //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                        //DEBUG
+            Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
+            //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
+            pathfinder.excludeObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
+            Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
+            ts.getLogger().info("--------------'get_next_pos' Target: (" + targetLoc.x + "," + targetLoc.y  + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                                            //DEBUG
+
+            return un.unifies(args[5], new NumberTermImpl(nextPos.x))
+                    && un.unifies(args[6], new NumberTermImpl(nextPos.y));
         }
-
-        //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                     //DEBUG
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
-        //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
-        pathfinder.excludeObjects(myLoc, GridModel.SHEEP, spacing);
-        Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
-        ts.getLogger().info("--------------'get_next_pos' Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                     //DEBUG
-
-        return un.unifies(args[6], new NumberTermImpl(nextPos.x))
-                && un.unifies(args[7], new NumberTermImpl(nextPos.y));
     }
 
 }
