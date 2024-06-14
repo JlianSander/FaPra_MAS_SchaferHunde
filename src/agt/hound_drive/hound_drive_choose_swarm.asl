@@ -53,11 +53,11 @@ i_am_close_enough_to_swarm(Ss):- limit_distance_assumption_hound_driving(Limit_D
                 }
             }
         } else{
-            if( i_am_close_enough_to_swarm(Swarm_to_Evaluate)){
+            /* if( i_am_close_enough_to_swarm(Swarm_to_Evaluate)){
                 //.print("Not driving swarm ", Swarm_to_Evaluate, " since it has enough drivers: ", Len_Drivers);                                                                 //DEBUG
             }else{
                 //.print("I'm not close enough to drive the swarm: ", Swarm_to_Evaluate);                                                                                         //DEBUG
-            }            
+            }  */           
         }
     }
     

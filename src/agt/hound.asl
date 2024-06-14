@@ -18,9 +18,8 @@ in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 
 is_jammed :- jammed(J) & J > 10.
 
-//+pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
-//+pos_agent(X,Y,S) : sheep(S) <- !!startDrive.
-+pos_agent(X,Y,S) <- .print("new pos_agent").
++pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
+
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
@@ -69,20 +68,12 @@ is_jammed :- jammed(J) & J > 10.
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 
 +!perceiveSurrounding 
-    <- .print("perceiveSurrounding");
+    <- //.print("perceiveSurrounding");
     jia.look_around;
     ?wait_perception(W);
     .wait(W);
     !!perceiveSurrounding.
 
-+!test 
-    <- ?limit_radius_swarm(Limit_rad);
-    .print("Limit radius swarm: ", Limit_rad);
-    !!startDrive; 
-    .wait(500); 
-    !!test.
-
-+limit_radius_swarm(X) <- .print("new limit radius swarm").
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 { include("agent.asl") }
