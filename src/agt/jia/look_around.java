@@ -60,7 +60,7 @@ public class look_around extends DefaultInternalAction{
                 }
                 
                 ts.getAg().getLogger().info("add position of agent " + seenAgent.getJasonId());                                                     //DEBUG
-                BeliefBaseManager.addBelief(ts, "pos_agent", null, loc.x, loc.y, new Atom(seenAgent.getJasonId()));
+                BeliefBaseManager.addBelief(ts, "pos_agent", new Atom("percept"), loc.x, loc.y, new Atom(seenAgent.getJasonId()));
             }
         }
 

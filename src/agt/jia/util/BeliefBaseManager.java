@@ -39,7 +39,8 @@ public class BeliefBaseManager {
                 }
             }
             if(source != null){
-                literal.addAnnot(source);
+                Term TSource = Pred.createSource(source);
+                literal.addAnnot(TSource);
             }
             agent.addBel(literal);
         } catch (Exception e) {
