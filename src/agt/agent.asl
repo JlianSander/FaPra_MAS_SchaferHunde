@@ -32,23 +32,12 @@ all_sheep_names([]).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* +pos(X,Y) <- 
-    !broadCastPos(X,Y). */
-
 //------------------------------------------------------- Send to agent list -------------------------------------------------------
 
 +!sendToListOfAgents([], Atom, Msg).
 +!sendToListOfAgents([X|Ls], Atom, Msg)
     <- .send(X, Atom, Msg);
        !sendToListOfAgents(Ls, Atom, Msg).
-
-/* //------------------------------------------------------- broadcastPos -------------------------------------------------------
-
-+!broadCastPos(X,Y) : all_hound_names(AH)
-    <- .my_name(ID);
-        // .broadcast(achieve, trackMove(X,Y));
-        !sendToListOfAgents(AH, achieve, trackMove(X,Y));
-        .print(ID," moves to: (", X," , ", Y, ")"). */
 
 //------------------------------------------------------- updatePos -------------------------------------------------------   
 
@@ -60,21 +49,6 @@ all_sheep_names([]).
 //------------------------------------------------------- waitToMove -------------------------------------------------------   
 
 +!waitToMove : waitTime(Wait) <- .wait(Wait).
-
-/* //------------------------------------------------------- repeatPos -------------------------------------------------------  
-//DEBUG: this plan should become obsolete, once the agents can actively perceive the environment they move to
-// needed to tell hounds position of non-moving sheep
-+!repeatPos : not pos(X,Y)
-    <- .wait(1000);
-    !!repeatPos.
-
-+!repeatPos : pos(X,Y) & repeated_pos(I) & I < 1
-    <- !broadCastPos(X,Y);
-    -+repeated_pos(I + 1);
-    .wait(1000);
-    !!repeatPos.
-
-+!repeatPos <- true. */
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

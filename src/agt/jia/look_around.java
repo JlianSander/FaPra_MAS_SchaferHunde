@@ -6,6 +6,7 @@ import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.StringTerm;
@@ -47,18 +48,19 @@ public class look_around extends DefaultInternalAction{
                         try {
                             int posX = (int)((NumberTerm)belief.getTerm(0)).solve();
                             int posY = (int)((NumberTerm)belief.getTerm(1)).solve();
-                            String agentID = ((StringTerm)belief.getTerm(2)).getString();
+                            String agentID = ((Atom)belief.getTerm(2)).toString();
                             if (agentID.equals(seenAgent.getJasonId()) || posX == loc.x && posY == loc.y) {
                                 //other belief about same agent or belief about some other agent, who was thouhgt to be on this position
                                 BeliefBaseManager.removeBelief(ts, belief);
                             }
                         } catch (NoValueException e) {
-                            ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());  //Abfangbedingung
+                            ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());
                         }
                     }
                 }
                 
-                BeliefBaseManager.addBelief(ts, "pos_agent", loc.x, loc.y, seenAgent.getJasonId());
+                ts.getAg().getLogger().info("add position of agent " + seenAgent.getJasonId());                                                     //DEBUG
+                BeliefBaseManager.addBelief(ts, "pos_agent", null, loc.x, loc.y, new Atom(seenAgent.getJasonId()));
             }
         }
 

@@ -3,21 +3,26 @@ package jia.util;
 import java.lang.Iterable;
 import java.util.Iterator;
 
+import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
+import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
+import jason.stdlib.add_nested_source;
 
 public class BeliefBaseManager {
 
-    public static void addBelief(TransitionSystem ts, String name, Object... terms) {
+    public static void addBelief(TransitionSystem ts, String name, Atom source, Object... terms) {
         try {
-            BeliefBase bb = ts.getAg().getBB();
+            //BeliefBase bb = ts.getAg().getBB();
+            Agent agent = ts.getAg();
             LiteralImpl literal = new LiteralImpl(name);
 
             for (Object object : terms) {
@@ -27,12 +32,16 @@ public class BeliefBaseManager {
                     literal.addTerm(new NumberTermImpl((Double) object));
                 } else if (object instanceof String){
                     literal.addTerm(new StringTermImpl((String) object));
+                }else if (object instanceof Atom){
+                    literal.addTerm((Atom) object);
                 }else{
                     throw new Exception("Invalid object type");
                 }
             }
-
-            bb.add(literal);
+            if(source != null){
+                literal.addAnnot(source);
+            }
+            agent.addBel(literal);
         } catch (Exception e) {
             e.printStackTrace();
         }

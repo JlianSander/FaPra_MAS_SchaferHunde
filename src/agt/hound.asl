@@ -19,7 +19,8 @@ in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 is_jammed :- jammed(J) & J > 10.
 
 //+pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
-+pos_agent(X,Y,S) : sheep(S) <- !!startDrive.
+//+pos_agent(X,Y,S) : sheep(S) <- !!startDrive.
++pos_agent(X,Y,S) <- .print("new pos_agent").
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
@@ -65,31 +66,23 @@ is_jammed :- jammed(J) & J > 10.
     !waitToMove;
     !makeStepTowards.     //retry making step 
 
-/* //------------------------------------------------------- handleNewSheep -------------------------------------------------------
-@handleNewSheep_target[atomic]
-+!handleNewSheep(A) <- .print("handleNewSheep: ", A);                                                                                         
-    !!startDrive. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
-
-//------------------------------------------------------- trackMove -------------------------------------------------------
-+!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
-    <- .abolish(pos_agent(_ ,_, S));
-    +pos_agent(X ,Y, S);
-    !handleNewSheep(S).
-
-+!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
-    <- .abolish(pos_agent(_ ,_, S));
-    +pos_agent(X ,Y, S). 
-
-+!trackMove(X,Y) <- true. */
-
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 
-+!perceiveSurrounding <- .print("perceiveSurrounding");
++!perceiveSurrounding 
+    <- .print("perceiveSurrounding");
     jia.look_around;
     ?wait_perception(W);
     .wait(W);
     !!perceiveSurrounding.
 
++!test 
+    <- ?limit_radius_swarm(Limit_rad);
+    .print("Limit radius swarm: ", Limit_rad);
+    !!startDrive; 
+    .wait(500); 
+    !!test.
+
++limit_radius_swarm(X) <- .print("new limit radius swarm").
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 { include("agent.asl") }
