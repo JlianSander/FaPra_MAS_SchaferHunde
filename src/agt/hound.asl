@@ -8,6 +8,7 @@ jammed(0).
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
        !init_drive;
+       !!perceiveSurrounding;
        .print("Finished init hound").
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
@@ -16,6 +17,8 @@ jammed(0).
 in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 
 is_jammed :- jammed(J) & J > 10.
+
++pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,22 +65,15 @@ is_jammed :- jammed(J) & J > 10.
     !waitToMove;
     !makeStepTowards.     //retry making step 
 
-//------------------------------------------------------- handleNewSheep -------------------------------------------------------
-@handleNewSheep_target[atomic]
-+!handleNewSheep(A) <- .print("handleNewSheep: ", A);                                                                                         
-    !!startDrive. //TODO:  ersetzen durch Plan zum einschätzen der Lage, Hund sollte nicht direkt erst besten Schaf hinterher jagen / Ist Treiben noch sinnvoll? / Ist Treiben sinnvoll geworden?
+//------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 
-//------------------------------------------------------- trackMove -------------------------------------------------------
-+!trackMove(X, Y)[source(S)] : in_sight(X,Y) & sheep(S) //only observe sheep
-    <- .abolish(pos_agent(_ ,_, S));
-    +pos_agent(X ,Y, S);
-    !handleNewSheep(S).
++!perceiveSurrounding 
+    <- //.print("perceiveSurrounding");
+    jia.look_around;
+    ?wait_perception(W);
+    .wait(W);
+    !!perceiveSurrounding.
 
-+!trackMove(X, Y)[source(S)] : in_sight(X,Y) & hound(S)
-    <- .abolish(pos_agent(_ ,_, S));
-    +pos_agent(X ,Y, S). 
-
-+!trackMove(X,Y) <- true.
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 { include("agent.asl") }

@@ -26,7 +26,6 @@ mas mas_schafherde {
         join: world
         instances: 0
         focus: world.grid
-        goals: repeatPos
     }
     
     agent hound: hound.asl {
@@ -34,8 +33,7 @@ mas mas_schafherde {
         instances: 5
         focus: world.grid
         roles: driver in hounds
-        goals: repeatPos
-        //goals: explore
+        goals: test
     }
 
     workspace world {
