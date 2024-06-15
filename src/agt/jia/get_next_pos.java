@@ -35,28 +35,42 @@ public class get_next_pos extends DefaultInternalAction {
         int targetY = (int) ((NumberTerm) args[3]).solve();
         var targetLoc = new Location(targetX, targetY);
 
-        int numberCalls = (int) ((NumberTerm) args[4]).solve();
+        Location validTarget = calculateValidTargetRecursiv(model, maxNumberCalls, keepDistanceToSheep, myLoc, targetLoc, 0);
+        //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                        //DEBUG
+        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
+        //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
+        pathfinder.excludeObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
+        Location nextPos = pathfinder.getNextPosition(myLoc, validTarget);
+        //ts.getLogger().info("--------------'get_next_pos' valid Target: (" + validTarget.x + "," + validTarget.y  + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");           //DEBUG
+        return un.unifies(args[4], new NumberTermImpl(nextPos.x))
+                    && un.unifies(args[5], new NumberTermImpl(nextPos.y));
+    }
 
+    private Location calculateValidTargetRecursiv(GridModel model, Integer maxNumberCalls, Integer keepDistanceToSheep, Location myLoc, Location desiredTarget, int numberCalls){
         //TERMINATION condition
-        if(targetLoc.equals(myLoc) || !model.inGrid(targetLoc) || numberCalls > maxNumberCalls){
+        if(desiredTarget.equals(myLoc) || !model.inGrid(desiredTarget) || numberCalls > maxNumberCalls){
             // return start location, so that agent does not move
-            return un.unifies(args[5], new NumberTermImpl(myX))
-                && un.unifies(args[6], new NumberTermImpl(myY));
+            return myLoc;
         }
 
-        var sheepNearBy = model.getNeighborhood(targetLoc, keepDistanceToSheep, loc -> {
+        var sheepNearBy = model.getNeighborhood(desiredTarget, keepDistanceToSheep, loc -> {
             List<Integer> objects = model.getObjectsAt(loc);
             return objects.contains(GridModel.SHEEP) ;
         });
         
-        if(!model.isFree(targetLoc) || !sheepNearBy.isEmpty()){
-            //target position is no valid and needs to change
-            if(!model.isFree(targetLoc)){
+        if(model.isFree(desiredTarget) && sheepNearBy.isEmpty()){
+            return desiredTarget;
+        }else{
+            //target position is not valid and needs to change
+            //calculate a new target position, which is supposedly valid
+            Location calculatedNewTarget;
+            
+            if(!model.isFree(desiredTarget)){
                 //target position itself is not valid    
                 //calculate direction towards the target
                 RealVector directionToTarget = MatrixUtils.createRealVector(new double[] {
-                    targetLoc.x - myLoc.x,
-                    targetLoc.y - myLoc.y
+                    desiredTarget.x - myLoc.x,
+                    desiredTarget.y - myLoc.y
                 });
     
                 if( directionToTarget.getEntry(0) != 0 || directionToTarget.getEntry(1) != 0){
@@ -66,11 +80,11 @@ public class get_next_pos extends DefaultInternalAction {
                 RealVector directionAwayFromTarget =  directionToTarget.mapMultiply(-1);
     
                 //calculate new target position
-                targetLoc = new Location(
-                    targetLoc.x
+                calculatedNewTarget = new Location(
+                    desiredTarget.x
                         + (int) Math.round(
                             directionAwayFromTarget.getEntry(0) * 1),
-                    targetLoc.y 
+                    desiredTarget.y 
                         + (int) Math.round(
                             directionAwayFromTarget.getEntry(1) * 1));
     
@@ -81,8 +95,8 @@ public class get_next_pos extends DefaultInternalAction {
 
                 //calculate direction towards the first sheep
                 RealVector directionToSheep = MatrixUtils.createRealVector(new double[] {
-                    locSheep.x - targetLoc.x,
-                    locSheep.y - targetLoc.y
+                    locSheep.x - desiredTarget.x,
+                    locSheep.y - desiredTarget.y
                 });
 
                 if( directionToSheep.getEntry(0) != 0 || directionToSheep.getEntry(1) != 0){
@@ -92,34 +106,18 @@ public class get_next_pos extends DefaultInternalAction {
                 RealVector directionAwayFromSheep =  directionToSheep.mapMultiply(-1);
 
                 //calculate new target position
-                targetLoc = new Location(
-                    targetLoc.x
+                calculatedNewTarget = new Location(
+                    desiredTarget.x
                         + (int) Math.round(
                             directionAwayFromSheep.getEntry(0) * 1),
-                    targetLoc.y 
+                    desiredTarget.y 
                         + (int) Math.round(
                             directionAwayFromSheep.getEntry(1) * 1));
             }
 
-            //change arguments for recursive call
-            args[2] = new NumberTermImpl(targetLoc.x);
-            args[3] = new NumberTermImpl(targetLoc.y);
-            args[5] = new NumberTermImpl(numberCalls + 1);
-
             //RECURSIVE CALL
             //call method again to check new target position
-            return execute(ts, un, args);
-        }else{
-            //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                                        //DEBUG
-            Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
-            //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                                     //DEBUG
-            pathfinder.excludeObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
-            Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
-            ts.getLogger().info("--------------'get_next_pos' Target: (" + targetLoc.x + "," + targetLoc.y  + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                                            //DEBUG
-
-            return un.unifies(args[5], new NumberTermImpl(nextPos.x))
-                    && un.unifies(args[6], new NumberTermImpl(nextPos.y));
+            return calculateValidTargetRecursiv(model, maxNumberCalls, keepDistanceToSheep, myLoc, calculatedNewTarget, numberCalls++);
         }
     }
-
 }

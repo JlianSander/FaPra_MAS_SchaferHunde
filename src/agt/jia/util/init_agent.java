@@ -37,6 +37,9 @@ public class init_agent extends DefaultInternalAction {
                 BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
                     loader.getProperty("hound_wait_between_driving", Integer.class));
 
+                BeliefBaseManager.addBelief(ts, "wait_cant_reach_driving_pos", null,
+                    loader.getProperty("hound_wait_cant_reach_driving_pos", Integer.class));
+
                 BeliefBaseManager.addBelief(ts, "wait_perception", null,
                     loader.getProperty("hound_wait_perception", Integer.class));
                 break;
