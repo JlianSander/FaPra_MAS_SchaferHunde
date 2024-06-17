@@ -36,7 +36,7 @@
            !random_walk;  // Fortsetzung random_walk
        } else {  // Schafe gefunden
            .print("Benni Found sheep at: (", NearestX, ",", NearestY, "), starting drive.");
-           !init_drive;  // Start zum Treiben der Schafe
+           !!startDrive;  // Start zum Treiben der Schafe
        }.
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
@@ -70,5 +70,5 @@
 
 +!get_random_position(X, Y) <- jia.random_position(X, Y). 
 
-{ include("hound_drive.asl") }
+
 

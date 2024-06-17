@@ -86,7 +86,8 @@ public class get_nearest_sheep_in_range_2 extends DefaultInternalAction {
                 try {
                     int posX = (int)((NumberTerm)belief.getTerm(0)).solve();
                     int posY = (int)((NumberTerm)belief.getTerm(1)).solve();
-                    String agentID = belief.getTerm(2).toString();
+                    //String agentID = belief.getTerm(2).toString();
+                    String agentID = ((Atom)belief.getTerm(2)).toString();
                     if (agentID.equals(sheepID)) {
                         return new int[]{posX, posY};
                     }
