@@ -9,7 +9,7 @@ import jason.environment.grid.Area;
 import grid.GridModel;
 import util.PropertiesLoader;
 
-public class DrivePositioner {
+public class DriveStrategy_1 {
 
     public static Location positionAgent(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG

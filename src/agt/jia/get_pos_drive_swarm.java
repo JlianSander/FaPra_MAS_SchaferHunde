@@ -1,6 +1,6 @@
 package jia;
 
-import jia.util.DrivePositioner;
+import jia.util.DriveStrategy_1;
 import jia.util.SwarmManipulator;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -27,7 +27,7 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         get_corral.execute(ts, un, args);
         var corral = get_corral.getCorral();
 
-        var agentLoc = DrivePositioner.positionAgent(ts, swarm, corral, positionNumber);
+        var agentLoc = DriveStrategy_1.positionAgent(ts, swarm, corral, positionNumber);
 
         return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
                 && un.unifies(args[5], new NumberTermImpl(agentLoc.y));

@@ -33,7 +33,6 @@ mas mas_schafherde {
         instances: 5
         focus: world.grid
         roles: driver in hounds
-        goals: test
     }
 
     workspace world {

@@ -7,7 +7,7 @@
 
 other_hound_is_closer_to_swarm(Swarm) :- .member(S, Swarm) & other_hound_is_closer_to_sheep(S).
 
-is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) & 
+is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) & 
     pos_agent(HX,HY, H) & hound(H) & jia.get_distance(CX,CY,HX,HY,DH) & 
     pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
     DH < D_ME.
@@ -24,7 +24,7 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) &
 
     for(.member(Swarm_to_Evaluate, Swarms)){
         //.print(Swarm_to_Evaluate, " of ", Swarms);                                                                                                                              //DEBUG
-        //?swarm(Swarm_to_Evaluate, CX, CY, Size, R);                                                                                                                             //DEBUG
+        //?swarm(Swarm_to_Evaluate, CX, CY, R);                                                                                                                             //DEBUG
         //.print("Swarm: ", Swarm_to_Evaluate, " Center: (", CX, ",", XY, ")");                                                                                                   //DEBUG
         .setof(H, hound_drives(H, Swarm_to_Evaluate) & is_closer_to_swarm(H, Swarm_to_Evaluate), Drivers);
         .length(Drivers, Len_Drivers);
@@ -76,13 +76,13 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) &
     //get all hounds, of which their positions are known and all known swarms of sheep
     .setof(H, pos_agent(_,_, H) & hound(H) , All_Hounds);
     //.print("All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
-    .findall(Ss, swarm(Ss, _, _, _, _), Swarms);
+    .findall(Ss, swarm(Ss, _, _, _), Swarms);
     //.print("All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
     ?limit_distance_assumption_hound_driving(Limit_Distance_Driving);
     for(.member(H_in_focus, All_Hounds)){
         ?pos_agent(HX,HY, H_in_focus);
         for(.member(Ss_2, Swarms)){
-            ?swarm(Ss_2, CX_2, CY_2, Size_2, R_2);
+            ?swarm(Ss_2, CX_2, CY_2, R_2);
             jia.get_distance(HX,HY,CX_2,CY_2,D_Ss_2);
 
             //check if hound is within limit to drive, otherwise suspect that hound is not driving the swarm
@@ -92,7 +92,7 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, Size, R) &
                 }else{
                     // suspect hound to drive the swarm he's closer to
                     ?hound_drives(H_in_focus, Ss_3);
-                    ?swarm(Ss_3, CX_3, CY_3, Size_3, R_3);
+                    ?swarm(Ss_3, CX_3, CY_3, R_3);
                     jia.get_distance(HX,HY,CX_3,CY_3,D_Ss_3);
                     if(D_Ss_2 < D_Ss_3){
                         -+hound_drives(H_in_focus, Ss_2);
