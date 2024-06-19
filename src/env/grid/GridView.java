@@ -2,7 +2,9 @@ package grid;
 
 import jason.environment.grid.GridWorldView;
 import model.AgentInfo;
+import model.AgentInfo.Facing;
 import service.AgentDB;
+import util.PropertiesLoader;
 import jason.environment.grid.GridWorldModel;
 
 import java.awt.Graphics;
@@ -19,7 +21,8 @@ import java.awt.FontMetrics;
 public class GridView extends GridWorldView {
     private static final Logger logger = Logger.getLogger(GridModel.class.getName());
 
-    private Image sheepImage, houndImage;
+    private Image[] sheepImages = new Image[2];
+    private Image[] houndImages = new Image[2];
     private boolean drawCoords;
 
     public GridView(GridWorldModel model, boolean drawCoords) {
@@ -27,11 +30,17 @@ public class GridView extends GridWorldView {
         this.drawCoords = drawCoords;
         setVisible(true);
 
-        try {
-            sheepImage = ImageIO.read(new File("src/resources/sheep.png"));
-            houndImage = ImageIO.read(new File("src/resources/hound.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Boolean loadIcons = loader.getProperty("print_icons", Boolean.class);
+        if (loadIcons) {
+            try {
+                sheepImages[0] = ImageIO.read(new File("src/resources/sheep.png"));
+                sheepImages[1] = ImageIO.read(new File("src/resources/sheep-flipped.png"));
+                houndImages[0] = ImageIO.read(new File("src/resources/hound.png"));
+                houndImages[1] = ImageIO.read(new File("src/resources/hound-flipped.png"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         repaint();
@@ -70,32 +79,41 @@ public class GridView extends GridWorldView {
 
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        // g.setColor(c);
-        // g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
-
         AgentInfo agent = AgentDB.getInstance().getAgentByLocation(x, y);
         // No idea why this is needed, but a sheep is (sometimes) null, when it lands on a corral that a another sheep previously occupied
         // In any case, we just forego drawing the agent in this case, it's just for one frame anyhow
         if (agent != null) {
-            switch (agent.getAgentType()) {
-                case GridModel.SHEEP:
-                    g.drawImage(sheepImage, x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
-                            (int) (this.cellSizeH * 0.8),
-                            null);
-                    break;
-                case GridModel.HOUND:
-                    g.drawImage(houndImage, x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
-                            (int) (this.cellSizeH * 0.8),
-                            null);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid agent type");
-            }
-            id = agent.getShortName();
+            drawAgentIcon(g, agent, c, x, y);
+        }
+    }
+
+    private void drawAgentIcon(Graphics g, AgentInfo agent, Color c, int x, int y) {
+        if (sheepImages[0] == null) {
+            g.setColor(c);
+            g.fillOval(x * this.cellSizeW + 2, y * this.cellSizeH + 2, this.cellSizeW - 4, this.cellSizeH - 4);
+            Integer id = agent.getShortName();
             // if (id >= 0) {
             g.setColor(Color.black);
             this.drawString(g, x, y, this.defaultFont, String.valueOf(id));
             // }
+            return;
+        }
+
+        int facing = agent.getFacing() == Facing.RIGHT ? 0 : 1;
+
+        switch (agent.getAgentType()) {
+            case GridModel.SHEEP:
+                g.drawImage(sheepImages[facing], x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
+                        (int) (this.cellSizeH * 0.8),
+                        null);
+                break;
+            case GridModel.HOUND:
+                g.drawImage(houndImages[facing], x * this.cellSizeW, y * this.cellSizeH, this.cellSizeW,
+                        (int) (this.cellSizeH * 0.8),
+                        null);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid agent type");
         }
     }
 

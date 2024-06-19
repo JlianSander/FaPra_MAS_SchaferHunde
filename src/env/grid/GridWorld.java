@@ -52,7 +52,7 @@ public class GridWorld extends Artifact {
             logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
                     + " calced next move -> "
                     + nextPos);
-            moveTo(agent, nextPos, newX, newY);
+            moveTo(agent, startPos, nextPos, newX, newY);
         } catch (UnwalkableTargetCellException e) {
             logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos
                     + " - NO PATH FOUND. Destination is unwalkable.");
@@ -60,15 +60,16 @@ public class GridWorld extends Artifact {
         }
     }
 
-    private void moveTo(AgentInfo agent, Location location, OpFeedbackParam<Integer> newX,
+    private void moveTo(AgentInfo agent, Location currentLoc, Location targetLoc, OpFeedbackParam<Integer> newX,
             OpFeedbackParam<Integer> newY) {
         GridModel model = GridModel.getInstance();
 
-        if (!model.getObstacleMap().isObstacle(location, agent.getAgentType())) {
+        if (!model.getObstacleMap().isObstacle(targetLoc, agent.getAgentType())) {
             int agentCartagoId = agent.getCartagoId();
-            model.setAgPos(AgentDB.getInstance().getAgentByCartagoId(agentCartagoId), location);
-            newX.set(location.x);
-            newY.set(location.y);
+            agent.onAgentMoved(currentLoc, targetLoc);
+            model.setAgPos(AgentDB.getInstance().getAgentByCartagoId(agentCartagoId), targetLoc);
+            newX.set(targetLoc.x);
+            newY.set(targetLoc.y);
             signal("mapChanged");
         } else {
             logger.warning("MOVE FAILED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -83,7 +84,7 @@ public class GridWorld extends Artifact {
         Location loc = GridModel.getInstance().initAgent(agent);
         X.set(loc.x);
         Y.set(loc.y);
-        moveTo(agent, loc, X, Y);
+        moveTo(agent, new Location(-99, -99), loc, X, Y);
     }
 
     @OPERATION
