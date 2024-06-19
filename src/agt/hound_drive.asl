@@ -82,3 +82,4 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 { include("./hound_drive/hound_drive_cluster_swarms.asl")}
 { include("./hound_drive/hound_drive_choose_swarm.asl")}
 { include("./hound_drive/hound_drive_plan_position.asl")}
+{ include("./hound_drive/misc_plans.asl")}

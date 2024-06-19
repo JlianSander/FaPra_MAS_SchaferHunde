@@ -15,35 +15,35 @@
         .fail_goal(startClusterStrat1);
     }
     //.print("All Sheeps not in Corral are: ", All_Sheep);                                                                                    //DEBUG
-    !mapSetToSwarms(All_Sheep).
+    !s1_mapSetToSwarms(All_Sheep).
 
-//------------------------------------------------------- mapSetToSwarms ------------------------------------------------------- 
+//------------------------------------------------------- s1_mapSetToSwarms ------------------------------------------------------- 
 
-+!mapSetToSwarms(UnMapped_Set) 
-    <- //.print("mapSetToSwarms(", UnMapped_Set, ")");                                                                                      //DEBUG
++!s1_mapSetToSwarms(UnMapped_Set) 
+    <- //.print("s1_mapSetToSwarms(", UnMapped_Set, ")");                                                                                      //DEBUG
     //only calculate swarm for more than one sheep in the set
     if(.length(UnMapped_Set) > 1){
-        !createSwarmWithoutOutsiders(UnMapped_Set);
+        !s1_createSwarmWithoutOutsiders(UnMapped_Set);
                 
         if(outsiders(Outsiders)){
             -outsiders(_);
-            !mapSetToSwarms(Outsiders);
+            !s1_mapSetToSwarms(Outsiders);
         }
     } else{
         //.print("Set ", UnMapped_Set, " has only one element.");                                                                           //DEBUG
         !updateSwarmData(UnMapped_Set);
     }.
 
-//------------------------------------------------------- createSwarmWithoutOutsiders ------------------------------------------------------- 
+//------------------------------------------------------- s1_createSwarmWithoutOutsiders ------------------------------------------------------- 
 
-    +!createSwarmWithoutOutsiders(Set_Sheep)
-        <- //.print("createSwarmWithoutOutsiders(", Set_Sheep, ")");                                                                        //DEBUG
+    +!s1_createSwarmWithoutOutsiders(Set_Sheep)
+        <- //.print("s1_createSwarmWithoutOutsiders(", Set_Sheep, ")");                                                                        //DEBUG
         ?limit_radius_swarm(Limit_rad);
         if(swarm_temp(_)){
             .abolish(swarm_temp(_));
         }
         for(.member(S, Set_Sheep)){
-            //.print("createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");                                                            //DEBUG
+            //.print("s1_createSwarmWithoutOutsiders(", S, " of ", Set_Sheep, ")");                                                            //DEBUG
             ?pos_agent(SX,SY, S);
             if(swarm_temp(_)){
                 ?swarm_temp(LS);
