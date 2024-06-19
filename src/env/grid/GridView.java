@@ -31,7 +31,7 @@ public class GridView extends GridWorldView {
         setVisible(true);
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
-        Boolean loadIcons = loader.getProperty("print_icons", Boolean.class);
+        Boolean loadIcons = loader.getProperty("draw_icons", Boolean.class);
         if (loadIcons) {
             try {
                 sheepImages[0] = ImageIO.read(new File("src/resources/sheep.png"));

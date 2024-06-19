@@ -19,21 +19,22 @@ public class GridWorld extends Artifact {
     private Simulation simulation;
     private ScenarioInfo scenarioInfo;
 
-    void init(int size, int corralWidth, int corralHeight, boolean drawCoords) {
+    void init(int size, int corralWidth, int corralHeight) {
         GridModel.create(size, corralWidth, corralHeight);
-        commonInit(drawCoords);
+        commonInit();
     }
 
-    void init(String filePath, boolean drawCoords) {
+    void init(String filePath) {
         GridModel.create(filePath);
-        commonInit(drawCoords);
+        commonInit();
     }
 
-    private void commonInit(boolean drawCoords) {
+    private void commonInit() {
         GridModel model = GridModel.getInstance();
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Boolean drawCoords = loader.getProperty("draw_coords", Boolean.class);
         new GridView(model, drawCoords);
 
-        PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
         Double houndWaitRatio = loader.getProperty("hound_wait_ratio", Double.class);
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);

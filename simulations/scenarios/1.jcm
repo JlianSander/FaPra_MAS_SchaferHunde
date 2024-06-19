@@ -22,7 +22,7 @@ mas mas_schafherde {
     }
 
     workspace world {
-      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt", "true")
+      artifact grid: grid.GridWorld("src/env/grid/templates/5.txt")
       debug
     }
 
