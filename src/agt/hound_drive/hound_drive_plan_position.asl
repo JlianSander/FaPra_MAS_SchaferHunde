@@ -9,12 +9,7 @@ is_closer_to_pos(X,Y,H) :-
     distance_other_to_pos(X,Y,H, DH) & 
     distance_me_to_pos(X,Y, D_Me) &
     DH < D_Me.
-
-is_farerAway_to_pos(X,Y,H) :- 
-    distance_other_to_pos(X,Y,H, DH) & 
-    distance_me_to_pos(X,Y, D_Me) &
-    DH > D_Me.
-
+    
 is_equal_away_to_pos(X,Y,H) :- 
     distance_other_to_pos(X,Y,H, DH) & 
     distance_me_to_pos(X,Y, D_Me) &

@@ -6,12 +6,6 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
-other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) & 
-    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(SX,SY,HX,HY,DH) & 
-    pos(ME_X, ME_Y)  & jia.get_distance(SX,SY,ME_X,ME_Y,D_ME) &
-    DH < D_ME.
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- startDrive -------------------------------------------------------
@@ -22,7 +16,7 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) &
     
 +!startDrive : not has_enough_info <- .print("Not enough info to drive."). //.fail_goal(startDrive).
 
-+!startDrive : is_driving <- .print("Already started driving."). //true. //.fail_goal(startDrive).       
++!startDrive : is_driving <- true. //.print("Already started driving."). //.fail_goal(startDrive).       
 
 //------------------------------------------------------- endDrive -------------------------------------------------------
 
