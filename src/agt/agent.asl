@@ -3,6 +3,9 @@
 
 repeated_pos(0).
 
+all_hound_names([]).
+all_sheep_names([]).
+
 +!start
     <-
         .my_name(Me);
@@ -10,22 +13,31 @@ repeated_pos(0).
         jia.util.init_agent;
         +pos(AgX,AgY);
         ?waitTime(Wait);
-        .print(Me, " initialized at (", AgX, " , ", AgY, ") with wait time: ", Wait);
+        !prepareAgentLists;
+        .print("Done agent init of: ", Me, " at (", AgX, ",", AgY, ") with wait time: ", Wait);
         !init.
+
+//------------------------------------------------------- Prepare agent lists-------------------------------------------------------
+
++!prepareAgentLists
+    <-
+        .all_names(AA);
+        !filterNames(AA, "hound", AH);
+        !filterNames(AA, "sheep", AS);
+        -+all_hound_names(AH);
+        -+all_sheep(AS).
+
++!filterNames(Names, SubStr, FilteredNames)
+<- .findall(X, (.member(X, Names) & .term2string(Y, X) & .lower_case(Y, Q) & .substring(SubStr, Q)), FilteredNames).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+pos(X,Y) <- 
-    !broadCastPos(X,Y).
+//------------------------------------------------------- Send to agent list -------------------------------------------------------
 
-//////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//------------------------------------------------------- broadcastPos -------------------------------------------------------
-
-+!broadCastPos(X,Y) <- 
-    .my_name(ID);
-    .broadcast(achieve, trackMove(X,Y));
-    .print(ID," moves to: (", X," , ", Y, ")").
++!sendToListOfAgents([], Atom, Msg).
++!sendToListOfAgents([X|Ls], Atom, Msg)
+    <- .send(X, Atom, Msg);
+       !sendToListOfAgents(Ls, Atom, Msg).
 
 //------------------------------------------------------- updatePos -------------------------------------------------------   
 
@@ -37,21 +49,6 @@ repeated_pos(0).
 //------------------------------------------------------- waitToMove -------------------------------------------------------   
 
 +!waitToMove : waitTime(Wait) <- .wait(Wait).
-
-//------------------------------------------------------- repeatPos -------------------------------------------------------  
-//DEBUG: this plan should become obsolete, once the agents can actively perceive the environment they move to
-// needed to tell hounds position of non-moving sheep
-+!repeatPos : not pos(X,Y)
-    <- .wait(1000);
-    !!repeatPos.
-
-+!repeatPos : pos(X,Y) & repeated_pos(I) & I < 1
-    <- !broadCastPos(X,Y);
-    -+repeated_pos(I + 1);
-    .wait(1000);
-    !!repeatPos.
-
-+!repeatPos <- true.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

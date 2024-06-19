@@ -42,7 +42,7 @@ public class in_line_of_sight extends DefaultInternalAction {
 
         while (true) {
             Location locToCheck = new Location(startX, startY);
-            if (!GridModel.getInstance().isFree(locToCheck)) {
+            if (GridModel.getInstance().getObjectsAt(locToCheck).contains(GridModel.OBSTACLE)) {
                 return false;
             }
             if (startX == targetX && startY == targetY) {

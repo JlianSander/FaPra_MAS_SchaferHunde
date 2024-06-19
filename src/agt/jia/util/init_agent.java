@@ -4,10 +4,7 @@ import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.LiteralImpl;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
-import jason.bb.BeliefBase;
 import util.PropertiesLoader;
 
 public class init_agent extends DefaultInternalAction {
@@ -25,43 +22,34 @@ public class init_agent extends DefaultInternalAction {
             case GridModel.HOUND:
                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
-                addBelief(ts, "limit_distance_assumption_hound_driving",
-                        loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
+                BeliefBaseManager.addBelief(ts, "keep_distance_to_swarm", null,
+                    loader.getProperty("hound_keep_distance_to_swarm", Integer.class));
 
-                addBelief(ts, "limit_number_agents_driving_swarm",
-                        loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
+                BeliefBaseManager.addBelief(ts, "limit_distance_assumption_hound_driving", null,
+                    loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
 
-                addBelief(ts, "limit_radius_swarm",
-                        loader.getProperty("hound_limit_radius_swarm", Integer.class));
+                BeliefBaseManager.addBelief(ts, "limit_number_agents_driving_swarm", null,
+                    loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "limit_radius_swarm", null,
+                    loader.getProperty("hound_limit_radius_swarm", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
+                    loader.getProperty("hound_wait_between_driving", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "wait_cant_reach_driving_pos", null,
+                    loader.getProperty("hound_wait_cant_reach_driving_pos", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "wait_perception", null,
+                    loader.getProperty("hound_wait_perception", Integer.class));
                 break;
 
             default:
                 throw new RuntimeException("Invalid agent type");
         }
 
-        addBelief(ts, "waitTime", waitTime);
+        BeliefBaseManager.addBelief(ts, "waitTime", null, waitTime);
 
         return true;
-    }
-
-    private void addBelief(TransitionSystem ts, String name, Object... terms) {
-        try {
-            BeliefBase bb = ts.getAg().getBB();
-            LiteralImpl literal = new LiteralImpl(name);
-
-            for (Object object : terms) {
-                if (object instanceof Integer) {
-                    literal.addTerm(new NumberTermImpl((Integer) object));
-                } else if (object instanceof Double) {
-                    literal.addTerm(new NumberTermImpl((Double) object));
-                } else {
-                    throw new Exception("Invalid object type");
-                }
-            }
-
-            bb.add(literal);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -2,7 +2,6 @@
     <- .my_name(Me);
        .broadcast(tell, sheep(Me));
        +formerPos(-1, -1);
-    //    +doflock;
        !!flock;
        .
        
@@ -13,11 +12,11 @@ target_not_reached(AgX, AgY, TargetX, TargetY) :- pos(AgX, AgY) &
             formerPos(FormerX, FormerY) &
             not (AgX = TargetX  &  AgY = TargetY).
 
-is_stuck :- pos(AgX, AgY) &
-            formerPos(FormerAgX, FormerAgY) &
-            destination(TargetX, TargetY) &
-            (AgX = FormerAgX  &  AgY = FormerAgY) &
-            not ( AgX = TargetX  &  AgY = TargetY).
+// is_stuck :- pos(AgX, AgY) &
+//             formerPos(FormerAgX, FormerAgY) &
+//             destination(TargetX, TargetY) &
+//             (AgX = FormerAgX  &  AgY = FormerAgY) &
+//             not ( AgX = TargetX  &  AgY = TargetY).
 
 is_done :- pos(AgX, AgY) &
             formerPos(FormerAgX, FormerAgY) &
@@ -52,27 +51,19 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
 +!takeStep : target_not_reached(AgX, AgY, TargetX, TargetY)
     <-
     .print("Destination not reached yet");
-    // .print("before step:");
-    // .print("destination: (", TargetX, " , ", TargetY, ")");
-    // .print("current pos: (", AgX, " , ", AgY, ")");
-    // .print("former pos: (", FormerX, " , ", FormerY, ")");
     -+formerPos(AgX, AgY);
     nextStep(TargetX, TargetY, NewX, NewY);
     .print("Old pos: (", AgX, " , ", AgY, ") - New pos: (", NewX, " , ", NewY, ")");
     -+pos(NewX, NewY);
     !waitToMove;
-    // .print("after step:");
-    // .print("destination: (", TargetX, " , ", TargetY, ")");
-    // .print("current pos: (", NewX, " , ", NewY, ")");
-    // .print("former pos: (", AgX, " , ", AgY, ")");
     !takeStep;
     .
 
-+!takeStep : is_stuck 
-    <-
-    .print("IM STUCK!");
-    -destination(X,Y);
-    !!flock.
+// +!takeStep : is_stuck 
+//     <-
+//     .print("IM STUCK!");
+//     -destination(X,Y);
+//     !!flock.
 
 +!takeStep : is_done
     <-
@@ -86,8 +77,5 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
     -destination(X,Y);
     -formerPos(X,Y);
     !!flock.
-
-+!trackMove(X, Y)
-    <- true.
 
 { include("agent.asl") }

@@ -3,16 +3,14 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 
-spacing_to_sheep(2).
-
-has_enough_info(S) :- pos_agent(SX,SY)[source(S)] & corral_area(TLX,TLY,BRX,BRY).
+has_enough_info(S) :- pos_agent(SX,SY, S) & corral_area(TLX,TLY,BRX,BRY).
 
 has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
-is_in_corral(S) :- pos_agent(SX,SY)[source(S)] & jia.is_in_corral(SX, SY).
+is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
-other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] & 
-    pos_agent(HX,HY)[source(H)] & hound(H) & jia.get_distance(SX,SY,HX,HY,DH) & 
+other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY, S) & 
+    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(SX,SY,HX,HY,DH) & 
     pos(ME_X, ME_Y)  & jia.get_distance(SX,SY,ME_X,ME_Y,D_ME) &
     DH < D_ME.
 
@@ -24,16 +22,17 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 +!startDrive : has_enough_info & not .desire(processDriving)
     <- !processDriving.
 
-+!startDrive : not has_enough_info <- .print("Not enough info to drive."); false. //.fail_goal(startDrive).
++!startDrive : not has_enough_info <- .print("Not enough info to drive."). //.fail_goal(startDrive).
 
-+!startDrive : .desire(processDriving) <- .print("Already started driving."); false. //.fail_goal(startDrive).       
++!startDrive : .desire(processDriving) <- true.//.print("Already started driving."). //.fail_goal(startDrive).       
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
 +!processDriving  
-    <- !mapSwarms;
+    <- .print("processDriving");                                                                                                                //DEBUG
+    !mapSwarms;
     .findall(Swarm, swarm(Swarm,_,_,_,_),Swarms);
-    //.print("found swarms: ", Swarms);                                                                                                           //DEBUG
+    //.print("found swarms: ", Swarms);                                                                                                         //DEBUG
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
@@ -45,7 +44,8 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
         ?swarm_chosen_to_drive(Swarm_Chosen);
         .print("Swarm chosen to drive: ", Swarm_Chosen);
         !driveSwarm(Swarm_Chosen);
-        .wait(10);
+        ?wait_between_driving(Wait_between_driving);
+        .wait(Wait_between_driving);
         !processDriving;
     }else{
         .print("no swarm chosen");
@@ -58,17 +58,26 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
 +!driveSwarm(LS) 
-    <- //.print("driveSwarm(", LS, ")");                                                                                                      //DEBUG
+    <- //.print("driveSwarm(", LS, ")");                                                                                                                                    //DEBUG
     !updateSwarmData(LS);
     ?swarm_data_updated(LS, CX,CY, Size, R);
     !planPositionToDrive(LS);
     ?driving_position(Driving_Position);
     jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
-    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                         //DEBUG
+    .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                           //DEBUG
     ?pos(ME_X, ME_Y);
-    //?spacing_to_sheep(Spacing);
+    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y );                                                                                   //DEBUG
     jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
-    !reachDestination(ME_NXT_X, ME_NXT_Y).
+    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
+    if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
+        //can't reach desired target 
+        //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
+        .print("Can't reach target position.");                                                                                                                             //DEBUG   
+        ?wait_cant_reach_driving_pos(W);
+        .wait(W);
+    }else{
+        !reachDestination(ME_NXT_X, ME_NXT_Y);
+    }.    
 
 -!driveSwarm(LS) <- true.
 
@@ -76,12 +85,12 @@ other_hound_is_closer_to_sheep(S) :- pos_agent(SX,SY)[source(S)] &
 
 +!updateSwarmData(LS)
     <- //.print("updateSwarmData(",LS,")");                                                                                                 //DEBUG
-    .findall(X, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_X);
-    .findall(Y, pos_agent(X,Y)[source(S)] & .member(S,LS), List_of_Y);
+    .findall(X, pos_agent(X, Y, S) & .member(S,LS), List_of_X);
+    .findall(Y, pos_agent(X, Y, S) & .member(S,LS), List_of_Y);
     CX = math.round(math.mean(List_of_X));
     CY = math.round(math.mean(List_of_Y));
     .length(LS, Len_LS);
-    .findall(R, pos_agent(X,Y)[source(S)] & .member(S,LS) & jia.get_distance(CX,CY,X,Y,R), List_of_R);   
+    .findall(R, pos_agent(X,Y, S) & .member(S,LS) & jia.get_distance(CX,CY,X,Y,R), List_of_R);   
     R = math.round(math.max(List_of_R));
     .abolish(swarm_data_updated(_,_,_,_,_));
     +swarm_data_updated(LS, CX, CY, Len_LS, R);

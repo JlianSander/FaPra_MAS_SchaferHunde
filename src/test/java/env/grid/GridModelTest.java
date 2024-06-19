@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import grid.GridModel;
 
-public class GridModel_test {
+public class GridModelTest {
     @Test
     public void testInLineOfSight() {
         GridModel model = GridModel.create("src/test/resources/templates/1_test.txt");
