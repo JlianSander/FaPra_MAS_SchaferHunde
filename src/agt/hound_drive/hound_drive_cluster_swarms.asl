@@ -8,8 +8,8 @@
 
 +!clusterSwarms
     <- //.print("clusterSwarms");                                                                                                               //DEBUG
-    if(swarm(_, _, _, _, _)){
-        .abolish(swarm(_, _, _, _, _));  
+    if(swarm(_, _, _, _)){
+        .abolish(swarm(_, _, _, _));  
     }
 
     !startClusterStrat1.
