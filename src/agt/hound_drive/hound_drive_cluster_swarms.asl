@@ -11,8 +11,8 @@
     if(swarm(_, _, _, _)){
         .abolish(swarm(_, _, _, _));  
     }
-
-    !startClusterStrat1.
+    ?strategy_cluster_swarm(StratID);
+    !chooseStrategy_clusterSwarms(StratID).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
-{ include("./hound_drive/clustering_strategies.asl")}
+{ include("./hound_drive/hound_drive_strategies_cluster_swarms.asl")}

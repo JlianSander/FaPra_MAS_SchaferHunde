@@ -1,7 +1,13 @@
 package jia;
 
-import jia.util.DriveStrategy_1;
+import jia.util.DriveStrategy1;
+import jia.util.IDrivePositioner;
 import jia.util.SwarmManipulator;
+
+import util.PropertiesLoader;
+
+import org.apache.xpath.functions.WrongNumberArgsException;
+
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -21,15 +27,25 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         var swarmCenter = new Location(centerX, centerY);
         var swarm = new SwarmManipulator(swarmCenter, radius);
 
-        
-
         var get_corral = new get_corral_area();
         get_corral.execute(ts, un, args);
         var corral = get_corral.getCorral();
 
-        var agentLoc = DriveStrategy_1.positionAgent(ts, swarm, corral, positionNumber);
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        Integer stratID = loader.getProperty("hound_strategy_drive", Integer.class);
+        var agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, swarm, corral, positionNumber);
 
         return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
                 && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
+    }
+
+    private IDrivePositioner chooseStrategy(TransitionSystem ts,int stratId) throws WrongNumberArgsException{
+        switch(stratId){
+            case 1:
+                return new DriveStrategy1();
+            default:
+            ts.getAg().getLogger().info("ERROR strategy unknown");
+            throw new WrongNumberArgsException("1");
+        }
     }
 }

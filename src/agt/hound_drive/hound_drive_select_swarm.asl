@@ -8,9 +8,9 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//------------------------------------------------------- chooseSwarmToDrive -------------------------------------------------------
-+!chooseSwarmToDrive(Swarms)
-    <- //.print("chooseSwarmToDrive(", Swarms, ")");                                                                                                                              //DEBUG
+//------------------------------------------------------- selectSwarmToDrive -------------------------------------------------------
++!selectSwarmToDrive(Swarms)
+    <- //.print("selectSwarmToDrive(", Swarms, ")");                                                                                                                              //DEBUG
     if(swarm_chosen_to_drive(_)){
         .abolish(swarm_chosen_to_drive(_));
     }
@@ -30,7 +30,8 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
             if(not swarm_chosen_to_drive(_)){
                 +swarm_chosen_to_drive(Swarm_to_Evaluate);
             }else{
-                !choosing_Strategy_1(Swarm_to_Evaluate);
+                ?strategy_select_swarm(StratID);
+                !chooseStrategy_selectSwarm(Swarm_to_Evaluate, StratID);
             }
         } else{
             /* if( i_am_close_enough_to_swarm(Swarm_to_Evaluate)){
@@ -42,7 +43,7 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     }
     
     if(not swarm_chosen_to_drive(_)){
-        .fail_goal(chooseSwarmToDrive(Swarms));
+        .fail_goal(selectSwarmToDrive(Swarms));
         //.print("Not chosen any swarm.");                                                                                                                                        //DEBUG
     }else{
         //?swarm_chosen_to_drive(Ss);                                                                                                                                             //DEBUG
@@ -51,4 +52,4 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
-{ include("./hound_drive/choosing_strategies.asl")}
+{ include("./hound_drive/hound_drive_strategies_select_swarm.asl")}

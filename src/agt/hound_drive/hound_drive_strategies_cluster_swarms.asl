@@ -4,15 +4,25 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//------------------------------------------------------- mapSwarms -------------------------------------------------------
-+!startClusterStrat1 
+//------------------------------------------------------- choose_Strategy_select_Swarm -------------------------------------------------------
+
++! chooseStrategy_clusterSwarms(StratID)
+    <- if(StratID == 1){
+        !startStrategy_clusterSwarm_1;
+    }else{
+        .print("ERROR no such strategy known");
+        false;
+    }.
+
+//------------------------------------------------------- startStrategy_clusterSwarm_1 -------------------------------------------------------
++!startStrategy_clusterSwarm_1 
     <-
     //get all known sheep, which are not in the corral, in one big set
     .setof(S, pos_agent(_,_, S) & not is_in_corral(S) & sheep(S) , All_Sheep);
     if(.length(All_Sheep, 0)){
         //no swarm found
         .print("no sheep found");                                                                                                            //DEBUG
-        .fail_goal(startClusterStrat1);
+        .fail_goal(startStrategy_clusterSwarm_1);
     }
     //.print("All Sheeps not in Corral are: ", All_Sheep);                                                                                    //DEBUG
     !s1_mapSetToSwarms(All_Sheep).

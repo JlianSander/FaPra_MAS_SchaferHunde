@@ -1,8 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//------------------------------------------------------- choosing_Strategy_1 -------------------------------------------------------
+//------------------------------------------------------- choose_Strategy_select_Swarm -------------------------------------------------------
 
-+! choosing_Strategy_1(Swarm_to_Evaluate)
++! chooseStrategy_selectSwarm(Swarm, StratID)
+    <- if(StratID == 1){
+        !startStrategy_selectSwarm_1(Swarm);
+    }else{
+        .print("ERROR no such strategy known");
+        false;
+    }.
+
+//------------------------------------------------------- startStrategy_selectSwarm_1 -------------------------------------------------------
+
++! startStrategy_selectSwarm_1(Swarm_to_Evaluate)
     <- ?swarm_chosen_to_drive(Swarm_Chosen);
     //.print("Swarm_to_Evaluate: ", Swarm_to_Evaluate);                                                                                                             //DEBUG
     //.print("Swarm_Chosen: ", Swarm_Chosen);                                                                                                                       //DEBUG

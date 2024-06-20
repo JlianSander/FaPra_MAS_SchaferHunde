@@ -37,7 +37,7 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
         //!!search_sheep;           //TODO activate search
         .fail_goal(processDriving);
     }
-    !chooseSwarmToDrive(Swarms);
+    !selectSwarmToDrive(Swarms);
     if(swarm_chosen_to_drive(_)){
         ?swarm_chosen_to_drive(Swarm_Chosen);
         .print("Swarm chosen to drive: ", Swarm_Chosen);
@@ -80,6 +80,6 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 { include("./hound_drive/hound_drive_cluster_swarms.asl")}
-{ include("./hound_drive/hound_drive_choose_swarm.asl")}
+{ include("./hound_drive/hound_drive_select_swarm.asl")}
 { include("./hound_drive/hound_drive_plan_position.asl")}
-{ include("./hound_drive/misc_plans.asl")}
+{ include("./hound_drive/hound_drive_misc_plans.asl")}
