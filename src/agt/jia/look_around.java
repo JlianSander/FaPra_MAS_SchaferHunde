@@ -1,7 +1,5 @@
 package jia;
 
-import java.util.Iterator;
-
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -9,11 +7,9 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
-import grid.GridModel;
 import util.PropertiesLoader;
 import model.AgentInfo;
 import service.AgentDB;

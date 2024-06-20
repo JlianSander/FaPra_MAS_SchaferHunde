@@ -1,11 +1,9 @@
 package jia.util;
 
-import java.lang.Iterable;
 import java.util.Iterator;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
-import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
@@ -15,7 +13,6 @@ import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
-import jason.stdlib.add_nested_source;
 
 public class BeliefBaseManager {
 
