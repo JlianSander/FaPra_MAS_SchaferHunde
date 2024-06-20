@@ -1,16 +1,16 @@
 //------------------------------------------------------- guess_who_is_driving_what -------------------------------------------------------
 
   +!guess_who_is_driving_what
-    <- .print("guess_who_is_driving_what");                                                                                                                                     //DEBUG
+    <- //.print("guess_who_is_driving_what");                                                                                                                                     //DEBUG
     if(hound_drives(_,_)){
         .abolish(hound_drives(_, _));
     }
 
     //get all hounds, which positions are known and all known swarms of sheep
     .setof(H, pos_agent(_,_, H) & hound(H) , All_Hounds);
-    .print("All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
+    //.print("All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
     .findall(Ss, swarm(Ss, _, _, _), Swarms);
-    .print("All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
+    //.print("All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
     ?limit_distance_assumption_hound_driving(Limit_Distance_Driving);
     for(.member(H_in_focus, All_Hounds)){
         ?pos_agent(HX,HY, H_in_focus);
@@ -21,7 +21,7 @@
             //check if hound is within limit to drive, otherwise suspect that hound is not driving the swarm
             if(D_Ss_2 < Limit_Distance_Driving){
                 if(not hound_drives(H_in_focus,_)){
-                    .print("hound ", H_in_focus, " drives ", Ss_2);
+                    //.print("hound ", H_in_focus, " drives ", Ss_2);                                                                                                               //DEBUG
                     +hound_drives(H_in_focus, Ss_2);
                 }else{
                     // suspect hound to drive the swarm he's closer to
@@ -29,7 +29,7 @@
                     ?swarm(Ss_3, CX_3, CY_3, R_3);
                     jia.get_distance(HX,HY,CX_3,CY_3,D_Ss_3);
                     if(D_Ss_2 < D_Ss_3){
-                        .print("hound ", H_in_focus, " drives ", Ss_2);
+                        //.print("hound ", H_in_focus, " drives ", Ss_2);                                                                                                           //DEBUG
                         -+hound_drives(H_in_focus, Ss_2);
                     }
                 }

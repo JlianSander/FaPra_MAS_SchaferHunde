@@ -47,17 +47,17 @@ i_am_lower_than(H):- .my_name(Me) & Me < H.
     if(Len_Other_Drivers < 1){
         //I'm the only hound driving this swarm
         -+driving_position(3);
-        .print("driving_position(3)");                                                                                                                //DEBUG
+        //.print("driving_position(3)");                                                                                                                //DEBUG
     }elif(Len_Other_Drivers < 2){
         //there is another hound driving the swarm
         !getHoundClosestToPos(Swarm, Other_Drivers, 2);
         ?closest(C);
         if(.my_name(C)){
             -+driving_position(2);
-            .print("driving_position(", 2, ")");                                                                                                      //DEBUG
+            //.print("driving_position(", 2, ")");                                                                                                      //DEBUG
         }else{
             -+driving_position(4);
-            .print("driving_position(", 4, ")");                                                                                                      //DEBUG
+            //.print("driving_position(", 4, ")");                                                                                                      //DEBUG
         }
     }else{
         // there are two other hounds driving the same swarm
@@ -65,17 +65,17 @@ i_am_lower_than(H):- .my_name(Me) & Me < H.
         ?closest(C);
         if(.my_name(C)){
             -+driving_position(1);
-            .print("driving_position(", 1, ")");                                                                                                      //DEBUG
+            //.print("driving_position(", 1, ")");                                                                                                      //DEBUG
         }else{
             .delete(C, Other_Drivers, New_Other_Drivers);
             !getHoundClosestToPos(Swarm, New_Other_Drivers, 3);
             ?closest(C1);
             if(.my_name(C1)){
                 -+driving_position(3);
-                .print("driving_position(", 3, ")");                                                                                                  //DEBUG
+                //.print("driving_position(", 3, ")");                                                                                                  //DEBUG
             }else{
                 -+driving_position(5);
-                .print("driving_position(", 5, ")");                                                                                                  //DEBUG
+                //.print("driving_position(", 5, ")");                                                                                                  //DEBUG
             }
         }   
     }
@@ -84,7 +84,7 @@ i_am_lower_than(H):- .my_name(Me) & Me < H.
 +!getHoundClosestToPos(Swarm, Other_Drivers, I)
     <- //.print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", I, ")");                                                                       //DEBUG
     !updateSwarmData(Swarm);
-    ?swarm_data_updated(Swarm, CX,CY, Size, R);
+    ?swarm(Swarm, CX,CY, R);
     jia.get_pos_drive_swarm(CX, CY, R, I, POS_I_X, POS_I_Y);
     /* .print("Position to reach POS_I:(", POS_I_X, ", ", POS_I_Y, ")");                                                                                //DEBUG
     .findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp, H_tmp), List_tmp);                                                 //DEBUG
