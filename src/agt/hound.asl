@@ -7,7 +7,6 @@ jammed(0).
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
-       !init_drive;
        !!perceiveSurrounding;
        .print("Finished init hound").
 

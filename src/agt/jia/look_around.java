@@ -1,7 +1,5 @@
 package jia;
 
-import java.util.Iterator;
-
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -14,7 +12,6 @@ import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
-import grid.GridModel;
 import util.PropertiesLoader;
 import model.AgentInfo;
 import service.AgentDB;
@@ -25,10 +22,7 @@ public class look_around extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-
-        AgentInfo agent = AgentUtil.getAgentInfoFromTs(ts);
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
-        GridModel model = GridModel.getInstance();
         AgentDB agentDB = AgentDB.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer range = loader.getProperty("vision_range", Integer.class);

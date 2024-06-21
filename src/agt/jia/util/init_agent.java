@@ -34,6 +34,12 @@ public class init_agent extends DefaultInternalAction {
                 BeliefBaseManager.addBelief(ts, "limit_radius_swarm", null,
                     loader.getProperty("hound_limit_radius_swarm", Integer.class));
 
+                BeliefBaseManager.addBelief(ts, "strategy_cluster_swarm", null, 
+                    loader.getProperty("hound_strategy_cluster_swarm", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "strategy_select_swarm", null, 
+                    loader.getProperty("hound_strategy_select_swarm", Integer.class));
+
                 BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
                     loader.getProperty("hound_wait_between_driving", Integer.class));
 
