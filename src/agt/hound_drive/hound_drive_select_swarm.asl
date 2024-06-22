@@ -3,8 +3,10 @@
 
 is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) & 
     pos_agent(HX,HY, H) & hound(H) & jia.get_distance(CX,CY,HX,HY,DH) & 
-    pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
+    my_distance_to_swarm(Ss, D_ME) &
     DH < D_ME.
+
+my_distance_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 

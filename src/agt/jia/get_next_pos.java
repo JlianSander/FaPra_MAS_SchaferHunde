@@ -19,7 +19,7 @@ public class get_next_pos extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        ts.getLogger().info("--------------'get_next_pos' "); // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' ");                                                                                         // DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);
@@ -38,13 +38,13 @@ public class get_next_pos extends DefaultInternalAction {
 
         Location validTarget = calculateValidTarget(ts, model, maxNumberRecalculations, keepDistanceToSheep, myLoc,
                 targetLoc, evasionX, evasionY);
-        ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance"); // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                        // DEBUG
         Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
-        ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects"); // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                     // DEBUG
         pathfinder.excludeObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
         Location nextPos = pathfinder.getNextPosition(myLoc, validTarget);
-        ts.getLogger().info("--------------'get_next_pos' valid Target: (" + validTarget.x + "," + validTarget.y
-                + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")"); // DEBUG
+        /*ts.getLogger().info("--------------'get_next_pos' valid Target: (" + validTarget.x + "," + validTarget.y
+                + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");  */                                                                               // DEBUG
         return un.unifies(args[6], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[7], new NumberTermImpl(nextPos.y));
     }
@@ -52,7 +52,7 @@ public class get_next_pos extends DefaultInternalAction {
     private Location calculateValidTarget(TransitionSystem ts, GridModel model, Integer maxNumberRecalculations,
             Integer keepDistanceToSheep, Location myLoc, Location originalTarget,
             int evasionX, int evasionY) {
-        ts.getLogger().info("--------------'calculateValidTarget'");
+        //ts.getLogger().info("--------------'calculateValidTarget'");
         Queue<Location> locsToProcess = new ArrayDeque<Location>();
         locsToProcess.add(originalTarget);
         int numberRecalculations = 0;
@@ -60,16 +60,16 @@ public class get_next_pos extends DefaultInternalAction {
         while (!locsToProcess.isEmpty()) {
             // avoid StackOverflow
             numberRecalculations++;
-            ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
+            //ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
             if (numberRecalculations > maxNumberRecalculations) {
-                ts.getLogger()
-                        .info("--------------'calculateValidTarget' no valid target: reached limit of recalculations");
+                /*ts.getLogger()
+                        .info("--------------'calculateValidTarget' no valid target: reached limit of recalculations"); */                                  //DEBUG
                 return myLoc;
             }
 
             Location targetToProcess = locsToProcess.poll();
-            ts.getLogger()
-                    .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());
+            /*ts.getLogger()
+                    .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());   */                                //DEBUG
 
             var sheepTooCloseBy = model.getNeighborhood(targetToProcess, keepDistanceToSheep, loc -> {
                 List<Integer> objects = model.getObjectsAt(loc);
@@ -77,8 +77,8 @@ public class get_next_pos extends DefaultInternalAction {
             });
 
             if (model.isFree(targetToProcess) && sheepTooCloseBy.isEmpty()) {
-                ts.getLogger().info("--------------'calculateValidTarget' calculated new valid target: "
-                        + targetToProcess.toString());
+                /* ts.getLogger().info("--------------'calculateValidTarget' calculated new valid target: "
+                        + targetToProcess.toString());  */                                                                                                //DEBUG
                 return targetToProcess;
             }
             // --------------------------------------------------
@@ -140,8 +140,8 @@ public class get_next_pos extends DefaultInternalAction {
 
                 if (model.inGrid(calculatedNewTarget)) {
                     locsToProcess.add(calculatedNewTarget);
-                    ts.getLogger()
-                    .info("--------------'calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString());
+                    /* ts.getLogger()
+                    .info("--------------'calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString()); */        //DEBUG
                 }
             }
 
@@ -155,14 +155,14 @@ public class get_next_pos extends DefaultInternalAction {
                 for (var loc : evasionTargets) {
                     if (model.inGrid(loc)) {
                         locsToProcess.add(loc);
-                        ts.getLogger()
-                        .info("--------------'calculateValidTarget' added Target based on evasion: " + loc.toString());
+                        /* ts.getLogger()
+                        .info("--------------'calculateValidTarget' added Target based on evasion: " + loc.toString()); */                       //DEBUG
                     }
                 }
             }
         }
 
-        ts.getLogger().info("--------------'calculateValidTarget' no valid target: no places to process");
+        //ts.getLogger().info("--------------'calculateValidTarget' no valid target: no places to process");                                    //DEBUG
         return myLoc;
     }
 }
