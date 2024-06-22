@@ -19,23 +19,8 @@ public class DriveStrategy1 implements IDrivePositioner {
         Double angle_incr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
         //ts.getLogger().info("--------------'positionAgent' angle_incr: " + angle_incr);                                                                               //DEBUG
 
-        //get position, where the swarm is to drive to        
-        //ts.getLogger().info("--------------'positionAgent' Swarm.Center: (" + swarm.center().x + "," + swarm.center().y + ")");                                     //DEBUG
-        var swarmTargetLoc = swarm.getNextPositionTo(corral.center());
-        //ts.getLogger().info("--------------'positionAgent' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
-
-        //get direction of the swarms desired movements
-        RealVector direction_swarm = MatrixUtils.createRealVector(new double[] {
-                swarmTargetLoc.x - swarm.center().x,
-                swarmTargetLoc.y - swarm.center().y
-        });
-        //ts.getLogger().info("--------------'positionAgent' swarm_direction not normalized: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");         //DEBUG
-        if( direction_swarm.getEntry(0) != 0 || direction_swarm.getEntry(1) != 0){
-            direction_swarm = direction_swarm.unitVector();
-            //ts.getLogger().info("--------------'positionAgent' swarm_direction: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");                      //DEBUG
-        }
+        RealVector direction_swarm = swarm.getDirectionTo(corral.center());
         
-
         //calculate angle depending on the positionNumber
         double angle = (3 - positionNumber) * angle_incr;
         //ts.getLogger().info("--------------'positionAgent' calculated angle: " + angle);                                                                             //DEBUG
