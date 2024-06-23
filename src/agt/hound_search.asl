@@ -17,6 +17,7 @@
 +!reachRandomDestination(X, Y) : not pos(X, Y) // Noch nicht Ziel erreicht
     <- .print("Benni walking towards: (", X, ",", Y, ")");
        !makeStepTowards(X, Y);
+       //!waitToMove;
        .wait(100);
        !reachRandomDestination(X, Y).
 
@@ -29,7 +30,8 @@
 +!reachRandomDestination(X, Y) : pos(X, Y) 
     <- .print("Benni Reached destination at: (", X, ",", Y, "), continuing search.");
        ?pos(AgX, AgY);  // Aktuelle Position des Agenten abfragen
-       jia.get_nearest_sheep_in_range_2(AgX, AgY, 0, 0, 10, NearestX, NearestY);  // Aufruf der Internal Action zur Suche nach Schafen
+       ?vision_range(VR);
+       jia.get_nearest_sheep_in_range_2(AgX, AgY, 0, 0, VR, NearestX, NearestY);  // Aufruf der Internal Action zur Suche nach Schafen
        .print("Benni Nearest sheep coordinates received: (", NearestX, ",", NearestY, ")");
        if ((NearestX == -1) & (NearestY == -1)) {  // Keine Schafe gefunden
            .print("Benni No sheep in range, continuing to random walk.");
@@ -44,6 +46,7 @@
 +!reachDestination(X, Y) : not pos(X, Y)
     <- .print("walking towards: (", X, ",", Y, ")");
        !makeStepTowards(X, Y);
+       //!waitToMove;
        .wait(100);
        !reachDestination(X, Y).
 
@@ -65,7 +68,7 @@
 
 +!updatePos(X, Y) : last_step_not_OK
     <- -last_step_not_OK;
-       .print("Benni last step not ok"). // Letzter Schritt war nicht erfolgreich
+       .print("Benni last step not ok"); // Letzter Schritt war nicht erfolgreich
        !search_sheep. // Starte die Suche nach Schafen erneut
 
 +!get_random_position(X, Y) <- jia.random_position(X, Y). 

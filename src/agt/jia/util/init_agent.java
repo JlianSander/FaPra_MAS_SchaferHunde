@@ -14,6 +14,8 @@ public class init_agent extends DefaultInternalAction {
         PropertiesLoader loader = PropertiesLoader.getInstance();
 
         int waitTime = loader.getProperty("sheep_wait_duration", Integer.class);
+        BeliefBaseManager.addBelief(ts, "vision_range", null,
+                    loader.getProperty("vision_range", Integer.class));
 
         switch (AgentUtil.getAgentInfoFromTs(ts).getAgentType()) {
             case GridModel.SHEEP:
