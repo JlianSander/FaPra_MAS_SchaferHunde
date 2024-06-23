@@ -9,9 +9,9 @@ import jason.environment.grid.Area;
 import grid.GridModel;
 import util.PropertiesLoader;
 
-public class DrivePositioner {
+public class DriveStrategy1 implements IDrivePositioner {
 
-    public static Location positionAgent(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
+    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();

@@ -33,12 +33,11 @@ mas mas_schafherde {
         instances: 1
         focus: world.grid
         roles: driver in hounds
-        goals: test
     }
 
     workspace world {
-      // artifact grid: grid.GridWorld(20, 3, 2, "true")
-      artifact grid: grid.GridWorld("src/env/grid/templates/Simulation_Julian_100_Wide.txt", "true")
+      // artifact grid: grid.GridWorld(20, 3, 2)
+      artifact grid: grid.GridWorld("src/env/grid/templates/Simulation_Julian_100_Wide.txt")
       debug
     }
 

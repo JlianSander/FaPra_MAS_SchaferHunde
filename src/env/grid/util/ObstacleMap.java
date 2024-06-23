@@ -4,12 +4,16 @@ import java.util.List;
 
 import grid.GridModel;
 import jason.environment.grid.Location;
+import util.PropertiesLoader;
 
 public class ObstacleMap {
     private boolean[][] data;
+    private boolean houndWalkThroughCorral;
 
     public ObstacleMap(int width, int height) {
         this.data = new boolean[width][height];
+        PropertiesLoader loader = PropertiesLoader.getInstance();
+        houndWalkThroughCorral = loader.getProperty("hound_walk_through_corral", Boolean.class);
     }
 
     public boolean isObstacle(int x, int y, int user) {
@@ -46,7 +50,7 @@ public class ObstacleMap {
         boolean isDefaultBlocked = objects.stream()
                 .anyMatch(obj -> obj == GridModel.HOUND || obj == GridModel.SHEEP || obj == GridModel.OBSTACLE);
 
-        if (user == GridModel.HOUND) {
+        if (!houndWalkThroughCorral && user == GridModel.HOUND) {
             return isDefaultBlocked || objects.stream().anyMatch(obj -> obj == GridModel.CORRAL);
         }
 

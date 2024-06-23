@@ -83,7 +83,7 @@ task run (type: JavaExec, dependsOn: 'classes') {
     }
     mainClass = 'jacamo.infra.JaCaMoLauncher'
     args 'mas_schafherde.jcm'
-    jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
+    // jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
     classpath sourceSets.main.runtimeClasspath
 }
 

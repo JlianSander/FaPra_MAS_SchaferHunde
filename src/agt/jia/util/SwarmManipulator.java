@@ -1,7 +1,5 @@
 package jia.util;
 
-import org.apache.commons.math3.linear.*;
-
 import jason.environment.grid.Location;
 
 import grid.GridModel;
@@ -19,15 +17,6 @@ public class SwarmManipulator {
 
     public Location getNextPositionTo(Location targetLocation) {
         var nextPosCenter = Pathfinder.getInstance(GridModel.SHEEP).getNextPosition(this.center, targetLocation);
-
-        // Vector direction = new Vector(
-        //     nextPosCenter.x - this.center.x,
-        //     nextPosCenter.y - this.center.y
-        // );
-        RealVector direction = MatrixUtils.createRealVector(new double[] {
-                nextPosCenter.x - this.center.x,
-                nextPosCenter.y - this.center.y
-        });
 
         var edgePosTR = new Location(nextPosCenter.x + radius, nextPosCenter.y + radius);
         var edgePosTL = new Location(nextPosCenter.x + radius, nextPosCenter.y - radius);
