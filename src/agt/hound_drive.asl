@@ -34,7 +34,7 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-        //!!search_sheep;           //TODO activate search
+        !!startSearch;
         .fail_goal(processDriving);
     }
     !selectSwarmToDrive(Swarms);
@@ -47,7 +47,7 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
         !processDriving;
     }else{
         .print("no swarm chosen");
-        //!!search_sheep;           //TODO activate search
+        !!startSearch;
         .fail_goal(processDriving);
     }.    
 
