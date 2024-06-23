@@ -104,8 +104,7 @@ public class Pathfinder {
             List<Location> path = getPath(start, target);
             return path.size() > 1 ? path.get(1) : path.get(0);
         } catch (UnwalkableTargetCellException | NoPathFoundException e) {
-            logger.info(e.getMessage());
-            logger.info("Returning start location instead");
+            logger.info(e.getMessage() + " -> Returning start location instead");
             return start;
         } finally {
             releaseInstance();
@@ -125,7 +124,8 @@ public class Pathfinder {
 
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
-        if (!ds.replan()) {
+        if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
+                || s.x >= GridModel.getInstance().getWidth() || s.y >= GridModel.getInstance().getHeight())) {
             throw new NoPathFoundException("No path found");
         }
         return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
