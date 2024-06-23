@@ -23,11 +23,8 @@ public class check_nearby_sheep extends DefaultInternalAction {
                 if (sheepPos == null) {
                     continue;
                 }
-                int sheepX = sheepPos[0];
-                int sheepY = sheepPos[1];
 
-                Location sheepLoc = new Location(sheepX, sheepY);
-                double distance = ownLoc.distanceChebyshev(sheepLoc);
+                Location sheepLoc = new Location(sheepPos[0], sheepPos[1]);
 
                 Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
                         new Term[] { new NumberTermImpl(ownLoc.x),
@@ -37,9 +34,7 @@ public class check_nearby_sheep extends DefaultInternalAction {
                 if (!los)
                     continue;
 
-                if (distance < ownLoc.distanceChebyshev(nearestSheep)) {
-                    nearestSheep = sheepLoc;
-                }
+                nearestSheep = sheepLoc;
             }
         }
 
