@@ -1,6 +1,9 @@
 package jia.util;
 
+import java.util.List;
+
 import org.apache.commons.math3.linear.*;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 
 import jason.environment.grid.Location;
 import jason.asSemantics.TransitionSystem;
@@ -11,7 +14,7 @@ import util.PropertiesLoader;
 
 public class DriveStrategy1 implements IDrivePositioner {
 
-    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
+    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) throws ExceptionPositioningFailed{
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
@@ -64,6 +67,12 @@ public class DriveStrategy1 implements IDrivePositioner {
             } else {
                 agentPos = new Location(agentPos.x - 1, agentPos.y - 1);
             }
+        }
+
+        List<Integer> atPos = model.getObjectsAt(agentPos);
+
+        if(atPos.contains(GridModel.OBSTACLE)){
+            throw new ExceptionPositioningFailed("Target position is obstacle");
         }
 
         //ts.getLogger().info("--------------'positionAgent' agent_pos final: (" + agentPos.x + "," + agentPos.y + ")");                                    //DEBUG

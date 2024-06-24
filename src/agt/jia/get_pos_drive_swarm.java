@@ -1,6 +1,7 @@
 package jia;
 
 import jia.util.DriveStrategy1;
+import jia.util.ExceptionPositioningFailed;
 import jia.util.IDrivePositioner;
 import jia.util.SwarmManipulator;
 
@@ -15,6 +16,7 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import jason.stdlib.fail;
 
 public class get_pos_drive_swarm extends DefaultInternalAction {
 
@@ -33,10 +35,13 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer stratID = loader.getProperty("hound_strategy_drive", Integer.class);
-        var agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, swarm, corral, positionNumber);
-
-        return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
+        try{
+            Location agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, swarm, corral, positionNumber);
+            return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
                 && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
+        }catch(ExceptionPositioningFailed e){
+            return fail.create().execute(ts, un, args);
+        }
     }
 
     private IDrivePositioner chooseStrategy(TransitionSystem ts,int stratId) throws WrongNumberArgsException{

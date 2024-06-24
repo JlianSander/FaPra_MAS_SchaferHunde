@@ -5,5 +5,5 @@ import jason.environment.grid.Area;
 import jason.environment.grid.Location;
 
 public interface IDrivePositioner {
-     public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber);
+     public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) throws ExceptionPositioningFailed;
 }
