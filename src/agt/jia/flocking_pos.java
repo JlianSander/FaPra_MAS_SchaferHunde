@@ -1,3 +1,4 @@
+
 package jia;
 
 import java.util.ArrayList;
@@ -12,24 +13,22 @@ import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import jia.util.AgentUtil;
 import util.PropertiesLoader;
 
 public class flocking_pos extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         GridModel model = GridModel.getInstance();
-        int AgX = (int) ((NumberTerm) args[0]).solve();
-        int AgY = (int) ((NumberTerm) args[1]).solve();
-        Location agLoc = new Location(AgX, AgY);
+        Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
 
         // collect all neighboring cells
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer range = loader.getProperty("vision_range", Integer.class);
-        List<Location> reachableNeighbors = model.getNeighborhood(agLoc, range, loc -> {
+        List<Location> reachableNeighbors = model.getNeighborhood(ownLoc, range, loc -> {
             return model.inGrid(loc);
         });
 
@@ -37,7 +36,15 @@ public class flocking_pos extends DefaultInternalAction {
         double maxWeight = 0;
         Map<Location, Double> cellWeights = new HashMap<>();
         for (Location loc : reachableNeighbors) {
-            int distance = agLoc.distanceChebyshev(loc);
+            Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
+                    new Term[] { new NumberTermImpl(ownLoc.x),
+                            new NumberTermImpl(ownLoc.y), new NumberTermImpl(loc.x),
+                            new NumberTermImpl(loc.y) });
+
+            if (!los)
+                continue;
+
+            int distance = ownLoc.distanceChebyshev(loc);
             double weight = calculateWeight(loc) / distance;
 
             // Max weight?
@@ -57,7 +64,7 @@ public class flocking_pos extends DefaultInternalAction {
         }
         // negativeCells.sort((a, b) -> a.getValue0().compareTo(b.getValue0()));
         // System.out.println("Negative cells: " + negativeCells.size());
-        List<Location> oppositeCells = getOppositeCells(agLoc, negativeCells);
+        List<Location> oppositeCells = getOppositeCells(ownLoc, negativeCells);
         // for (Location location : oppositeCells) {
         //     System.out.println("Opposite location: " + location);
         // }
@@ -77,8 +84,8 @@ public class flocking_pos extends DefaultInternalAction {
             oppositeCells.add(chosenLocation);
             Location finalLocation = getAverageLocation(oppositeCells);
             // System.out.println("Final location: " + finalLocation);
-            return un.unifies(args[2], new NumberTermImpl(finalLocation.x))
-                    && un.unifies(args[3], new NumberTermImpl(finalLocation.y));
+            return un.unifies(args[0], new NumberTermImpl(finalLocation.x))
+                    && un.unifies(args[1], new NumberTermImpl(finalLocation.y));
         }
 
         return false;

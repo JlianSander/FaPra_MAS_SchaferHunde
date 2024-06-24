@@ -32,7 +32,7 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-        //!!search_sheep;           //TODO activate search
+        !!startSearch;
         .fail_goal(processDriving);
     }
     !selectSwarmToDrive(Swarms);
@@ -45,7 +45,7 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
         !processDriving;
     }else{
         .print("no swarm chosen");
-        //!!search_sheep;           //TODO activate search
+        !!startSearch;
         .fail_goal(processDriving);
     }.    
 
