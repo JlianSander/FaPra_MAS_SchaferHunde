@@ -45,6 +45,15 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     distance_me_to_swarm(Ss, D_ME) &
     DH < D_ME.
 
+exists_close_swarms :- 
+    .setof(Ss2, 
+        swarm(Ss2, _, _, _) 
+        & swarm(Ss3, _, _, _) 
+        & Ss2 \== Ss3
+        & swarms_are_close_to_eachother(Ss2, Ss3), CloseSwarms)
+    & .length(CloseSwarms, CloseSwarms_Len) 
+    & CloseSwarms_Len > 0.
+
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
 is_jammed :- jammed(J) & J > 10.
@@ -53,7 +62,7 @@ in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 
 +pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
 
-swarms_are_close_to_eachother(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_closest_member(Limit_distance) & D < Limit_distance.
+swarms_are_close_to_eachother(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_closest_member(Limit_distance) & D <= Limit_distance.
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
