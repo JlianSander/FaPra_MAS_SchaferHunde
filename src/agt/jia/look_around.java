@@ -8,7 +8,6 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 

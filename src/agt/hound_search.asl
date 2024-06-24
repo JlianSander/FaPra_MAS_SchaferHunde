@@ -1,26 +1,28 @@
-//In diesem Code wird die interne Aktion findNearestSheep verwendet, 
-//um das nächstgelegene Schaf zu suchen. Die Koordinaten des gefundenen Schafs werden dann als Ziel gesetzt, 
-//und der Hound-Agent initiiert einen Zug zum Schaf durch Senden einer entsprechenden Nachricht.
 
-////////////////////////////////////////////////////////////////////////////////////////////////// Init ////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs //////////////////////////////////////////////////////////////////////////////////////////////////// 
 
-// Keine spezielle Initialisierung erforderlich
++pos_agent(X,Y,S) : sheep(S) &  situation_ok_to_drive //starts the drive, whenever a sheep was sighted and further criteria are met
+    <- 
+    .drop_desire(walkTowards(_,_));
+    .drop_desire(reachDestination(_,_));
+    !!startDrive.  
 
-//////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
+situation_ok_to_drive :- true.   //TODO in situation_ok_to_drive können weitere Kriterien z.B. über eine jia definiert werden um die Situation näher zu untersuchen               
 
-// Keine speziellen Überzeugungen erforderlich
+// situation_ok_to_drive :- 
+//     .findall(S, sheep(S), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3.        //starts driving if the positions of more than 3 sheep are known 
+//situation_ok_to_drive:- jia.check_nearby_sheep.
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
++!startSearch
+    <- .print("Search started");
+    !!setMove;
+    .
 
-//------------------------------------------------------- searchSheep -------------------------------------------------------
-/*
-+flock_target(X,Y) <- .print("Starting sheep search."); 
-    ?pos(AgX, AgY);
-    .jia.findNearestSheep(AgX, AgY, X, Y);
-    .print("Found nearest sheep at (", X, ",", Y, ")");
-    +destination(X,Y);
-    .my_name(Me);
-    .broadcast(achieve, driveTarget(Me));
-    .print("Initiating drive towards sheep").
-*/
-//
++!setMove : not .desire(reachDestination(L,M))
+    <-
+    jia.get_random_position(TargetX, TargetY);
+    !reachDestination(TargetX, TargetY);
+    !!setMove;
+    .
