@@ -47,8 +47,8 @@
         //.print(Swarm_Chosen , " and ", Swarm_to_Evaluate, " are of equal size.");                                                                         //DEBUG
     }
     
-    ?my_distance_to_swarm(Swarm_to_Evaluate, D_eval);
-    ?my_distance_to_swarm(Swarm_Chosen, D_cho);
+    ?distance_me_to_swarm(Swarm_to_Evaluate, D_eval);
+    ?distance_me_to_swarm(Swarm_Chosen, D_cho);
     if(D_eval < D_cho){
         Decision_Proximity = 1;
         //.print(Swarm_to_Evaluate , " is closer.");                                                                                                        //DEBUG
