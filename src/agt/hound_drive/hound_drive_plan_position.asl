@@ -1,21 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
 
-distance_other_to_pos(X,Y,H, DH):- 
-    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
-
-is_closer_to_pos(X,Y,H) :- 
-    distance_other_to_pos(X,Y,H, DH) & 
-    distance_me_to_pos(X,Y, D_Me) &
-    DH < D_Me.
-    
-is_equal_away_to_pos(X,Y,H) :- 
-    distance_other_to_pos(X,Y,H, DH) & 
-    distance_me_to_pos(X,Y, D_Me) &
-    DH = D_Me.
-
-i_am_lower_than(H):- .my_name(Me) & Me < H.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +8,7 @@ i_am_lower_than(H):- .my_name(Me) & Me < H.
 
 +!planPositionToDrive(Swarm) 
     <- //.print("planPositionToDrive(", Swarm, ")");                                                                                                    //DEBUG
-    !guess_who_is_driving_what;
+    !guessWhoDrivingWhat;
     .findall(H, hound_drives(H, Swarm), Other_Drivers);
     .length(Other_Drivers, Len_Other_Drivers);
     //.print("Other hound driving same swarm: ", Other_Drivers);                                                                                        //DEBUG

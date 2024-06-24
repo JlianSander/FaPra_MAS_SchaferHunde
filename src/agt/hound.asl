@@ -13,11 +13,57 @@ jammed(0).
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
+i_am_lower_than(H):- .my_name(Me) & Me < H.
 
-in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
+distance_between_agents(A1, A2, D):-  pos_agent(A1X,A1Y, A1) & pos_agent(A2X,A2Y, A2) & jia.get_distance(A1X,A1Y,A2X,A2Y,D).
+
+distance_between_swarms_closest_members(Ss1, Ss2, Min_D):-  
+            Ss1 \== Ss2 
+            & swarm(Ss1, _, _, _)
+            & swarm(Ss2, _, _, _)
+            & .findall(D, .member(S1, Ss1) & .member(S2, Ss2) & S1 \== S2 & distance_between_agents(S1, S2, D)  ,Distances)
+            & .min(Distances, Min_D).
+
+distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
+
+distance_me_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D).
+
+distance_other_hound_to_pos(X,Y,H, DH):- 
+    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
+
+is_closer_to_pos(X,Y,H) :- 
+    distance_other_hound_to_pos(X,Y,H, DH) & 
+    distance_me_to_pos(X,Y, D_Me) &
+    DH < D_Me.
+    
+is_equal_away_to_pos(X,Y,H) :- 
+    distance_other_hound_to_pos(X,Y,H, DH) & 
+    distance_me_to_pos(X,Y, D_Me) &
+    DH = D_Me.
+
+is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) & 
+    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(CX,CY,HX,HY,DH) & 
+    distance_me_to_swarm(Ss, D_ME) &
+    DH < D_ME.
+
+exists_close_swarms :- 
+    .setof(Ss2, 
+        swarm(Ss2, _, _, _) 
+        & swarm(Ss3, _, _, _) 
+        & Ss2 \== Ss3
+        & swarms_are_close_to_eachother(Ss2, Ss3), CloseSwarms)
+    & .length(CloseSwarms, CloseSwarms_Len) 
+    & CloseSwarms_Len > 0.
+
+is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
 is_jammed :- jammed(J) & J > 10.
 
+in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
+
++pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
+
+swarms_are_close_to_eachother(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_closest_member(Limit_distance) & D <= Limit_distance.
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------

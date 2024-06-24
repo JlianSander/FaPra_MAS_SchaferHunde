@@ -1,6 +1,9 @@
 package jia.util;
 
+import java.util.List;
+
 import org.apache.commons.math3.linear.*;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 
 import jason.environment.grid.Location;
 import jason.asSemantics.TransitionSystem;
@@ -11,7 +14,7 @@ import util.PropertiesLoader;
 
 public class DriveStrategy1 implements IDrivePositioner {
 
-    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) {
+    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber) throws ExceptionPositioningFailed{
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
@@ -19,23 +22,8 @@ public class DriveStrategy1 implements IDrivePositioner {
         Double angle_incr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
         //ts.getLogger().info("--------------'positionAgent' angle_incr: " + angle_incr);                                                                               //DEBUG
 
-        //get position, where the swarm is to drive to        
-        //ts.getLogger().info("--------------'positionAgent' Swarm.Center: (" + swarm.center().x + "," + swarm.center().y + ")");                                     //DEBUG
-        var swarmTargetLoc = swarm.getNextPositionTo(corral.center());
-        //ts.getLogger().info("--------------'positionAgent' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
-
-        //get direction of the swarms desired movements
-        RealVector direction_swarm = MatrixUtils.createRealVector(new double[] {
-                swarmTargetLoc.x - swarm.center().x,
-                swarmTargetLoc.y - swarm.center().y
-        });
-        //ts.getLogger().info("--------------'positionAgent' swarm_direction not normalized: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");         //DEBUG
-        if( direction_swarm.getEntry(0) != 0 || direction_swarm.getEntry(1) != 0){
-            direction_swarm = direction_swarm.unitVector();
-            //ts.getLogger().info("--------------'positionAgent' swarm_direction: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");                      //DEBUG
-        }
+        RealVector direction_swarm = swarm.getDirectionTo(corral.center());
         
-
         //calculate angle depending on the positionNumber
         double angle = (3 - positionNumber) * angle_incr;
         //ts.getLogger().info("--------------'positionAgent' calculated angle: " + angle);                                                                             //DEBUG
@@ -79,6 +67,12 @@ public class DriveStrategy1 implements IDrivePositioner {
             } else {
                 agentPos = new Location(agentPos.x - 1, agentPos.y - 1);
             }
+        }
+
+        List<Integer> atPos = model.getObjectsAt(agentPos);
+
+        if(atPos.contains(GridModel.OBSTACLE)){
+            throw new ExceptionPositioningFailed("Target position is obstacle");
         }
 
         //ts.getLogger().info("--------------'positionAgent' agent_pos final: (" + agentPos.x + "," + agentPos.y + ")");                                    //DEBUG

@@ -22,6 +22,9 @@ public class init_agent extends DefaultInternalAction {
             case GridModel.HOUND:
                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
+                BeliefBaseManager.addBelief(ts, "cluster_swarm_limit_closest_member", null,
+                    loader.getProperty("hound_cluster_swarm_limit_closest_member", Integer.class));
+
                 BeliefBaseManager.addBelief(ts, "keep_distance_to_swarm", null,
                     loader.getProperty("hound_keep_distance_to_swarm", Integer.class));
 
@@ -33,6 +36,12 @@ public class init_agent extends DefaultInternalAction {
 
                 BeliefBaseManager.addBelief(ts, "limit_radius_swarm", null,
                     loader.getProperty("hound_limit_radius_swarm", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null, 
+                    loader.getProperty("hound_select_swarm_weight_proximity", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "select_swarm_weight_size", null, 
+                    loader.getProperty("hound_select_swarm_weight_size", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "strategy_cluster_swarm", null, 
                     loader.getProperty("hound_strategy_cluster_swarm", Integer.class));

@@ -1,7 +1,12 @@
-//------------------------------------------------------- guess_who_is_driving_what -------------------------------------------------------
+//------------------------------------------------------- addToSwarm -------------------------------------------------------
++!addToSwarm(Swarm, Sheep)
+    <- .set.add(Swarm,Sheep);
+    !updateSwarmData(Swarm).
 
-  +!guess_who_is_driving_what
-    <- //.print("guess_who_is_driving_what");                                                                                                                                     //DEBUG
+//------------------------------------------------------- guessWhoDrivingWhat -------------------------------------------------------
+//TODO change name of plan
+  +!guessWhoDrivingWhat
+    <- //.print("guessWhoDrivingWhat");                                                                                                                                     //DEBUG
     if(hound_drives(_,_)){
         .abolish(hound_drives(_, _));
     }

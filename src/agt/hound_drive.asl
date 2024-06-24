@@ -4,8 +4,6 @@ has_enough_info(S) :- pos_agent(SX,SY, S) & corral_area(TLX,TLY,BRX,BRY).
 
 has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
-is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
-
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- startDrive -------------------------------------------------------
@@ -62,8 +60,9 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
     jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
     .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                           //DEBUG
     ?pos(ME_X, ME_Y);
+    jia.get_evasion_directions(CX, CY, R, EVADE_X, EVADE_Y);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y );                                                                                   //DEBUG
-    jia.get_next_pos(ME_X, ME_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
+    jia.get_next_pos(ME_X, ME_Y, EVADE_X, EVADE_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 
@@ -73,9 +72,7 @@ is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
         .wait(W);
     }else{
         !reachDestination(ME_NXT_X, ME_NXT_Y);
-    }.    
-
--!driveSwarm(LS) <- true.
+    }.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

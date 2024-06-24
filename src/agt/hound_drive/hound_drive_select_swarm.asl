@@ -1,10 +1,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////  
 
-is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) & 
-    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(CX,CY,HX,HY,DH) & 
-    pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D_ME) &
-    DH < D_ME.
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,7 +11,7 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     if(swarm_chosen_to_drive(_)){
         .abolish(swarm_chosen_to_drive(_));
     }
-    !guess_who_is_driving_what;
+    !guessWhoDrivingWhat;
 
     for(.member(Swarm_to_Evaluate, Swarms)){
         //.print(Swarm_to_Evaluate, " of ", Swarms);                                                                                                                              //DEBUG
