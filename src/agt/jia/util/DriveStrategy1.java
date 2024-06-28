@@ -3,7 +3,6 @@ package jia.util;
 import java.util.List;
 
 import org.apache.commons.math3.linear.*;
-import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 
 import jason.environment.grid.Location;
 import jason.asSemantics.TransitionSystem;
@@ -22,7 +21,7 @@ public class DriveStrategy1 implements IDrivePositioner {
         Double angle_incr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
         //ts.getLogger().info("--------------'positionAgent' angle_incr: " + angle_incr);                                                                               //DEBUG
 
-        RealVector direction_swarm = swarm.getDirectionTo(corral.center());
+        RealVector direction_swarm = swarm.getDirectionTo(ts, corral.center());
         
         //calculate angle depending on the positionNumber
         double angle = (3 - positionNumber) * angle_incr;

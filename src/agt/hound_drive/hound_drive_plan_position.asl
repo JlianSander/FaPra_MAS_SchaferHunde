@@ -52,16 +52,9 @@
 +!getHoundClosestToPos(Swarm, Other_Drivers, Position_Idx)
     <- //.print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", Position_Idx, ")");                                                                       //DEBUG
     !updateSwarmData(Swarm);
-    ?swarm(Swarm, CX,CY, R);
+    ?swarm(Swarm, CX, CY, R);
     jia.get_pos_drive_swarm(CX, CY, R, Position_Idx, POS_I_X, POS_I_Y);
-    /* .print("Position to reach POS_I:(", POS_I_X, ", ", POS_I_Y, ")");                                                                                //DEBUG
-    .findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp, H_tmp), List_tmp);                                                 //DEBUG
-    print("List_tmp: ", List_temp);                                                                                                                     //DEBUG */
-    .findall(D, .member(H2, Other_Drivers) & pos_agent(HX2,HY2, H2) & jia.get_distance(POS_I_X, POS_I_Y, HX2, HY2, D), List_Distances);
-    //.print("Distances to Pos", Position_Idx, ": ", List_Distances);                                                                                              //DEBUG
-    .min(List_Distances, Min_D);
-    .findall(H3, .member(H3, Other_Drivers) & pos_agent(HX3,HY3, H3) & jia.get_distance(POS_I_X, POS_I_Y,HX3,HY3,D3) & D3 == Min_D, List_temp);
-    .nth(0, List_temp, H);
+    !getClosestHoundToPosCritical(Other_Drivers, POS_I_X, POS_I_Y, H);
     /*.print("Other Hound with minimal distance to Pos", Position_Idx, " is ", H);                                                                                 //DEBUG
     .my_name(Me);                                                                                                                                       //DEBUG
     ?pos(ME_X, ME_Y);                                                                                                                                   //DEBUG
@@ -88,6 +81,18 @@
     ?closest(C);
     //.print("Hound with minimal distance to Pos", Position_Idx, " is ", C);                                                                                       //DEBUG
 .
+
+@getClosest[atomic]
++!getClosestHoundToPosCritical(Other_Drivers, POS_I_X, POS_I_Y, H)
+    <- //.print("Position to reach POS_I:(", POS_I_X, ", ", POS_I_Y, ")");                                                                                          //DEBUG
+    //.findall(H_tmp, .member(H_tmp, Other_Drivers) & pos_agent(HX_tmp,HY_tmp, H_tmp), List_tmp);                                                                   //DEBUG
+    //.print("List_tmp: ", List_tmp);                                                                                                                               //DEBUG
+    .findall(D, .member(H2, Other_Drivers) & pos_agent(HX2, HY2, H2) & jia.get_distance(POS_I_X, POS_I_Y, HX2, HY2, D), List_Distances);
+    //.print("Distances to Pos", Position_Idx, ": ", List_Distances);                                                                                               //DEBUG
+    .min(List_Distances, Min_D);
+    //.print("Min_D: ", Min_D);
+    .findall(H3, .member(H3, Other_Drivers) & pos_agent(HX3, HY3, H3) & jia.get_distance(POS_I_X, POS_I_Y,HX3,HY3,D3) & D3 == Min_D, List_temp);    //critical since position of the agents must not change between the lines
+    .nth(0, List_temp, H).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
  

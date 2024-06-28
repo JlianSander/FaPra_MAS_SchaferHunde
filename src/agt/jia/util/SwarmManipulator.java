@@ -1,5 +1,6 @@
 package jia.util;
 
+import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Location;
 
 import org.apache.commons.math3.linear.MatrixUtils;
@@ -18,8 +19,10 @@ public class SwarmManipulator {
         this.radius = radius;
     }
 
-    public Location getNextPositionTo(Location targetLocation) {
+    public Location getNextPositionTo(TransitionSystem ts, Location targetLocation) {
+        //ts.getLogger().info("--------------'getNextPositionTo' targetLocation: " + targetLocation.toString());                                                               //DEBUG
         var nextPosCenter = Pathfinder.getInstance(GridModel.SHEEP).getNextPosition(this.center, targetLocation);
+        //ts.getLogger().info("--------------'getNextPositionTo' nextPosCenter: " + nextPosCenter.toString());                                                               //DEBUG
 
         var edgePosTR = new Location(nextPosCenter.x + radius, nextPosCenter.y + radius);
         var edgePosTL = new Location(nextPosCenter.x + radius, nextPosCenter.y - radius);
@@ -27,9 +30,13 @@ public class SwarmManipulator {
         var edgePosBR = new Location(nextPosCenter.x - radius, nextPosCenter.y + radius);
 
         boolean trBlocked = GridModel.getInstance().getObjectsAt(edgePosTR.x, edgePosTR.y).contains(GridModel.OBSTACLE);
+        //ts.getLogger().info("--------------'getNextPositionTo' trBlocked: " + trBlocked);                                                               //DEBUG
         boolean tlBlocked = GridModel.getInstance().getObjectsAt(edgePosTL.x, edgePosTL.y).contains(GridModel.OBSTACLE);
+        //ts.getLogger().info("--------------'getNextPositionTo' tlBlocked: " + tlBlocked);                                                               //DEBUG
         boolean blBlocked = GridModel.getInstance().getObjectsAt(edgePosBL.x, edgePosBL.y).contains(GridModel.OBSTACLE);
+        //ts.getLogger().info("--------------'getNextPositionTo' blBlocked: " + blBlocked);                                                               //DEBUG
         boolean brBlocked = GridModel.getInstance().getObjectsAt(edgePosBR.x, edgePosBR.y).contains(GridModel.OBSTACLE);
+        //ts.getLogger().info("--------------'getNextPositionTo' brBlocked: " + brBlocked);                                                               //DEBUG
 
         int xPosUnBlocked = nextPosCenter.x;
         int yPosUnBlocked = nextPosCenter.y;
@@ -50,10 +57,10 @@ public class SwarmManipulator {
         return new Location(xPosUnBlocked, yPosUnBlocked);
     }
 
-    public RealVector getDirectionTo(Location target){
+    public RealVector getDirectionTo(TransitionSystem ts, Location target){
         //get position, where the swarm is to drive to        
-        //ts.getLogger().info("--------------'getDirectionTo' Swarm.Center: (" + swarm.center().x + "," + swarm.center().y + ")");                                     //DEBUG
-        var swarmTargetLoc = this.getNextPositionTo(target);
+        //ts.getLogger().info("--------------'getDirectionTo' Swarm.Center: (" + this.center().x + "," + this.center().y + ")");                                     //DEBUG
+        var swarmTargetLoc = this.getNextPositionTo(ts, target);
         //ts.getLogger().info("--------------'getDirectionTo' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
 
         //get direction of the swarms desired movements

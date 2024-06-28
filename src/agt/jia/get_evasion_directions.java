@@ -23,7 +23,7 @@ public class get_evasion_directions extends DefaultInternalAction {
         get_corral.execute(ts, un, args);
         var corral = get_corral.getCorral();
 
-        var swarmDirection = swarm.getDirectionTo(corral.center());
+        var swarmDirection = swarm.getDirectionTo(ts, corral.center());
         var evasionDirection = swarmDirection.mapMultiply(-1);
 
         return un.unifies(args[3], new NumberTermImpl(Math.round(evasionDirection.getEntry(0))))
