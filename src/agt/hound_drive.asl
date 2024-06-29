@@ -45,6 +45,9 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
         !processDriving;
     }else{
         .print("no swarm chosen");
+        .setof(S, sheep(S) & pos_agent(_,_,S), LS);
+        !ignoreSheep(LS);
+        !!forgetIgnoreSheep(LS);
         !!startSearch;
         .fail_goal(processDriving);
     }.    
