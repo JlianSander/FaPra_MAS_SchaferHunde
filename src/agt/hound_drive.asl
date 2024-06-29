@@ -23,7 +23,8 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     -is_driving.
 
 -!endDrive
-    <- is_driving.
+    <- -is_driving;
+    !!startSearch.
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
