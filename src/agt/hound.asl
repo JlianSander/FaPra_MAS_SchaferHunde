@@ -7,6 +7,8 @@ jammed(0).
        jia.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
+       .set.create(S);
+       +ignoredSheep(S);
        !!perceiveSurrounding;
        !!startSearch;
        .print("Finished init hound").
@@ -117,6 +119,22 @@ swarms_are_close_to_eachother(Ss1, Ss2) :-  distance_between_swarms_closest_memb
     ?wait_perception(W);
     .wait(W);
     !!perceiveSurrounding.
+
+//------------------------------------------------------- ignoreSheep -------------------------------------------------------
++!ignoreSheep(LS)
+    <- //.print("ignoreSheep(", LS, ")");
+    ?ignoredSheep(IgnoredSheep);
+    .set.add_all(IgnoredSheep, LS).
+    //.print("ignoredSheep: ", IgnoredSheep).
+
+//------------------------------------------------------- forgetIgnoreSheep -------------------------------------------------------
++!forgetIgnoreSheep(LS)
+    <- //.print("forgetIgnoreSheep(", LS, ")");
+    ?wait_ignore_sheep_forget(W);
+    .wait(W);
+    ?ignoredSheep(IgnoredSheep);
+    .set.difference(IgnoredSheep,LS).
+    //.print("ignoredSheep: ", IgnoredSheep).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 
