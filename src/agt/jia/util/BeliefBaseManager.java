@@ -1,18 +1,23 @@
 package jia.util;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
+import jason.asSyntax.SetTerm;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
+import jason.environment.grid.Location;
 
 public class BeliefBaseManager {
 
@@ -53,5 +58,40 @@ public class BeliefBaseManager {
     public static boolean removeBelief(TransitionSystem ts, Literal belief){
         BeliefBase beliefBase = ts.getAg().getBB();
         return beliefBase.remove(belief);
+    }
+
+    public static Location[] getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
+        Iterator<Literal> itBeliefsSwarms = BeliefBaseManager.getBeliefs(ts, "swarm", 4);
+        Collection<Term> sheepTerms = null;
+        while(itBeliefsSwarms.hasNext()){
+            Literal literal = itBeliefsSwarms.next();
+            Term[] terms = literal.getTermsArray();
+            int cX = (int) ((NumberTermImpl) terms[1]).solve();
+            int cY = (int) ((NumberTermImpl) terms[2]).solve();
+            int r = (int) ((NumberTermImpl) terms[3]).solve();
+            if(cX == swarm.getCenter().x && cY == swarm.getCenter().y && r == swarm.getRadius() ){
+                sheepTerms = (SetTerm) terms[0]; 
+                break;
+            }
+        }
+
+        Location[] locationsSheep = new Location[sheepTerms.size()];
+        int idx = 0;
+        for(Term sheepT : sheepTerms){
+            Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
+            while(itBeliefsPos.hasNext()){
+                Literal literal = itBeliefsPos.next();
+                Term[] terms = literal.getTermsArray();
+                if(terms[2].equals(sheepT)){
+                    int tmpX = (int) ((NumberTermImpl) terms[0]).solve();
+                    int tmpY = (int) ((NumberTermImpl) terms[1]).solve();
+                    locationsSheep[idx] = new Location(tmpX, tmpY);
+                    idx++;
+                    break;
+                }
+            }
+        }
+
+        return locationsSheep;
     }
 }

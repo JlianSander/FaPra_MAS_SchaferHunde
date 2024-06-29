@@ -44,7 +44,6 @@ public class DriveStrategy2 implements IDrivePositioner {
                 break;
         }
 
-
        return DriveStrategyCommon.calculatePosition(ts, positionNumber, angleIncr, invertedDirection, radiusInQuadrant, houndDistanceToSwarm, swarm.getCenter(), model);
     }
     

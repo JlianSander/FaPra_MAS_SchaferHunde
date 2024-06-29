@@ -2,6 +2,7 @@ package jia;
 
 import jia.util.DriveStrategy1;
 import jia.util.DriveStrategy2;
+import jia.util.DriveStrategy3;
 import jia.util.ExceptionPositioningFailed;
 import jia.util.IDrivePositioner;
 import jia.util.SwarmManipulator;
@@ -56,6 +57,8 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
                 return new DriveStrategy1();
             case 2:
                 return new DriveStrategy2();
+            case 3:
+                return new DriveStrategy3();
             default:
             ts.getAg().getLogger().info("ERROR strategy unknown");
             throw new WrongNumberArgsException("1");
