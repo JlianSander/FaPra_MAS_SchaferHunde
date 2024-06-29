@@ -13,10 +13,16 @@ public class SwarmManipulator {
 
     private Location center;
     private int radius;
+    private int[] radiusQ;
 
     public SwarmManipulator(Location center, int radius) {
         this.center = center;
         this.radius = radius;
+    }
+
+    public SwarmManipulator(Location center, int radius, int[] radiusQ) {
+        this(center, radius);
+        this.radiusQ = radiusQ;
     }
 
     public Location getNextPositionTo(TransitionSystem ts, Location targetLocation) {
@@ -65,8 +71,8 @@ public class SwarmManipulator {
 
         //get direction of the swarms desired movements
         RealVector direction_swarm = MatrixUtils.createRealVector(new double[] {
-                swarmTargetLoc.x -  this.center().x,
-                swarmTargetLoc.y -  this.center().y
+                swarmTargetLoc.x -  this.getCenter().x,
+                swarmTargetLoc.y -  this.getCenter().y
         });
         //ts.getLogger().info("--------------'getDirectionTo' swarm_direction not normalized: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");         //DEBUG
         if( direction_swarm.getEntry(0) != 0 || direction_swarm.getEntry(1) != 0){
@@ -77,11 +83,15 @@ public class SwarmManipulator {
         return direction_swarm;
     }
 
-    public Location center() {
+    public Location getCenter() {
         return center;
     }
 
-    public int radius() {
+    public int getRadius() {
         return radius;
+    }
+
+    public int[] getRadiusQ(){
+        return radiusQ;
     }
 }

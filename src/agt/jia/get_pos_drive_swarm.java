@@ -1,6 +1,7 @@
 package jia;
 
 import jia.util.DriveStrategy1;
+import jia.util.DriveStrategy2;
 import jia.util.ExceptionPositioningFailed;
 import jia.util.IDrivePositioner;
 import jia.util.SwarmManipulator;
@@ -25,9 +26,14 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         int centerX = (int) ((NumberTerm) args[0]).solve();
         int centerY = (int) ((NumberTerm) args[1]).solve();
         int radius = (int) ((NumberTerm) args[2]).solve();
-        int positionNumber = (int) ((NumberTerm) args[3]).solve();
+        int[] radiusQ = new int[4];
+        radiusQ[0] = (int) ((NumberTerm) args[3]).solve();
+        radiusQ[1] = (int) ((NumberTerm) args[4]).solve();
+        radiusQ[2] = (int) ((NumberTerm) args[5]).solve();
+        radiusQ[3] = (int) ((NumberTerm) args[6]).solve();
+        int positionNumber = (int) ((NumberTerm) args[7]).solve();
         var swarmCenter = new Location(centerX, centerY);
-        var swarm = new SwarmManipulator(swarmCenter, radius);
+        var swarm = new SwarmManipulator(swarmCenter, radius, radiusQ);
 
         var get_corral = new get_corral_area();
         get_corral.execute(ts, un, args);
@@ -37,8 +43,8 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         Integer stratID = loader.getProperty("hound_strategy_drive", Integer.class);
         try{
             Location agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, swarm, corral, positionNumber);
-            return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
-                && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
+            return un.unifies(args[8], new NumberTermImpl(agentLoc.x))
+                && un.unifies(args[9], new NumberTermImpl(agentLoc.y));
         }catch(ExceptionPositioningFailed e){
             return fail.create().execute(ts, un, args);
         }
@@ -48,6 +54,8 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         switch(stratId){
             case 1:
                 return new DriveStrategy1();
+            case 2:
+                return new DriveStrategy2();
             default:
             ts.getAg().getLogger().info("ERROR strategy unknown");
             throw new WrongNumberArgsException("1");

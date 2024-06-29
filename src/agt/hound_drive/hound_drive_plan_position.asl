@@ -53,7 +53,8 @@
     <- //.print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", Position_Idx, ")");                                                                       //DEBUG
     !updateSwarmData(Swarm);
     ?swarm(Swarm, CX, CY, R);
-    jia.get_pos_drive_swarm(CX, CY, R, Position_Idx, POS_I_X, POS_I_Y);
+    !getQuadrantRadius(Swarm, RQ1, RQ2, RQ3, RQ4);
+    jia.get_pos_drive_swarm(CX, CY, R, RQ1, RQ2, RQ3, RQ4, Position_Idx, POS_I_X, POS_I_Y);
     !getClosestHoundToPosCritical(Other_Drivers, POS_I_X, POS_I_Y, H);
     /*.print("Other Hound with minimal distance to Pos", Position_Idx, " is ", H);                                                                                 //DEBUG
     .my_name(Me);                                                                                                                                       //DEBUG
