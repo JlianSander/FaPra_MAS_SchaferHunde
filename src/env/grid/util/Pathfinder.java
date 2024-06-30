@@ -29,15 +29,16 @@ public class Pathfinder {
 
     private static final Logger logger = Logger.getLogger(Pathfinder.class.getName());
 
-    private DStarLite ds;
+    protected DStarLite ds;
     private GridProcessor gridProcessor;
     private int user;
     private Set<Location> customExcludedObjects = new HashSet<>();
-    private static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
+    protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
-    private Pathfinder() {
+    protected Pathfinder() {
         ds = new DStarLite();
-        gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(), GridModel.getInstance().getHeight());
+        GridModel model = GridModel.getInstance();
+        gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
 
     public static Pathfinder getInstance(Integer user) {
@@ -57,7 +58,7 @@ public class Pathfinder {
         }
     }
 
-    private void releaseInstance() {
+    protected void releaseInstance() {
         customExcludedObjects.clear();
         AtomicBoolean inUse = instances.get(this);
         if (inUse != null) {
@@ -81,8 +82,8 @@ public class Pathfinder {
     }
 
     public void excludeObjects(Location callerPosition, int objectType, int range) {
-        GridProcessor gridProcessor = new GridProcessor(GridModel.getInstance().getWidth(),
-                GridModel.getInstance().getHeight());
+        GridModel model = GridModel.getInstance();
+        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         List<Location> objectLocations = new ArrayList<>();
         gridProcessor.processEntireGrid(
                 loc -> !loc.equals(callerPosition)
@@ -92,7 +93,7 @@ public class Pathfinder {
 
         for (Location location : objectLocations) {
             customExcludedObjects.add(location);
-            customExcludedObjects.addAll(GridModel.getInstance().getNeighborhood(location, range, loc -> true));
+            customExcludedObjects.addAll(model.getNeighborhood(location, range, loc -> true));
         }
 
         customExcludedObjects.remove(callerPosition);
@@ -111,21 +112,26 @@ public class Pathfinder {
         }
     }
 
+    protected boolean targetIsWalkable(Location target) {
+        return !(GridModel.getInstance().getObstacleMap().isObstacle(target, user)
+                || customExcludedObjects.contains(target));
+    }
+
     private List<Location> getPath(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         if (start.equals(target)) {
             return List.of(start);
         }
 
-        if (GridModel.getInstance().getObstacleMap().isObstacle(target, user)
-                || customExcludedObjects.contains(target)) {
+        if (!targetIsWalkable(target)) {
             throw new UnwalkableTargetCellException("Target location is an obstacle");
         }
 
+        GridModel model = GridModel.getInstance();
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
         if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
-                || s.x >= GridModel.getInstance().getWidth() || s.y >= GridModel.getInstance().getHeight())) {
+                || s.x >= model.getWidth() || s.y >= model.getHeight())) {
             throw new NoPathFoundException("No path found");
         }
         return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
