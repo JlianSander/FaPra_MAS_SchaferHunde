@@ -1,21 +1,13 @@
 package jia.util;
 
-import java.util.Iterator;
-import java.util.List;
-
+import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealVector;
 
 import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
-import jason.asSyntax.Literal;
-import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.Term;
-import jason.asSyntax.ListTermImpl;
-import jason.asSyntax.ListTerm;
 
 import jason.environment.grid.Area;
 import jason.environment.grid.Location;
-import jason.stdlib.foreach;
 import util.PropertiesLoader;
 
 public class DriveStrategy3 implements IDrivePositioner{
@@ -35,6 +27,15 @@ public class DriveStrategy3 implements IDrivePositioner{
 
         var posSheep = BeliefBaseManager.getPosOfSheep(ts, swarm);
         
+        //TODO get sheep most left
+        //TODO get sheep most in direction of angular translation
+        RealVector vertical = MatrixUtils.createRealVector(new double[] {0,1});
+        //getIntersection(sPosLeft, vertical, sPosDir, Dir);
+
         return posSheep[positionNumber-1];
+    }
+
+    private Location getIntersection(Location p1, RealVector dir1, Location p2, RealVector dir2){
+
     }
 }
