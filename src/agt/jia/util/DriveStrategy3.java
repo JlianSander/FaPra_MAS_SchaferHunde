@@ -1,5 +1,7 @@
 package jia.util;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealVector;
 
@@ -36,6 +38,6 @@ public class DriveStrategy3 implements IDrivePositioner{
     }
 
     private Location getIntersection(Location p1, RealVector dir1, Location p2, RealVector dir2){
-
+        throw new RuntimeException();
     }
 }
