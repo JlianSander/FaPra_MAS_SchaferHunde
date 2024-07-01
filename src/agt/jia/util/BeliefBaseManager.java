@@ -1,13 +1,12 @@
 package jia.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
-import jason.asSyntax.ListTerm;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
@@ -60,7 +59,7 @@ public class BeliefBaseManager {
         return beliefBase.remove(belief);
     }
 
-    public static Location[] getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
+    public static ArrayList<Location> getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
         Iterator<Literal> itBeliefsSwarms = BeliefBaseManager.getBeliefs(ts, "swarm", 4);
         Collection<Term> sheepTerms = null;
         while(itBeliefsSwarms.hasNext()){
@@ -75,8 +74,7 @@ public class BeliefBaseManager {
             }
         }
 
-        Location[] locationsSheep = new Location[sheepTerms.size()];
-        int idx = 0;
+        ArrayList<Location> locationsSheep = new ArrayList<Location>(sheepTerms.size());
         for(Term sheepT : sheepTerms){
             Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
             while(itBeliefsPos.hasNext()){
@@ -85,8 +83,7 @@ public class BeliefBaseManager {
                 if(terms[2].equals(sheepT)){
                     int tmpX = (int) ((NumberTermImpl) terms[0]).solve();
                     int tmpY = (int) ((NumberTermImpl) terms[1]).solve();
-                    locationsSheep[idx] = new Location(tmpX, tmpY);
-                    idx++;
+                    locationsSheep.add(new Location(tmpX, tmpY));
                     break;
                 }
             }

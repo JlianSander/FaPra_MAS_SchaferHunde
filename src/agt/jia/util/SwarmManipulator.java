@@ -3,12 +3,10 @@ package jia.util;
 import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Location;
 
-import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealVector;
 
 import grid.GridModel;
 import grid.util.BypassPathfinder;
-import grid.util.Pathfinder;
 
 public class SwarmManipulator {
 
@@ -68,21 +66,10 @@ public class SwarmManipulator {
     public RealVector getDirectionTo(TransitionSystem ts, Location target){
         //get position, where the swarm is to drive to        
         //ts.getLogger().info("--------------'getDirectionTo' Swarm.Center: (" + this.center().x + "," + this.center().y + ")");                                     //DEBUG
-        var swarmTargetLoc = this.getNextPositionTo(ts, target);
+        var nextPos = this.getNextPositionTo(ts, target);
         //ts.getLogger().info("--------------'getDirectionTo' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
 
-        //get direction of the swarms desired movements
-        RealVector direction_swarm = MatrixUtils.createRealVector(new double[] {
-                swarmTargetLoc.x -  this.getCenter().x,
-                swarmTargetLoc.y -  this.getCenter().y
-        });
-        //ts.getLogger().info("--------------'getDirectionTo' swarm_direction not normalized: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");         //DEBUG
-        if( direction_swarm.getEntry(0) != 0 || direction_swarm.getEntry(1) != 0){
-            direction_swarm = direction_swarm.unitVector();
-            //ts.getLogger().info("--------------'getDirectionTo' swarm_direction: [" + direction_swarm.getEntry(0) + "][" + direction_swarm.getEntry(1) + "]");                      //DEBUG
-        }
-
-        return direction_swarm;
+        return GeometryCalculator.calcDirection(ts, this.center, nextPos);
     }
 
     public Location getCenter() {
