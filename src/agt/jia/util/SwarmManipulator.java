@@ -25,10 +25,10 @@ public class SwarmManipulator {
     }
 
     public Location getNextPositionTo(TransitionSystem ts, Location targetLocation) {
-        ts.getLogger().info("--------------'getNextPositionTo' get next step from " + this.center.toString() + " to " + targetLocation.toString());                                                               //DEBUG
+        //ts.getLogger().info("--------------'getNextPositionTo' get next step from " + this.center.toString() + " to " + targetLocation.toString());                                                               //DEBUG
         var nextPosCenter = BypassPathfinder.getInstance().getNextPosition(this.center, targetLocation);
         //var nextPosCenter = Pathfinder.getInstance(GridModel.SHEEP).getNextPosition(this.center, targetLocation);
-        ts.getLogger().info("--------------'getNextPositionTo' nextPosCenter: " + nextPosCenter.toString());                                                               //DEBUG
+        //ts.getLogger().info("--------------'getNextPositionTo' nextPosCenter: " + nextPosCenter.toString());                                                               //DEBUG
 
         var edgePosTR = new Location(nextPosCenter.x + radius, nextPosCenter.y + radius);
         var edgePosTL = new Location(nextPosCenter.x + radius, nextPosCenter.y - radius);

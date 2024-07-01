@@ -77,8 +77,8 @@
     !getRadiusOfSubSet(Ss, Sheep_Q3, RQ3);
     //Q4
     .findall(S4, .member(S4, Ss) & pos_agent(S4x, S4y, S4) & S4x >= Cx & S4y >= Cy, Sheep_Q4);
-    !getRadiusOfSubSet(Ss, Sheep_Q4, RQ4);
-    .print("Radius per Quadrant Q1:", RQ1, " Q2:", RQ2, " Q3:", RQ3, " Q4:", RQ4).
+    !getRadiusOfSubSet(Ss, Sheep_Q4, RQ4).
+    //.print("Radius per Quadrant Q1:", RQ1, " Q2:", RQ2, " Q3:", RQ3, " Q4:", RQ4).
 
     //------------------------------------------------------- getRadiusOfSubSet -------------------------------------------------------
 

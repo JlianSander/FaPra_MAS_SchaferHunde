@@ -30,7 +30,7 @@ public class GeometryCalculator {
             p2.x - p1.x,
             p2.y - p1.y
         });
-        return Math.abs(distance.dotProduct(dir));
+        return distance.dotProduct(dir);
     }
 
     public static double calcStraightSlope(RealVector dir){
@@ -128,7 +128,10 @@ public class GeometryCalculator {
         return rotation.operate(direction);
     }
 
-    public static Location translateInDir(TransitionSystem ts, Location p1, RealVector dir, int offset){
-        return new Location(p1.x + offset * Math.round((float)dir.getEntry(0)), p1.y + offset * Math.round((float)dir.getEntry(1)));
+    public static Location translateInDir(TransitionSystem ts, Location p1, RealVector dir, double offset){
+        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' p1: "+ p1.toString());
+        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' dir: "+ dir.toString());
+        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' offset: "+ offset);
+        return new Location(Math.round((float)(p1.x + offset * dir.getEntry(0))), Math.round((float)(p1.y + offset * dir.getEntry(1))));
     }
 }
