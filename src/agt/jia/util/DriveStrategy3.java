@@ -17,8 +17,7 @@ import util.PropertiesLoader;
 public class DriveStrategy3 implements IDrivePositioner{
 
     @Override
-    public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber)
-            throws ExceptionPositioningFailed {
+    public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral, int positionNumber){
         ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' positionNumber: " + positionNumber);                                                                             //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
@@ -35,26 +34,26 @@ public class DriveStrategy3 implements IDrivePositioner{
         //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' lstPosSwarm: " + lstPosSwarm.toString());                                                                        //DEBUG
 
         if(positionNumber != 3){
-            return calcTranslatedAgtPos(ts, swarm, positionNumber, model, houndDistanceToSwarm, angleIncr, directionSwarm,
+            return calcTranslatedAgtPos(ts, myLoc, swarm, positionNumber, model, houndDistanceToSwarm, angleIncr, directionSwarm,
                 invertedDirection, lstPosSwarm);
         }else{
-            return calcCenterPos(ts, swarm, model, houndDistanceToSwarm,  
+            return calcCenterPos(ts, myLoc, swarm, model, houndDistanceToSwarm,  
                 invertedDirection, lstPosSwarm);
         }
     }
 
-    private Location calcCenterPos(TransitionSystem ts, SwarmManipulator swarm, GridModel model, Integer houndDistanceToSwarm, 
-        RealVector invertedDirection, ArrayList<Location> lstPosSwarm) throws ExceptionPositioningFailed{
-        var posAgent = calcPosBehindSheep(ts, swarm, houndDistanceToSwarm + 1, lstPosSwarm, invertedDirection);
+    private Location calcCenterPos(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, GridModel model, Integer offsetToSheep, 
+        RealVector invertedDirection, ArrayList<Location> lstPosSwarm){
+        var posAgent = calcPosBehindSheep(ts, swarm, offsetToSheep + 1, lstPosSwarm, invertedDirection);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
-        Location afterEnsureValid = DriveStrategyCommon.ensurePosValid(ts, swarm.getCenter(), model, posAgent);
+        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
         return afterEnsureValid;
     }
 
-    private Location calcTranslatedAgtPos(TransitionSystem ts, SwarmManipulator swarm, int positionNumber, GridModel model,
-            Integer houndDistanceToSwarm, Double angleIncr, RealVector directionSwarm, RealVector invertedDirection,
-            ArrayList<Location> lstPosSwarm) throws ExceptionPositioningFailed {
+    private Location calcTranslatedAgtPos(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, int positionNumber, GridModel model,
+            Integer offsetToSheep, Double angleIncr, RealVector directionSwarm, RealVector invertedDirection,
+            ArrayList<Location> lstPosSwarm){
         //get the sheep, which is positioned farest away from the center in a direction translated by 90° of the direction of the swarm
         double angle1 = positionNumber < 3 ? -90.0 : 90.0;
         RealVector dir1Perp = GeometryCalculator.translateAngle(ts, directionSwarm, angle1);
@@ -87,12 +86,12 @@ public class DriveStrategy3 implements IDrivePositioner{
             }
             // add offset , since it was not given before the intersection
             //Location p4 = GeometryCalculator.translateInDir(ts, p3, dir1Perp, 1);
-            p5 = GeometryCalculator.translateInDir(ts, p3, dir2Perp, houndDistanceToSwarm);
+            p5 = GeometryCalculator.translateInDir(ts, p3, dir2Perp, offsetToSheep);
         }catch(InvalidAlgorithmParameterException e){
             //should not happen since directions cant be parallel to each other
             throw new RuntimeException(e);
         }
-        Location afterEnsureValid =  DriveStrategyCommon.ensurePosValid(ts, swarm.getCenter(), model, p5);
+        Location afterEnsureValid =  ValidatorPos.ensurePosValid(ts, myLoc, p5, dir2Perp, offsetToSheep);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' afterEnsureValid: " + afterEnsureValid.toString());                                                       //DEBUG
         return afterEnsureValid;
     }

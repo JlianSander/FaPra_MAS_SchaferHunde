@@ -60,31 +60,3 @@
     +swarm(LS, CX, CY, R);
     //.print("Updated swarm: (", LS, ", ", CX, ", ", CY, ", ", R, ")");                                                                     //DEBUG
     .
-
-    //------------------------------------------------------- getQuadrantRadius -------------------------------------------------------
-
-+!getQuadrantRadius(Ss, RQ1, RQ2, RQ3, RQ4)
-    <- //.print("getQuadrantRadius(", Ss, ")");
-    ?swarm(Ss, Cx, Cy, R);
-    //Q1
-    .findall(S1, .member(S1, Ss) & pos_agent(S1x, S1y, S1) & S1x >= Cx & S1y <= Cy, Sheep_Q1);
-    !getRadiusOfSubSet(Ss, Sheep_Q1, RQ1);
-    //Q2
-    .findall(S2, .member(S2, Ss) & pos_agent(S2x, S2y, S2) & S2x <= Cx & S2y <= Cy, Sheep_Q2);
-    !getRadiusOfSubSet(Ss, Sheep_Q2, RQ2);
-    //Q3
-    .findall(S3, .member(S3, Ss) & pos_agent(S3x, S3y, S3) & S3x <= Cx & S3y >= Cy, Sheep_Q3);
-    !getRadiusOfSubSet(Ss, Sheep_Q3, RQ3);
-    //Q4
-    .findall(S4, .member(S4, Ss) & pos_agent(S4x, S4y, S4) & S4x >= Cx & S4y >= Cy, Sheep_Q4);
-    !getRadiusOfSubSet(Ss, Sheep_Q4, RQ4).
-    //.print("Radius per Quadrant Q1:", RQ1, " Q2:", RQ2, " Q3:", RQ3, " Q4:", RQ4).
-
-    //------------------------------------------------------- getRadiusOfSubSet -------------------------------------------------------
-
-+!getRadiusOfSubSet(Ss, Sub_Ss, R)
-    <- //.print("getRadius(", Ss, ", ", Sub_Ss, ", R)");
-    ?swarm(Ss, Cx, Cy, _);
-    .findall(TmpR, .member(S, Sub_Ss) & pos_agent(Sx, Sy, S) & jia.get_distance(Cx,Cy,Sx,Sy,TmpR), ListR);
-    .max(ListR, R).
-    //.print("getRadius R:", R).

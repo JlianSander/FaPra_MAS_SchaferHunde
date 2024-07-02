@@ -12,16 +12,10 @@ public class SwarmManipulator {
 
     private Location center;
     private int radius;
-    private int[] radiusQ;
 
     public SwarmManipulator(Location center, int radius) {
         this.center = center;
         this.radius = radius;
-    }
-
-    public SwarmManipulator(Location center, int radius, int[] radiusQ) {
-        this(center, radius);
-        this.radiusQ = radiusQ;
     }
 
     public Location getNextPositionTo(TransitionSystem ts, Location targetLocation) {
@@ -78,9 +72,5 @@ public class SwarmManipulator {
 
     public int getRadius() {
         return radius;
-    }
-
-    public int[] getRadiusQ(){
-        return radiusQ;
     }
 }
