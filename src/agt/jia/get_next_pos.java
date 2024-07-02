@@ -19,7 +19,7 @@ public class get_next_pos extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        //ts.getLogger().info("--------------'get_next_pos' ");                                                                                         // DEBUG
+        ts.getLogger().info("--------------'get_next_pos' ");                                                                                         // DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);
@@ -35,6 +35,11 @@ public class get_next_pos extends DefaultInternalAction {
         int targetX = (int) ((NumberTerm) args[4]).solve();
         int targetY = (int) ((NumberTerm) args[5]).solve();
         var targetLoc = new Location(targetX, targetY);
+
+        if(targetLoc.equals(myLoc)){
+            return un.unifies(args[6], new NumberTermImpl(myLoc.x))
+                && un.unifies(args[7], new NumberTermImpl(myLoc.y));
+        }
 
         Location validTarget = calculateValidTarget(ts, model, maxNumberRecalculations, keepDistanceToSheep, myLoc,
                 targetLoc, evasionX, evasionY);
@@ -62,8 +67,8 @@ public class get_next_pos extends DefaultInternalAction {
             numberRecalculations++;
             //ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
             if (numberRecalculations > maxNumberRecalculations) {
-                /*ts.getLogger()
-                        .info("--------------'calculateValidTarget' no valid target: reached limit of recalculations"); */                                  //DEBUG
+                ts.getLogger()
+                        .info("--------------'get_next_pos::calculateValidTarget' no valid target: reached limit of recalculations");                                  //DEBUG
                 return myLoc;
             }
 
@@ -162,7 +167,7 @@ public class get_next_pos extends DefaultInternalAction {
             }
         }
 
-        //ts.getLogger().info("--------------'calculateValidTarget' no valid target: no places to process");                                    //DEBUG
+        ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process");                                    //DEBUG
         return myLoc;
     }
 }

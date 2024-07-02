@@ -75,7 +75,7 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 
         //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
-        .print("Can't reach target position.");                                                                                                                             //DEBUG   
+        .print("I stay at same position.");                                                                                                                             //DEBUG   
         ?wait_cant_reach_driving_pos(W);
         .wait(W);
     }else{
