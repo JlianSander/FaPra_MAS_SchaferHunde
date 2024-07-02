@@ -22,17 +22,17 @@ public class DriveStrategyCommon {
      public static double calcAngle(TransitionSystem ts, int positionNumber, Double angle_incr) {
         //calculate angle depending on the positionNumber
         double angle = (3 - positionNumber) * angle_incr;
-        ts.getLogger().info("--------------'DriveStrategyCommon::calcAngle' angle: " + angle);                                                                             //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategyCommon::calcAngle' angle: " + angle);                                                                             //DEBUG
         return angle;
     }
 
     public static Location calcPosOnCircle(TransitionSystem ts, Location center, RealVector directionFromCenter, double angleInDegree, int radius){
         RealVector directionSwarmRotated = GeometryCalculator.translateAngle(ts, directionFromCenter, angleInDegree);
-        ts.getLogger().info("--------------'DriveStrategyCommon::positionAgent' directionSwarmRotated: " + directionSwarmRotated.toString());                 //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategyCommon::positionAgent' directionSwarmRotated: " + directionSwarmRotated.toString());                 //DEBUG
 
         //calculate agents position behind the swarm
         var agentPos = GeometryCalculator.translateInDir(ts, center, directionSwarmRotated, radius);
-        ts.getLogger().info("--------------'DriveStrategyCommon::positionAgent' agentPos: " + agentPos.toString());                 //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategyCommon::positionAgent' agentPos: " + agentPos.toString());                 //DEBUG
         return agentPos;
     }
     
@@ -43,7 +43,7 @@ public class DriveStrategyCommon {
                 IDrivePositioner.stay_within_limit(ts, targetPos.x, model.getWidth() - 1),
                 IDrivePositioner.stay_within_limit(ts, targetPos.y, model.getHeight() - 1));
 
-        ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosOnMap' validPos: " + validPos.toString());                                    //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosOnMap' validPos: " + validPos.toString());                                    //DEBUG
         return validPos;
     }
 
@@ -68,7 +68,7 @@ public class DriveStrategyCommon {
             throw new ExceptionPositioningFailed("Target position is obstacle");
         }
 
-        ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosValid' validPos: " + validPos.toString());                                    //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosValid' validPos: " + validPos.toString());                                    //DEBUG
 
         return validPos;
     }

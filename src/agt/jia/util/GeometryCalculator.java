@@ -47,7 +47,8 @@ public class GeometryCalculator {
         return t * dir.getEntry(1) + p.y;
     }
 
-    public static Location calcStraightIntersection(Location p1, RealVector dir1, Location p2, RealVector dir2) throws InvalidAlgorithmParameterException{
+    public static Location calcStraightIntersection(TransitionSystem ts ,Location p1, RealVector dir1, Location p2, RealVector dir2) throws InvalidAlgorithmParameterException{
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersection' p1:" + p1.toString() + " dir1:" + dir1.toString() + " p2:" + p2.toString() + " dir2:" + dir2.toString());                                                                      //DEBUG
         //check that directions are not parallel
         if(checkParallel(dir1, dir2)){
             throw new InvalidAlgorithmParameterException("The two direction must not be parallel");
@@ -57,38 +58,50 @@ public class GeometryCalculator {
         RealVector horizontal = MatrixUtils.createRealVector(new double[]{ 1, 0});
         boolean dir1Parallel = checkParallel(dir1, vertical) || checkParallel(dir1, horizontal);
         boolean dir2Parallel = checkParallel(dir2, vertical) || checkParallel(dir2, horizontal);
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersection' dir1Parallel: " + dir1Parallel);                                                                      //DEBUG
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersection' dir2Parallel: " + dir2Parallel);                                                                      //DEBUG
 
         if(dir1Parallel && dir2Parallel){
-            return calcStraightIntersectionBothParallel(p1, dir1, p2, dir2);
+            return calcStraightIntersectionBothParallel(ts, p1, dir1, p2, dir2);
         }else if(dir1Parallel){
-            return calcStraightIntersectionOneParallel(p2, dir2, p1, dir1);
+            return calcStraightIntersectionOneParallel(ts, p2, dir2, p1, dir1);
         }else if(dir2Parallel){
-            return calcStraightIntersectionOneParallel(p1, dir1, p2, dir2);
+            return calcStraightIntersectionOneParallel(ts, p1, dir1, p2, dir2);
         }else{
             return calcStraightIntersectionNormal(p1, dir1, p2, dir2);
         }
     }
 
-    private static Location calcStraightIntersectionBothParallel(Location p1, RealVector dir1, Location p2,
+    private static Location calcStraightIntersectionBothParallel(TransitionSystem ts ,Location p1, RealVector dir1, Location p2,
             RealVector dir2) {
         int x = dir1.getEntry(0) == 0 ? p2.x : p1.x;
         int y = dir1.getEntry(1) == 0 ? p2.y : p1.y;
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionBothParallel' x: " + x);                                                                      //DEBUG
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionBothParallel' y: " + y);                                                                      //DEBUG
         return new Location(x, y);
     }
 
-    private static Location calcStraightIntersectionOneParallel(Location p1, RealVector straight, Location p2,
+    private static Location calcStraightIntersectionOneParallel(TransitionSystem ts ,Location p1, RealVector straight, Location p2,
             RealVector parallel) {
         double slope = calcStraightSlope(straight);
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' slope: " + slope);                                                                      //DEBUG
         double intercept = calcStraightIntercept(straight, p1);
+        //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' intercept: " + intercept);                                                              //DEBUG
         int x,y;
         if(parallel.getEntry(0) != 0){
             //parallel line is horizontal
-            x = p2.x;
-            y = Math.round((float)(x * slope + intercept));
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' parallel line is horizontal ");                                                //DEBUG
+            y = p2.y;
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' y: " + y);                                                              //DEBUG
+            x = Math.round((float)(y - intercept / slope));
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' x: " + x);                                                              //DEBUG
         }else{
             //parallel line is vertical
-            y = p2.y;
-            x = Math.round((float)(y - intercept / slope));
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' parallel line is vertical ");                                                //DEBUG
+            x = p2.x;
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' x: " + x);                                                              //DEBUG
+            y = Math.round((float)(x * slope + intercept));
+            //ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersectionOneParallel' y: " +y);                                                              //DEBUG
         }
 
         return new Location(x, y);
@@ -129,9 +142,9 @@ public class GeometryCalculator {
     }
 
     public static Location translateInDir(TransitionSystem ts, Location p1, RealVector dir, double offset){
-        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' p1: "+ p1.toString());
-        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' dir: "+ dir.toString());
-        ts.getLogger().info("--------------'GeometryCalculator::translateInDir' offset: "+ offset);
+        //ts.getLogger().info("--------------'GeometryCalculator::translateInDir' p1: "+ p1.toString());
+        //ts.getLogger().info("--------------'GeometryCalculator::translateInDir' dir: "+ dir.toString());
+        //ts.getLogger().info("--------------'GeometryCalculator::translateInDir' offset: "+ offset);
         return new Location(Math.round((float)(p1.x + offset * dir.getEntry(0))), Math.round((float)(p1.y + offset * dir.getEntry(1))));
     }
 }
