@@ -1,5 +1,7 @@
 package jia;
 
+import java.util.function.Predicate;
+
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -32,11 +34,7 @@ public class look_around extends DefaultInternalAction {
                     continue; //don't obeserve own position
 
                 Location loc = new Location(ownLoc.x + i, ownLoc.y + j);
-                AgentInfo seenAgent = agentDB.getAgentByLocation(loc.x, loc.y);
-                if (seenAgent == null)
-                    continue; //no agent found on the location
-
-                //check if the agent is in line of sight
+                //check if the location is in line of sight
                 Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
                         new Term[] { new NumberTermImpl(ownLoc.x),
                                 new NumberTermImpl(ownLoc.y), new NumberTermImpl(loc.x), new NumberTermImpl(loc.y) });
@@ -44,31 +42,53 @@ public class look_around extends DefaultInternalAction {
                 if (!los)
                     continue;
 
-                //remove all beliefs about this agent's old position or other agents at this position
-                var beliefs = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
-                if (beliefs != null) {
-                    while (beliefs.hasNext()) {
-                        Literal belief = beliefs.next();
-                        try {
-                            int posX = (int) ((NumberTerm) belief.getTerm(0)).solve();
-                            int posY = (int) ((NumberTerm) belief.getTerm(1)).solve();
-                            String agentID = ((Atom) belief.getTerm(2)).toString();
-                            if (agentID.equals(seenAgent.getJasonId()) || posX == loc.x && posY == loc.y) {
-                                //other belief about same agent or belief about some other agent, who was thouhgt to be on this position
-                                BeliefBaseManager.removeBelief(ts, belief);
-                            }
-                        } catch (NoValueException e) {
-                            ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());
-                        }
-                    }
-                }
+                AgentInfo seenAgent = agentDB.getAgentByLocation(loc.x, loc.y);
+                if (seenAgent == null){
+                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                        return posX == loc.x && posY == loc.y;
+                    });
+                }else{
+                    //remove all beliefs about this agent's old position or other agents at this position
+                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                        return agentID.equals(seenAgent.getJasonId()) || posX == loc.x && posY == loc.y;
+                    });
 
-                //ts.getAg().getLogger().info("add position of agent " + seenAgent.getJasonId());                                                     //DEBUG
-                BeliefBaseManager.addBelief(ts, "pos_agent", new Atom("percept"), loc.x, loc.y,
-                        new Atom(seenAgent.getJasonId()));
+                    //ts.getAg().getLogger().info("add position of agent " + seenAgent.getJasonId());                                                     //DEBUG
+                    BeliefBaseManager.addBelief(ts, "pos_agent", new Atom("percept"), loc.x, loc.y,
+                            new Atom(seenAgent.getJasonId()));
+                }
             }
         }
 
         return true;
     }
+
+    private void removeOutdatedBeliefs(TransitionSystem ts, Location loc, Function3<Integer, Integer, String, Boolean> filter) {
+        var beliefs = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
+        if (beliefs != null) {
+            while (beliefs.hasNext()) {
+                Literal belief = beliefs.next();
+                try {
+                    int posX = (int) ((NumberTerm) belief.getTerm(0)).solve();
+                    int posY = (int) ((NumberTerm) belief.getTerm(1)).solve();
+                    String agentID = ((Atom) belief.getTerm(2)).toString();
+                    if(filter.apply(posX, posY, agentID)) {
+                        //other belief about same agent or belief about some other agent, who was thouhgt to be on this position
+                        BeliefBaseManager.removeBelief(ts, belief);
+                    }
+                } catch (NoValueException e) {
+                    ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface Function3<One, Two, Three, Result> {
+        public Result apply(One one, Two two, Three three);
+    }
 }
+
+
+
+

@@ -19,7 +19,7 @@ public class DriveStrategy3 implements IDrivePositioner{
     @Override
     public Location calculateAgentPosition(TransitionSystem ts, SwarmManipulator swarm, Area corral, int positionNumber)
             throws ExceptionPositioningFailed {
-        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' positionNumber: " + positionNumber);                                                                             //DEBUG
+        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' positionNumber: " + positionNumber);                                                                             //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer houndDistanceToSwarm = loader.getProperty("hound_keep_distance_to_sheep", Integer.class);
