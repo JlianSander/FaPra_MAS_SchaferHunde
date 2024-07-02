@@ -14,8 +14,8 @@ public class DriveStrategy1 implements IDrivePositioner {
         //ts.getLogger().info("--------------'DriveStrategy1::calculateAgentPosition' positionNumber: " + positionNumber);                                                            //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
-        Integer houndDistanceToSwarm = loader.getProperty("hound_keep_distance_to_swarm", Integer.class);
-        Double angleIncr = loader.getProperty("hound_driving_position_angle_increment", Double.class);
+        Integer houndDistanceToSwarm = loader.getProperty("hound_keep_distance_to_sheep", Integer.class);
+        Double angleIncr = loader.getProperty("hound_drive_angle_increment", Double.class);
         //ts.getLogger().info("--------------'DriveStrategy1::calculateAgentPosition' angleIncr: " + angleIncr);                                                                      //DEBUG
 
         RealVector directionSwarm = swarm.getDirectionTo(ts, corral.center());

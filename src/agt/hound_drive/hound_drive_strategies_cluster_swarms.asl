@@ -49,7 +49,7 @@
 
     +!s1_createSwarmWithoutOutsiders(Set_Sheep)
         <- //.print("s1_createSwarmWithoutOutsiders(", Set_Sheep, ")");                                                                        //DEBUG
-        ?limit_radius_swarm(Limit_rad);
+        ?cluster_swarm_limit_radius(Limit_rad);
         if(swarm_temp(_)){
             .abolish(swarm_temp(_));
         }
