@@ -45,7 +45,7 @@ public class DriveStrategy3 implements IDrivePositioner{
 
     private Location calcCenterPos(TransitionSystem ts, SwarmManipulator swarm, GridModel model, Integer houndDistanceToSwarm, 
         RealVector invertedDirection, ArrayList<Location> lstPosSwarm) throws ExceptionPositioningFailed{
-        var posAgent = calcPosBehindSheep(ts, swarm, houndDistanceToSwarm, lstPosSwarm, invertedDirection);
+        var posAgent = calcPosBehindSheep(ts, swarm, houndDistanceToSwarm + 1, lstPosSwarm, invertedDirection);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
         Location afterEnsureValid = DriveStrategyCommon.ensurePosValid(ts, swarm.getCenter(), model, posAgent);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
@@ -59,7 +59,7 @@ public class DriveStrategy3 implements IDrivePositioner{
         double angle1 = positionNumber < 3 ? -90.0 : 90.0;
         RealVector dir1Perp = GeometryCalculator.translateAngle(ts, directionSwarm, angle1);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' dir1Perp: " + dir1Perp.toString());                                                                       //DEBUG
-        var p1 = calcPosBehindSheep(ts, swarm, houndDistanceToSwarm, lstPosSwarm, dir1Perp);
+        var p1 = calcPosBehindSheep(ts, swarm, 1, lstPosSwarm, dir1Perp);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' p1: " + p1.toString());                                                                                   //DEBUG
         //create a direction, that is angular translated by 90° to the direction of interest
         RealVector dir1 = directionSwarm;
@@ -71,21 +71,28 @@ public class DriveStrategy3 implements IDrivePositioner{
         //get the sheep, which is positioned farest away from the center in a direction translated by angle° of the inverted direction of the swarm
         RealVector dir2Perp = GeometryCalculator.translateAngle(ts, invertedDirection, angle);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' dir2Perp: " + dir2Perp.toString());                                                                       //DEBUG
-        var p2 = calcPosBehindSheep(ts, swarm, houndDistanceToSwarm, lstPosSwarm, dir2Perp);
+        var p2 = calcPosBehindSheep(ts, swarm, 1, lstPosSwarm, dir2Perp);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' p2: " + p2.toString());                                                                                   //DEBUG
         //create a direction, that is angular translated by 90° to the direction of interest
         RealVector dir2 = GeometryCalculator.translateAngle(ts, dir2Perp, 90.0);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' dir2: " + dir2.toString());                                                                               //DEBUG
 
-        Location agentPos;
+        Location p5;
         try{
-            agentPos = GeometryCalculator.calcStraightIntersection(ts, p1, dir1, p2, dir2);
-            //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' agentPos: " + agentPos.toString());                                                                   //DEBUG
+            Location p3 = GeometryCalculator.calcStraightIntersection(ts, p1, dir1, p2, dir2);
+            //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' p3: " + p3.toString());                                                                   //DEBUG
+            if(GeometryCalculator.calcDistanceInDir(swarm.getCenter(), p3, directionSwarm) >= 0){
+                //p3 is at height of center or above
+                p3 = GeometryCalculator.translateInDir(ts, p2, dir1Perp, GeometryCalculator.calcDistanceInDir(p2, p1, dir1Perp));
+            }
+            // add offset , since it was not given before the intersection
+            //Location p4 = GeometryCalculator.translateInDir(ts, p3, dir1Perp, 1);
+            p5 = GeometryCalculator.translateInDir(ts, p3, dir2Perp, houndDistanceToSwarm);
         }catch(InvalidAlgorithmParameterException e){
             //should not happen since directions cant be parallel to each other
             throw new RuntimeException(e);
         }
-        Location afterEnsureValid =  DriveStrategyCommon.ensurePosValid(ts, swarm.getCenter(), model, agentPos);
+        Location afterEnsureValid =  DriveStrategyCommon.ensurePosValid(ts, swarm.getCenter(), model, p5);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' afterEnsureValid: " + afterEnsureValid.toString());                                                       //DEBUG
         return afterEnsureValid;
     }
@@ -99,7 +106,7 @@ public class DriveStrategy3 implements IDrivePositioner{
         //ts.getLogger().info("--------------'DriveStrategy3::calcPosBehindSheep' sheep: " + sheep.toString());                                                                             //DEBUG
         //create a location in the desired direction but behind the sheep with an offset
         double distanceSheep = Math.abs(GeometryCalculator.calcDistanceInDir(swarm.getCenter(), sheep, directionFromCenter));
-        double distanceToCenter = distanceSheep + 1 + offset;
+        double distanceToCenter = distanceSheep + offset;
         var p2 = GeometryCalculator.translateInDir(ts, swarm.getCenter(), directionFromCenter, distanceToCenter);
         //ts.getLogger().info("--------------'DriveStrategy3::calcPosBehindSheep' p2: " + p2.toString());                                                                                     //DEBUG
         return p2;

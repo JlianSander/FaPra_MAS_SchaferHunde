@@ -19,7 +19,7 @@ public class get_next_pos extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        ts.getLogger().info("--------------'get_next_pos' ");                                                                                         // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' ");                                                                                         // DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);
