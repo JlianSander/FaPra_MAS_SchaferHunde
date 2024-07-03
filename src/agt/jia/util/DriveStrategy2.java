@@ -69,7 +69,11 @@ public class DriveStrategy2 implements IDrivePositioner {
 
     private int getRadiusInQ(ArrayList<Location> posSheep, Location center, Predicate<Location> qCondition) {
         List<Location> sheepInQuadrant = posSheep.stream().filter(qCondition).collect(Collectors.toList());
-        var listRadius = sheepInQuadrant.stream().map( loc ->loc.distanceChebyshev(center)).collect(Collectors.toList());
-        return Collections.max(listRadius);
+        if(sheepInQuadrant.isEmpty()){
+            return 1;
+        }else{
+            var listRadius = sheepInQuadrant.stream().map( loc ->loc.distanceChebyshev(center)).collect(Collectors.toList());
+            return Collections.max(listRadius);
+        }
     }
 }

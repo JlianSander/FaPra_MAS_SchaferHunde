@@ -9,7 +9,8 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 //------------------------------------------------------- startDrive -------------------------------------------------------
 @startDrive[atomic]
 +!startDrive : has_enough_info & not is_driving
-    <- +is_driving;
+    <- .print("startDrive");
+    +is_driving;
     !!endDrive. 
     
 +!startDrive : not has_enough_info <- .print("Not enough info to drive."). //.fail_goal(startDrive).
@@ -19,8 +20,7 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 //------------------------------------------------------- endDrive -------------------------------------------------------
 
 +!endDrive 
-    <- !processDriving;
-    -is_driving.
+    <- !processDriving.
 
 -!endDrive
     <- .print("endDrive");
@@ -37,7 +37,6 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-        !!startSearch;
         .fail_goal(processDriving);
     }
     !selectSwarmToDrive(Swarms);
@@ -53,7 +52,6 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
         .setof(S, sheep(S) & pos_agent(_,_,S), LS);
         !ignoreSheep(LS);
         !!forgetIgnoreSheep(LS);
-        !!startSearch;
         .fail_goal(processDriving);
     }.    
 
@@ -72,16 +70,37 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     jia.get_evasion_directions(CX, CY, R, EVADE_X, EVADE_Y);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y );                                                                                   //DEBUG
     jia.get_next_pos(ME_X, ME_Y, EVADE_X, EVADE_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
-    //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
+    .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 
         //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
-        .print("I stay at same position.");                                                                                                                             //DEBUG   
-        ?wait_cant_reach_driving_pos(W);
-        .wait(W);
+        !processStayingOnSamePos(LS);
     }else{
+        .abolish(same_pos(_));
         !reachDestination(ME_NXT_X, ME_NXT_Y);
     }.
+
+//------------------------------------------------------- processStayingOnSamePos -------------------------------------------------------
+
++!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I > N
+    <-  .print("processStayingOnSamePos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! abort Drive");                                                                                                                             //DEBUG 
+    !ignoreSheep(LS);
+    !!forgetIgnoreSheep(LS);
+    .abolish(same_pos(_));
+    .print("fail processDriving");
+    .fail_goal(processDriving).
+
++!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I <= N
+    <- .print("processStayingOnSamePos ", I);                                                                                                                               //DEBUG   
+    -+same_pos(I + 1);
+    ?wait_cant_reach_driving_pos(W);
+    .wait(W).
+
++!processStayingOnSamePos(LS) : not same_pos(_) 
+    <- .print("processStayingOnSamePos 0");                                                                                                                               //DEBUG   
+    +same_pos(1);
+    ?wait_cant_reach_driving_pos(W);
+    .wait(W).
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

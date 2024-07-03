@@ -31,6 +31,9 @@ public class init_agent extends DefaultInternalAction {
                 BeliefBaseManager.addBelief(ts, "limit_distance_assumption_hound_driving", null,
                     loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
 
+                BeliefBaseManager.addBelief(ts, "limit_jammed_retries", null,
+                    loader.getProperty("hound_limit_jammed_retries", Integer.class));
+
                 BeliefBaseManager.addBelief(ts, "limit_number_agents_driving_swarm", null,
                     loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
 

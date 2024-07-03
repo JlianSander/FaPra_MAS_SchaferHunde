@@ -59,7 +59,7 @@ exists_close_swarms :-
 
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
 
-is_jammed :- jammed(J) & J > 10.
+is_jammed :- jammed(J) & limit_jammed_retries(N) & J > N.
 
 in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 

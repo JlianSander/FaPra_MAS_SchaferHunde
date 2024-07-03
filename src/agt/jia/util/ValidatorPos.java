@@ -16,14 +16,16 @@ import util.PropertiesLoader;
 public class ValidatorPos {
 
     public static Location ensurePosValid(TransitionSystem ts, Location myLoc, Location targetPos, RealVector evasionDirection, int offsetToSheep) {
+        ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' myLoc:" + myLoc.toString() + " targetPos:" + targetPos.toString() 
+        + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);                                                                //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);
 
         Location posOnMap = ensurePosOnMap(ts, model, targetPos);
-        //ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosValid' posOnMap: " + posOnMap.toString());                                    //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' posOnMap: " + posOnMap.toString());                                                 //DEBUG
         Location result  = calculateValidTarget(ts, model, maxNumberRecalculations, offsetToSheep, myLoc, posOnMap, evasionDirection, 1);
-        //ts.getLogger().info("--------------'DriveStrategyCommon::ensurePosValid' result: " + result.toString());                                    //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' result: " + result.toString());                                                     //DEBUG
 
         return result;
     }
@@ -45,9 +47,13 @@ public class ValidatorPos {
                 return myLoc;
             }
 
-            Location targetToProcess = locsToProcess.poll();
+            Location targetToProcess = locsToProcess.poll();           
             /*ts.getLogger()
                     .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());   */                                //DEBUG
+            if(targetToProcess.equals(myLoc)){
+                //current position of the agent is a valid position
+                return myLoc;
+            }
 
             var sheepTooCloseBy = model.getNeighborhood(targetToProcess, keepDistanceToSheep, loc -> {
                 List<Integer> objects = model.getObjectsAt(loc);
@@ -157,11 +163,11 @@ public class ValidatorPos {
     }
 
     private static int stay_within_limit(TransitionSystem ts, int actVal, int maxLimit) {
-        //ts.getLogger().info("--------------'IDrivePositioner::stay_within_limit' actVal: " + actVal);                                    //DEBUG
-        //ts.getLogger().info("--------------'IDrivePositioner::stay_within_limit' maxLimit: " + maxLimit);                                    //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' actVal: " + actVal);                                    //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' maxLimit: " + maxLimit);                                    //DEBUG
         int output = actVal > 0 ? actVal : 0;
         output =  output < maxLimit ? output : maxLimit;
-        //ts.getLogger().info("--------------'IDrivePositioner::stay_within_limit' output: " + output);                                    //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' output: " + output);                                    //DEBUG
         return output;
     }
 }
