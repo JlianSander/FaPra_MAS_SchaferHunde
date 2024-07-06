@@ -63,7 +63,6 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     ?swarm(LS, CX, CY, R);
     !planPositionToDrive(LS);
     ?driving_position(Driving_Position);
-    .print("Driving position: ", Driving_Position);
     jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
     .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                           //DEBUG
     ?pos(ME_X, ME_Y);
