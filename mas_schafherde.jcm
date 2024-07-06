@@ -24,7 +24,7 @@ mas mas_schafherde {
     agent nonMovingSheep: sheep.asl {
         // ag-arch: arch.Sheep
         join: world
-        instances: 9
+        instances: 15
         focus: world.grid
     }
     
@@ -37,7 +37,7 @@ mas mas_schafherde {
 
     workspace world {
       // artifact grid: grid.GridWorld(20, 3, 2)
-      artifact grid: grid.GridWorld("src/env/grid/templates/Test_Hound_Drive_Cluster_3.txt")
+      artifact grid: grid.GridWorld("src/env/grid/templates/Test_Hound_Drive_Cluster_1.txt")
       debug
     }
 

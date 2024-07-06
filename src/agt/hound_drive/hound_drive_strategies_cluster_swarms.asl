@@ -28,7 +28,10 @@
         .fail_goal(startStrategy_clusterSwarm_1);
     }
     //.print("All Sheeps not in Corral are: ", All_Sheep);                                                                                    //DEBUG
-    !s1_mapSetToSwarms(All_Sheep).
+    !s1_mapSetToSwarms(All_Sheep);
+    
+    .setof(SsDEBUG, swarm(SsDEBUG, _, _, _), SwarmsDEBUG);                                                                                  //DEBUG
+    .print("all found swarms ", SwarmsDEBUG).
 
 //------------------------------------------------------- s1_mapSetToSwarms ------------------------------------------------------- 
 
@@ -103,34 +106,38 @@
         !addToSwarm(New_Swarm, S);
     }
 
+    .setof(SsDEBUG, swarm(SsDEBUG, _, _, _), SwarmsDEBUG);                                                                                  //DEBUG
+    .print("all found swarms ", SwarmsDEBUG);  
     !s2_mergeSwarmsSingleLinkage;
 
-    .setof(SsDEBUG, swarm(SsDEBUG, _, _, _), SwarmsDEBUG);                                                                                  //DEBUG
-    .print("all found swarms ", SwarmsDEBUG);                                                                                               //DEBUG
+    .setof(SsDEBUG2, swarm(SsDEBUG2, _, _, _), SwarmsDEBUG2);                                                                                  //DEBUG
+    .print("all found swarms ", SwarmsDEBUG2);                                                                                               //DEBUG
     .
 
 
 
 +!s2_mergeSwarmsSingleLinkage
-    <- //.print("s2_mergeSwarmsSingleLinkage");
+    <- .print("s2_mergeSwarmsSingleLinkage");
     // do as long as there are more than 2 swarms close to each other
     while(exists_close_swarms_single_linkage){
-        //.print("s2_mergeSwarmsSingleLinkage --- has close swarms");
+        .print("s2_mergeSwarmsSingleLinkage --- has close swarms");
         //always process only first element of swarms, which are close to another swarm
         .setof(TmpSs3, swarm(TmpSs3, _, _, _) & swarm(TmpSs4, _, _, _) & TmpSs3 \== TmpSs4 & swarms_are_close_to_eachother_single_linkage(TmpSs3, TmpSs4), ListSwarms);
+        .print("s2_mergeSwarmsSingleLinkage --- ListSwarms ", ListSwarms);
         .nth(0, ListSwarms, Ss1);
-        //find all elements in the list which are close to the swarm in focus
-        .setof(TmpSs2, .member(TmpSs2, ListSwarms) & swarms_are_close_to_eachother_single_linkage(Ss1, TmpSs2), ListCloseSwarms);
-        if(.length(ListCloseSwarms, TmpListCloseSwarms_Len) & TmpListCloseSwarms_Len == 0){
-            .print("ERROR No other swarm is close to ", Ss1,  " in ", ListSwarms);
-        }else{
-            //.print("Create union of ", Ss1, " and ", ListCloseSwarms);                                                                                             //DEBUG
-            for(.member(Ss2, ListCloseSwarms)){
-                .set.union(Ss1, Ss2, Ss1);
-                -swarm(Ss2, _, _, _);
-            }
-            !updateSwarmData(Ss1);
-        }
+        .print("s2_mergeSwarmsSingleLinkage --- Ss1 ", Ss1);
+        //merge with closest swarm
+        .setof(TmpD, swarm(TmpSs2, _, _, _) & distance_between_swarms_closest_members(Ss1, TmpSs2, TmpD), Distances_Swarms);
+        .print("s2_mergeSwarmsSingleLinkage --- Distances_Swarms", Distances_Swarms);
+        .min(Distances_Swarms, Min_D);
+        .print("s2_mergeSwarmsSingleLinkage --- Min_D", Min_D);
+        .findall(TmpSs5, swarm(TmpSs5, _, _, _) & distance_between_swarms_closest_members(Ss1, TmpSs5, TmpD1) & TmpD1 == Min_D, Closest_Swarms);
+        .print("s2_mergeSwarmsSingleLinkage --- Closest_Swarms", Closest_Swarms);
+        .nth(0, Closest_Swarms, Ss2);
+        .print("s2_mergeSwarmsSingleLinkage --- Ss2 ", Ss2);
+        .set.union(Ss1, Ss2, Ss1);
+        -swarm(Ss2, _, _, _);
+        !updateSwarmData(Ss1);
     }.
 
 //------------------------------------------------------- startStrategy_clusterSwarm_3 (complete linkage) -------------------------------------------------------
@@ -164,7 +171,7 @@
         .nth(0, ListSwarms, Ss1);
         .print("s3_mergeSwarmsCompleteLinkage --- Ss1 ", Ss1);
         //merge with closest swarm
-        .setof(TmpD, TmpSs2 & swarm(TmpSs2, _, _, _) & distance_between_swarms_farest_members(Ss1, TmpSs2, TmpD), Distances_Swarms);
+        .setof(TmpD, swarm(TmpSs2, _, _, _) & distance_between_swarms_farest_members(Ss1, TmpSs2, TmpD), Distances_Swarms);
         .print("s3_mergeSwarmsCompleteLinkage --- Distances_Swarms", Distances_Swarms);
         .min(Distances_Swarms, Min_D);
         .print("s3_mergeSwarmsCompleteLinkage --- Min_D", Min_D);
