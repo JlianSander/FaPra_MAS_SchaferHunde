@@ -23,7 +23,7 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        ts.getLogger().info("--------------'get_pos_drive_swarm::execute' ");                                                                             //DEBUG
+        //ts.getLogger().info("--------------'get_pos_drive_swarm::execute' ");                                                                             //DEBUG
         int centerX = (int) ((NumberTerm) args[0]).solve();
         int centerY = (int) ((NumberTerm) args[1]).solve();
         int radius = (int) ((NumberTerm) args[2]).solve();

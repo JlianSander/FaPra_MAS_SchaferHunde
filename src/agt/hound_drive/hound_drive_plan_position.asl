@@ -7,7 +7,7 @@
 //------------------------------------------------------- planPositionToDrive ------------------------------------------------------- 
 
 +!planPositionToDrive(Swarm) 
-    <- .print("planPositionToDrive(", Swarm, ")");                                                                                                    //DEBUG
+    <- //.print("planPositionToDrive(", Swarm, ")");                                                                                                    //DEBUG
     !guessWhoDrivingWhat;
     .findall(H, hound_drives(H, Swarm), Other_Drivers);
     .length(Other_Drivers, Len_Other_Drivers);
@@ -50,7 +50,7 @@
 .
 
 +!getHoundClosestToPos(Swarm, Other_Drivers, Position_Idx)
-    <- .print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", Position_Idx, ")");                                                                       //DEBUG
+    <- //.print("getHoundClosestToPos(", Swarm, ", ", Other_Drivers, ", ", Position_Idx, ")");                                                                       //DEBUG
     !updateSwarmData(Swarm);
     ?swarm(Swarm, CX, CY, R);
     jia.get_pos_drive_swarm(CX, CY, R, Position_Idx, POS_I_X, POS_I_Y);

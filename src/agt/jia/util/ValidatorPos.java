@@ -16,8 +16,8 @@ import util.PropertiesLoader;
 public class ValidatorPos {
 
     public static Location ensurePosValid(TransitionSystem ts, Location myLoc, Location targetPos, RealVector evasionDirection, int offsetToSheep) {
-        ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' myLoc:" + myLoc.toString() + " targetPos:" + targetPos.toString() 
-        + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);                                                                //DEBUG
+        /*ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' myLoc:" + myLoc.toString() + " targetPos:" + targetPos.toString() 
+        + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);   */                                                             //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);

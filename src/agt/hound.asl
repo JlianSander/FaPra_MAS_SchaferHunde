@@ -23,8 +23,15 @@ distance_between_swarms_closest_members(Ss1, Ss2, Min_D):-
             Ss1 \== Ss2 
             & swarm(Ss1, _, _, _)
             & swarm(Ss2, _, _, _)
-            & .findall(D, .member(S1, Ss1) & .member(S2, Ss2) & S1 \== S2 & distance_between_agents(S1, S2, D)  ,Distances)
+            & .findall(D, .member(S1, Ss1) & .member(S2, Ss2) & S1 \== S2 & distance_between_agents(S1, S2, D), Distances)
             & .min(Distances, Min_D).
+
+distance_between_swarms_farest_members(Ss1, Ss2, Max_D):-  
+            Ss1 \== Ss2 
+            & swarm(Ss1, _, _, _)
+            & swarm(Ss2, _, _, _)
+            & .findall(D, .member(S1, Ss1) & .member(S2, Ss2) & S1 \== S2 & distance_between_agents(S1, S2, D), Distances)
+            & .max(Distances, Max_D).
 
 distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
 
@@ -48,12 +55,21 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     distance_me_to_swarm(Ss, D_ME) &
     DH < D_ME.
 
-exists_close_swarms :- 
+exists_close_swarms_single_linkage :- 
     .setof(Ss2, 
         swarm(Ss2, _, _, _) 
         & swarm(Ss3, _, _, _) 
         & Ss2 \== Ss3
-        & swarms_are_close_to_eachother(Ss2, Ss3), CloseSwarms)
+        & swarms_are_close_to_eachother_single_linkage(Ss2, Ss3), CloseSwarms)
+    & .length(CloseSwarms, CloseSwarms_Len) 
+    & CloseSwarms_Len > 0.
+
+exists_close_swarms_complete_linkage :- 
+    .setof(Ss2, 
+        swarm(Ss2, _, _, _) 
+        & swarm(Ss3, _, _, _) 
+        & Ss2 \== Ss3
+        & swarms_are_close_to_eachother_complete_linkage(Ss2, Ss3), CloseSwarms)
     & .length(CloseSwarms, CloseSwarms_Len) 
     & CloseSwarms_Len > 0.
 
@@ -65,7 +81,9 @@ in_sight(X,Y) :- pos(AgX, AgY) & jia.in_line_of_sight(AgX, AgY, X, Y).
 
 +pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
 
-swarms_are_close_to_eachother(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_closest_member(Limit_distance) & D <= Limit_distance.
+swarms_are_close_to_eachother_single_linkage(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
+
+swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :-  distance_between_swarms_farest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
