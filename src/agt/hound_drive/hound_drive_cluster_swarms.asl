@@ -12,7 +12,10 @@
         .abolish(swarm(_, _, _, _));  
     }
     ?strategy_cluster_swarm(StratID);
-    !chooseStrategy_clusterSwarms(StratID).
+    !chooseStrategy_clusterSwarms(StratID);
+    //.setof(SsDEBUG, swarm(SsDEBUG, _, _, _), SwarmsDEBUG);                                                                                  //DEBUG
+    //.print("all found swarms ", SwarmsDEBUG);                                                                                               //DEBUG
+    .
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 { include("./hound_drive/hound_drive_strategies_cluster_swarms.asl")}

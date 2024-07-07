@@ -30,3 +30,5 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
     .
 
 +!setMove <- true.
+
+-!setMove <- !!setMove.
