@@ -136,7 +136,7 @@
     .setof(S, pos_agent(_,_, S) & not is_in_corral(S) & sheep(S) , All_Sheep);
     if(.length(All_Sheep, 0)){
         .print("no sheep found");                                                                                                               //DEBUG
-        .fail_goal(startStrategy_clusterSwarm_2);
+        .fail_goal(startStrategy_clusterSwarm_3);
     }
 
     for(.member(S, All_Sheep)){

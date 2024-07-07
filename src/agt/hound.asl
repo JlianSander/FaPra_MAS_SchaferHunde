@@ -81,7 +81,9 @@ is_jammed :- jammed(J) & limit_jammed_retries(N) & J > N.
 
 swarms_are_close_to_eachother_single_linkage(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
 
-swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :-  distance_between_swarms_farest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
+swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1) 
+        & swarm(Ss2, _, _, R2)
+        &  distance_between_swarms_farest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & (D <= R1 + Limit_distance | D <= R2 + Limit_distance).
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- reachDestination -------------------------------------------------------
