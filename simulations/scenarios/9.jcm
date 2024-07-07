@@ -1,11 +1,11 @@
 mas mas_schafherde {
     agent sheep: sheep.asl {
         join: world
-        instances: 10
+        instances: 22
         focus: world.grid
         beliefs: doflock
     }
-
+    
     agent hound: hound.asl {
         join: world
         instances: 5
@@ -22,7 +22,7 @@ mas mas_schafherde {
     }
 
     workspace world {
-      artifact grid: grid.GridWorld("src/env/grid/templates/simulations/Julian_10_Narrow.txt")
+      artifact grid: grid.GridWorld("src/env/grid/templates/simulations/Martin_3.txt")
       debug
     }
 
