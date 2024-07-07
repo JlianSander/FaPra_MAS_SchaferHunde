@@ -1,11 +1,9 @@
 package jia.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
-
+import grid.GridModel;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
@@ -20,6 +18,7 @@ import jason.asSyntax.SetTerm;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
+import service.AgentDB;
 
 public class BeliefBaseManager {
 
@@ -63,7 +62,12 @@ public class BeliefBaseManager {
     }
 
     public static ArrayList<Location> getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
+        ArrayList<Location> locationsSheep = new ArrayList<Location>();
         Iterator<Literal> itBeliefsSwarms = BeliefBaseManager.getBeliefs(ts, "swarm", 4);
+        if(itBeliefsSwarms == null){
+            return locationsSheep;
+        }
+
         Iterable<Term> sheepTerms = null;
         while(itBeliefsSwarms.hasNext()){
             Literal literal = itBeliefsSwarms.next();
@@ -84,7 +88,6 @@ public class BeliefBaseManager {
             }
         }
 
-        ArrayList<Location> locationsSheep = new ArrayList<Location>();
         for(Term sheepT : sheepTerms){
             Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
             while(itBeliefsPos.hasNext()){
@@ -100,5 +103,22 @@ public class BeliefBaseManager {
         }
 
         return locationsSheep;
+    }
+
+    public static ArrayList<Location> getPosHounds(TransitionSystem ts){
+        var locations = new ArrayList<Location>();
+        Iterator<Literal> itBeliefsHound = BeliefBaseManager.getBeliefs(ts, "hound", 1);
+        if(itBeliefsHound == null){
+            return locations;
+        }
+
+        while(itBeliefsHound.hasNext()){
+            String jasonID = ((Atom) itBeliefsHound.next()).getTerm(0).toString();
+            var agentInfo = AgentDB.getInstance().getAgentByJasonId(jasonID);
+            locations.add(GridModel.getInstance().getAgPos(agentInfo.getCartagoId()));
+        }
+
+        ts.getLogger().info(locations.toString());
+        return locations;
     }
 }

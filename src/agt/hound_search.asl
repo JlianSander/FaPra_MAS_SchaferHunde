@@ -19,16 +19,69 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 +!startSearch
     <- .print("Search started");
-    !!setMove;
+    ?search_strategy(X);
+    if(X == 1){
+        !!searchStrategy1;
+    }elif(X == 2){
+        !!searchStrategy2;
+    }else{
+        .print("ERROR no such search strategy!");
+    }
     .
 
-+!setMove : not .desire(reachDestination(L,M))
+//------------------------------------------------------- searchStrategy1 -------------------------------------------------------
++!searchStrategy1 : not .desire(reachDestination(L,M))
     <-
     jia.get_random_position(TargetX, TargetY);
     !reachDestination(TargetX, TargetY);
-    !!setMove;
+    !!searchStrategy1;
     .
 
-+!setMove <- true.
++!searchStrategy1 <- true.
 
--!setMove <- !!setMove.
+-!searchStrategy1 <- !!searchStrategy1.
+
+//------------------------------------------------------- searchStrategy2 -------------------------------------------------------
+
+i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
+
++!searchStrategy2 : i_know_sheep_pos 
+    <- .print("searchStrategy2 i_know_sheep_pos");
+    .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
+    .nth(0, List_Sheep, S1);
+    ?pos_agent(X, Y, S1);
+    !reachDestination(X,Y);
+    !!startSearch.
+
++!searchStrategy2 : not i_know_sheep_pos & not search_pattern(_, _, _, _)
+    <- .print("searchStrategy2");
+    jia.get_search_area(X,Y);
+    .print("searchStrategy2 search middle point: (", X, ",", Y, ")");
+    +search_pattern(X, Y, 0, 0);
+    !proceedSearchStrat2.
+
++!searchStrategy2 : not i_know_sheep_pos & search_pattern(X, Y, I, IsInverse)
+    <- .print("searchStrategy2");    
+    !proceedSearchStrat2.
+
++!proceedSearchStrat2 : search_pattern(X, Y, I, IsInverse)
+    <- jia.get_next_search_pos(I, X, Y, 1, IsInverse, Xnext, Ynext, Itrs);
+    -+search_iterations(X, Y, Itrs, IsInverse);
+    ?pos(Xme, Yme);
+    if(Xnext == Xme & Ynext == Yme){
+        .print("searchStrategy2   !!!!!!!!!!!! stuck");
+        if(search_stucked(J) & J > 10){
+            .abolish(search_iterations(_, _, _, _));
+        }elif(search_stucked(J) & J < 10){
+            -+search_stucked(J + 1);
+            .wait(500);
+        }else{
+            +search_stucked(1);
+            .wait(500);
+        }
+        !!startSearch;
+    }else{
+        !reachDestination(Xnext, Ynext);
+        !!startSearch;
+    }
+    .
