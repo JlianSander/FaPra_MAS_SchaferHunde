@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.xalan.xsltc.compiler.util.TypeCheckError;
+
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
@@ -11,6 +13,7 @@ import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.SetTerm;
@@ -61,7 +64,7 @@ public class BeliefBaseManager {
 
     public static ArrayList<Location> getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
         Iterator<Literal> itBeliefsSwarms = BeliefBaseManager.getBeliefs(ts, "swarm", 4);
-        Collection<Term> sheepTerms = null;
+        Iterable<Term> sheepTerms = null;
         while(itBeliefsSwarms.hasNext()){
             Literal literal = itBeliefsSwarms.next();
             Term[] terms = literal.getTermsArray();
@@ -69,12 +72,19 @@ public class BeliefBaseManager {
             int cY = (int) ((NumberTermImpl) terms[2]).solve();
             int r = (int) ((NumberTermImpl) terms[3]).solve();
             if(cX == swarm.getCenter().x && cY == swarm.getCenter().y && r == swarm.getRadius() ){
-                sheepTerms = (SetTerm) terms[0]; 
+                if(terms[0] instanceof SetTerm){
+                    sheepTerms = (SetTerm) terms[0]; 
+                }else if(terms[0] instanceof ListTerm){
+                    sheepTerms = (ListTerm) terms[0];
+                }else{
+                    throw new RuntimeException("Swarm is neither set nor list");
+                }
+                 
                 break;
             }
         }
 
-        ArrayList<Location> locationsSheep = new ArrayList<Location>(sheepTerms.size());
+        ArrayList<Location> locationsSheep = new ArrayList<Location>();
         for(Term sheepT : sheepTerms){
             Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
             while(itBeliefsPos.hasNext()){
