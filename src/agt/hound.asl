@@ -108,10 +108,13 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 +!walkTowards(X,Y) <- .print("walking finished").   //reached target coordinates
                                                                                                   
 //------------------------------------------------------- makeStepTowards -------------------------------------------------------
-+!makeStepTowards(X,Y) : pos(X,Y) <- true.
++!makeStepTowards(X,Y) : pos(X,Y) 
+    <- true.
 
 @step[atomic]
-+!makeStepTowards(X,Y)<- 
++!makeStepTowards(X,Y)
+    <- 
+    .print("makeStepTowards(", X, ", ", Y, ")");
     nextStep(X,Y, NewX, NewY);
     //.print("stepped to new position: (",NewX,",",NewY,")");
     !updatePos(NewX,NewY).       
@@ -122,10 +125,10 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
     //+last_step_not_OK;
     false.
 
--!makeStepTowards(X,Y) <- .print("waiting (jammed)");                                                                                                    
+-!makeStepTowards(X,Y) 
+    <- .print("waiting (jammed)");                                                                                                    
     ?jammed(J);
     -+jammed(J + 1);
-    //.wait({+mapChanged});
     !waitToMove;
     !makeStepTowards.     //retry making step 
 
