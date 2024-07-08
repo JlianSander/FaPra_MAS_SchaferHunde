@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.common;
 
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
@@ -23,40 +23,40 @@ public class init_agent extends DefaultInternalAction {
                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
                 BeliefBaseManager.addBelief(ts, "cluster_swarm_limit_distance_member", null,
-                    loader.getProperty("hound_cluster_swarm_limit_distance_member", Integer.class));
+                        loader.getProperty("hound_cluster_swarm_limit_distance_member", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "limit_distance_assumption_hound_driving", null,
-                    loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
+                        loader.getProperty("hound_limit_distance_assumption_hound_driving", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "limit_jammed_retries", null,
-                    loader.getProperty("hound_limit_jammed_retries", Integer.class));
+                        loader.getProperty("hound_limit_jammed_retries", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "limit_number_agents_driving_swarm", null,
-                    loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
+                        loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
 
-                BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null, 
-                    loader.getProperty("hound_select_swarm_weight_proximity", Integer.class));
+                BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null,
+                        loader.getProperty("hound_select_swarm_weight_proximity", Integer.class));
 
-                BeliefBaseManager.addBelief(ts, "select_swarm_weight_size", null, 
-                    loader.getProperty("hound_select_swarm_weight_size", Integer.class));
+                BeliefBaseManager.addBelief(ts, "select_swarm_weight_size", null,
+                        loader.getProperty("hound_select_swarm_weight_size", Integer.class));
 
-                BeliefBaseManager.addBelief(ts, "strategy_cluster_swarm", null, 
-                    loader.getProperty("hound_strategy_cluster_swarm", Integer.class));
+                BeliefBaseManager.addBelief(ts, "strategy_cluster_swarm", null,
+                        loader.getProperty("hound_strategy_cluster_swarm", Integer.class));
 
-                BeliefBaseManager.addBelief(ts, "strategy_select_swarm", null, 
-                    loader.getProperty("hound_strategy_select_swarm", Integer.class));
+                BeliefBaseManager.addBelief(ts, "strategy_select_swarm", null,
+                        loader.getProperty("hound_strategy_select_swarm", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
-                    loader.getProperty("hound_wait_between_driving", Integer.class));
+                        loader.getProperty("hound_wait_between_driving", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "wait_cant_reach_driving_pos", null,
-                    loader.getProperty("hound_wait_cant_reach_driving_pos", Integer.class));
+                        loader.getProperty("hound_wait_cant_reach_driving_pos", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "wait_ignore_sheep_forget", null,
-                    loader.getProperty("hound_wait_ignore_sheep_forget", Integer.class));
+                        loader.getProperty("hound_wait_ignore_sheep_forget", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "wait_perception", null,
-                    loader.getProperty("hound_wait_perception", Integer.class));
+                        loader.getProperty("hound_wait_perception", Integer.class));
                 break;
 
             default:

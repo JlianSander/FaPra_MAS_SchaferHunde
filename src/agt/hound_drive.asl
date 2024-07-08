@@ -63,12 +63,12 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
     ?swarm(LS, CX, CY, R);
     !planPositionToDrive(LS);
     ?driving_position(Driving_Position);
-    jia.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
+    jia.hounds.get_pos_drive_swarm(CX, CY, R, Driving_Position, ME_TARGET_X, ME_TARGET_Y);
     .print("Swarm is at (",CX,",",CY,") with R: ", R, "; Position agent in Pos ", Driving_Position, " at (", ME_TARGET_X, ",", ME_TARGET_Y, ")");                           //DEBUG
     ?pos(ME_X, ME_Y);
-    jia.get_evasion_directions(CX, CY, R, EVADE_X, EVADE_Y);
+    jia.hounds.get_evasion_directions(CX, CY, R, EVADE_X, EVADE_Y);
     //.print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y );                                                                                   //DEBUG
-    jia.get_next_pos(ME_X, ME_Y, EVADE_X, EVADE_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
+    jia.hounds.get_next_pos(ME_X, ME_Y, EVADE_X, EVADE_Y, ME_TARGET_X, ME_TARGET_Y, ME_NXT_X, ME_NXT_Y);
     .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 

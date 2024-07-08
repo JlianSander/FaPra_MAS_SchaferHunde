@@ -10,7 +10,7 @@ all_sheep_names([]).
     <-
         .my_name(Me);
         initAgent(Me, AgX, AgY);
-        jia.util.init_agent;
+        jia.util.common.init_agent;
         +pos(AgX,AgY);
         ?waitTime(Wait);
         !prepareAgentLists;

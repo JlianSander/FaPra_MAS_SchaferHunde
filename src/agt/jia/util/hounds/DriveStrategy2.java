@@ -1,4 +1,5 @@
-package jia.util;
+package jia.util.hounds;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,12 +12,14 @@ import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Area;
 import jason.environment.grid.Location;
+import jia.util.common.BeliefBaseManager;
 import util.PropertiesLoader;
 
 public class DriveStrategy2 implements IDrivePositioner {
 
     @Override
-    public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral, int positionNumber){
+    public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral,
+            int positionNumber) {
         //ts.getLogger().info("--------------'positionAgent' positionNumber: " + positionNumber);                                                                       //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
@@ -52,11 +55,11 @@ public class DriveStrategy2 implements IDrivePositioner {
                 break;
         }
 
-       return DriveStrategyCommon.calculatePosition(ts, myLoc, positionNumber, angleIncr, invertedDirection, radiusInQuadrant, houndDistanceToSwarm, swarm.getCenter(), model);
+        return DriveStrategyCommon.calculatePosition(ts, myLoc, positionNumber, angleIncr, invertedDirection,
+                radiusInQuadrant, houndDistanceToSwarm, swarm.getCenter(), model);
     }
-    
 
-    private int[] calculateQuadrantRadius(ArrayList<Location> posSheep, SwarmManipulator swarm){
+    private int[] calculateQuadrantRadius(ArrayList<Location> posSheep, SwarmManipulator swarm) {
         int[] radiusQ = new int[4];
         var center = swarm.getCenter();
         radiusQ[0] = getRadiusInQ(posSheep, center, loc -> loc.x >= center.x && loc.y <= center.y);
@@ -66,13 +69,13 @@ public class DriveStrategy2 implements IDrivePositioner {
         return radiusQ;
     }
 
-
     private int getRadiusInQ(ArrayList<Location> posSheep, Location center, Predicate<Location> qCondition) {
         List<Location> sheepInQuadrant = posSheep.stream().filter(qCondition).collect(Collectors.toList());
-        if(sheepInQuadrant.isEmpty()){
+        if (sheepInQuadrant.isEmpty()) {
             return 1;
-        }else{
-            var listRadius = sheepInQuadrant.stream().map( loc ->loc.distanceChebyshev(center)).collect(Collectors.toList());
+        } else {
+            var listRadius = sheepInQuadrant.stream().map(loc -> loc.distanceChebyshev(center))
+                    .collect(Collectors.toList());
             return Collections.max(listRadius);
         }
     }
