@@ -1,4 +1,3 @@
-mas mas_schafherde {
     agent sheep: sheep.asl {
         join: world
         instances: 40

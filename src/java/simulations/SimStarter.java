@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
-import model.HoundDriveStrategyConfig;
 import util.FileLister;
 import util.PropertiesLoader;
 
