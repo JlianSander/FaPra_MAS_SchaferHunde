@@ -3,6 +3,8 @@ package simulations;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JFrame;
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 import util.FileLister;
@@ -12,6 +14,22 @@ public class SimStarter {
     private static final Logger logger = Logger.getLogger(SimStarter.class.getName());
 
     private static Process simulationProcess;
+    private static JFrame controlFrame;
+
+    private static void createControlWindow() {
+        controlFrame = new JFrame("Simulation Control");
+        JButton stopButton = new JButton("Stop Simulation");
+
+        stopButton.addActionListener(e -> {
+            endSimulation();
+            System.exit(0);
+        });
+
+        controlFrame.getContentPane().add(stopButton);
+        controlFrame.setSize(200, 100);
+        controlFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        controlFrame.setVisible(true);
+    }
 
     public static void endSimulation() {
         if (simulationProcess != null && simulationProcess.isAlive()) {
@@ -24,6 +42,8 @@ public class SimStarter {
     }
 
     public static void main(String[] args) throws JasonException, IOException {
+        createControlWindow();
+
         String dir = "simulations/scenarios";
         List<String> scenarios = FileLister.getFileNames(dir, false);
 
