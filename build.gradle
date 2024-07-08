@@ -87,19 +87,7 @@ task run (type: JavaExec, dependsOn: 'classes') {
     classpath sourceSets.main.runtimeClasspath
 }
 
-task simTest (type: JavaExec, dependsOn: 'classes') {
-    group       ' JaCaMo'
-    description 'runs the JaCaMo application'
-    doFirst {
-        mkdir 'log'
-    }
-    mainClass = 'simulations.SimStarter'
-    args 'mas_schafherde.jcm'
-    // jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
-    classpath sourceSets.main.runtimeClasspath
-}
-
-task simOne(type: JavaExec, dependsOn: 'classes') {
+task simOne (type: JavaExec, dependsOn: 'classes') {
     group = 'JaCaMo'
     description = 'Runs a single JaCaMo simulation'
     doFirst {
@@ -118,7 +106,7 @@ task simOne(type: JavaExec, dependsOn: 'classes') {
     classpath = sourceSets.main.runtimeClasspath
 }
 
-task simAll(dependsOn: 'classes') {
+task simAll (dependsOn: 'classes') {
     group = 'JaCaMo'
     description = 'Runs multiple JaCaMo simulations consecutively'
 
@@ -141,6 +129,17 @@ task simAll(dependsOn: 'classes') {
             println "Finished simulation for ${configFile.name}"
         }
     }
+}
+
+task simFull (type: JavaExec, dependsOn: 'classes') {
+    group       ' JaCaMo'
+    description 'Runs multiple JaCaMo simulations consecutively with all strategies'
+    doFirst {
+        mkdir 'log'
+    }
+    mainClass = 'simulations.SimStarter'
+    // jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200'
+    classpath sourceSets.main.runtimeClasspath
 }
 
 task buildJCMDeps (type: JavaExec, dependsOn: 'classes') {

@@ -5,10 +5,11 @@
         !wait_and_end_simulation(T).
 
 +!wait_and_end_simulation(T)
-    <- .print("Ending simulation after ", T, " seconds");
+    <- .print("++++++++++++++++++++++++++Ending simulation after ", T, " seconds");
         .wait({+simulationEnded}, T, E);
         endSimulation;
-        .stopMAS.
+        .stopMAS;
+        .
 
 { include("$jacamo/templates/common-cartago.asl") }
 { include("$jacamo/templates/common-moise.asl") }

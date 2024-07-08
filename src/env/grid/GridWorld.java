@@ -11,6 +11,7 @@ import model.AgentInfo;
 import model.ScenarioInfo;
 import service.AgentDB;
 import util.PropertiesLoader;
+import simulations.SimStarter;
 import simulations.Simulation;
 
 public class GridWorld extends Artifact {
@@ -111,5 +112,6 @@ public class GridWorld extends Artifact {
     @OPERATION
     void endSimulation() {
         simulation.end();
+        SimStarter.endSimulation();
     }
 }
