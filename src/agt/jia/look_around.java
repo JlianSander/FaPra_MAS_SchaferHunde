@@ -1,7 +1,5 @@
 package jia;
 
-import java.util.function.Predicate;
-
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;

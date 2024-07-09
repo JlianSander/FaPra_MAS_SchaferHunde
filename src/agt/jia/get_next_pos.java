@@ -1,7 +1,5 @@
 package jia;
 
-import java.util.*;
-
 import org.apache.commons.math3.linear.*;
 
 import jason.asSemantics.DefaultInternalAction;

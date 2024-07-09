@@ -130,7 +130,7 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
     ?jammed(J);
     -+jammed(J + 1);
     !waitToMove;
-    !makeStepTowards.     //retry making step 
+    !makeStepTowards(X,Y).     //retry making step 
 
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 

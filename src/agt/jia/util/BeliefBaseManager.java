@@ -15,6 +15,7 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.SetTerm;
+import jason.asSyntax.SetTermImpl;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
@@ -37,6 +38,8 @@ public class BeliefBaseManager {
                     literal.addTerm(new StringTermImpl((String) object));
                 }else if (object instanceof Atom){
                     literal.addTerm((Atom) object);
+                }else if(object instanceof SetTermImpl){
+                    literal.addTerm((SetTermImpl) object);
                 }else{
                     throw new Exception("Invalid object type");
                 }
@@ -118,7 +121,7 @@ public class BeliefBaseManager {
             locations.add(GridModel.getInstance().getAgPos(agentInfo.getCartagoId()));
         }
 
-        ts.getLogger().info(locations.toString());
+        ts.getLogger().info("BeliefBaseManager::getPosHounds --- locations "  + locations.toString());
         return locations;
     }
 }

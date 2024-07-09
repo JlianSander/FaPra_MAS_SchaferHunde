@@ -293,4 +293,8 @@ public class GridModel extends GridWorldModel {
     public List<Integer> getObjectsAt(int x, int y) {
         return getObjectsAt(new Location(x, y));
     }
+
+    public Location getCenter(){
+        return new Location( Math.round(getWidth() / 2f), Math.round(getHeight() / 2f));
+    }
 }

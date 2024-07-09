@@ -33,9 +33,18 @@ public class init_agent extends DefaultInternalAction {
 
                 BeliefBaseManager.addBelief(ts, "limit_number_agents_driving_swarm", null,
                     loader.getProperty("hound_limit_number_agents_driving_swarm", Integer.class));
+                
+                BeliefBaseManager.addBelief(ts, "search_jammed_retries", null, 
+                    loader.getProperty("hound_search_jammed_retries", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "search_space_between_lines", null, 
+                    loader.getProperty("hound_search_space_between_lines", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "search_strategy", null, 
                     loader.getProperty("hound_search_strategy", Integer.class));
+
+                BeliefBaseManager.addBelief(ts, "search_wait_jammed", null, 
+                    loader.getProperty("hound_search_wait_jammed", Integer.class));
 
                 BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null, 
                     loader.getProperty("hound_select_swarm_weight_proximity", Integer.class));
