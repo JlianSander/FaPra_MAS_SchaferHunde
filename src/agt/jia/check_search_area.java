@@ -24,16 +24,16 @@ public class check_search_area extends DefaultInternalAction {
         if(chosenQ < 5){
             var posHounds = BeliefBaseManager.getPosHounds(ts);
             var myLoc = AgentUtil.getAgentPositionFromTs(ts);
-            ts.getLogger().info("check_search_area --- chosenQ: " + chosenQ);
+            //ts.getLogger().info("check_search_area --- chosenQ: " + chosenQ);
         
             //if already in the quadrant check if another hound is better positioned to search
             if(posHounds.size() > 0){
                 var corner = QuadrantProcessor.GetCornerOfQ(chosenQ);
-                ts.getLogger().info("check_search_area --- corner: " + corner);
+                //ts.getLogger().info("check_search_area --- corner: " + corner);
                 int distMe = corner.distanceChebyshev(myLoc);
                 int distOthersMin = Collections.min(posHounds.stream().map(loc -> corner.distanceChebyshev(loc)).collect(Collectors.toList()));
-                ts.getLogger().info("check_search_area --- distOthersMin: " + distOthersMin);
-                ts.getLogger().info("check_search_area --- distMe: " + distMe);
+                //ts.getLogger().info("check_search_area --- distOthersMin: " + distOthersMin);
+                //ts.getLogger().info("check_search_area --- distMe: " + distMe);
                 return distMe <= distOthersMin;
             }
         } 

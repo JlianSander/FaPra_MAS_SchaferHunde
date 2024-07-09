@@ -48,7 +48,7 @@ public class GridWorld extends Artifact {
         Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
         Location startPos = model.getAgPos(agent.getCartagoId());
         Location targetPos = new Location(targetX, targetY);
-        logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos);
+        //logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos);
         try {
             Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
             logger.info("nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos

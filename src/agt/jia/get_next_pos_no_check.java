@@ -28,7 +28,7 @@ public class get_next_pos_no_check extends DefaultInternalAction {
 
         Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
         Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
-        ts.getLogger().info("--------------'get_next_pos_no_check' myLoc: " + myLoc.toString() + " Target: " + targetLoc.toString() + " Next_Pos: " + nextPos.toString());                                                                               // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos_no_check' myLoc: " + myLoc.toString() + " Target: " + targetLoc.toString() + " Next_Pos: " + nextPos.toString());                                                                               // DEBUG
         return un.unifies(args[2], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[3], new NumberTermImpl(nextPos.y));
     }

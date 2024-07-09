@@ -121,7 +121,7 @@ public class BeliefBaseManager {
             locations.add(GridModel.getInstance().getAgPos(agentInfo.getCartagoId()));
         }
 
-        ts.getLogger().info("BeliefBaseManager::getPosHounds --- locations "  + locations.toString());
+        //ts.getLogger().info("BeliefBaseManager::getPosHounds --- locations "  + locations.toString());
         return locations;
     }
 }

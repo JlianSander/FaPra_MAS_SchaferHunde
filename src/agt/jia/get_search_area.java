@@ -42,10 +42,10 @@ public class get_search_area extends DefaultInternalAction {
     }
 
     private void CheckResetExcluded(TransitionSystem ts, ArrayList<Integer> excluded) {
-        ts.getLogger().info("get_search_area::CheckResetExcluded --- !!!!!!!!!!!!!!!!!!!!! exculded quadrants: " + excluded.toString());
+        //ts.getLogger().info("get_search_area::CheckResetExcluded --- !!!!!!!!!!!!!!!!!!!!! exculded quadrants: " + excluded.toString());
         if(excluded.contains(1) & excluded.contains(2) & excluded.contains(3) & excluded.contains(4) & excluded.contains(5) & excluded.contains(6)){
             excluded.clear();
-            ts.getLogger().info("get_search_area::CheckResetExcluded --- !!!!!!!!!!!!!!!!!!!!! reseting exculded quadrants with" + excluded.toString());
+            //ts.getLogger().info("get_search_area::CheckResetExcluded --- !!!!!!!!!!!!!!!!!!!!! reseting exculded quadrants with" + excluded.toString());
             QuadrantProcessor.UpdateExcludedInBelief(ts, excluded);
         }
     }
