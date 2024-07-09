@@ -24,8 +24,7 @@ public class SimStarter {
         JButton stopButton = new JButton("Stop Simulation");
 
         stopButton.addActionListener(e -> {
-            endSimulation();
-            System.exit(0);
+            destroy();
         });
 
         controlFrame.getContentPane().add(stopButton);
@@ -54,6 +53,11 @@ public class SimStarter {
         }
     }
 
+    private static void destroy() {
+        endSimulation();
+        System.exit(0);
+    }
+
     public static void main(String[] args) throws JasonException, IOException {
         createControlWindow();
 
@@ -72,17 +76,13 @@ public class SimStarter {
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
 
-        int i = full ? 1 : loader.getProperty("hound_strategy_cluster_swarm", Integer.class);
-        int j = full ? 1 : loader.getProperty("hound_strategy_select_swarm", Integer.class);
-        int k = full ? 1 : loader.getProperty("hound_strategy_drive", Integer.class);
+        int maxI = loader.getProperty("hound_strategy_cluster_swarm_amount", Integer.class);
+        int maxJ = loader.getProperty("hound_strategy_select_swarm_amount", Integer.class);
+        int maxK = loader.getProperty("hound_strategy_drive_amount", Integer.class);
 
-        int houndStrategyDriveClusterSwarmAmount = full
-                ? loader.getProperty("hound_strategy_cluster_swarm_amount", Integer.class)
-                : i;
-        int houndStrategyDriveSelectSwarmAmount = full
-                ? loader.getProperty("hound_strategy_select_swarm_amount", Integer.class)
-                : j;
-        int houndStrategyDriveDriveAmount = full ? loader.getProperty("hound_strategy_drive_amount", Integer.class) : k;
+        int initialI = loader.getProperty("hound_strategy_cluster_swarm", Integer.class);
+        int initialJ = loader.getProperty("hound_strategy_select_swarm", Integer.class);
+        int initialK = loader.getProperty("hound_strategy_drive", Integer.class);
 
         System.out.println("=== Starting simulation a total of " + times + " times ===\n");
         if (full) {
@@ -90,9 +90,9 @@ public class SimStarter {
         }
 
         for (int t = 0; t < times; t++) {
-            while (i <= houndStrategyDriveClusterSwarmAmount) {
-                while (j <= houndStrategyDriveSelectSwarmAmount) {
-                    while (k <= houndStrategyDriveDriveAmount) {
+            for (int i = full ? 1 : initialI; i <= (full ? maxI : initialI); i++) {
+                for (int j = full ? 1 : initialJ; j <= (full ? maxJ : initialJ); j++) {
+                    for (int k = full ? 1 : initialK; k <= (full ? maxK : initialK); k++) {
                         logger.info("+++ Starting simulation +++");
                         logger.info("Hound DRIVE strategy:");
                         logger.info("ClusterSwarm: " + i);
@@ -118,7 +118,7 @@ public class SimStarter {
                                     dir + "/" + scenario);
 
                             try {
-                                simulationProcess = processBuilder.start();
+                                Process simulationProcess = processBuilder.start();
 
                                 // Wait for the sim to complete
                                 simulationProcess.waitFor();
@@ -126,12 +126,11 @@ public class SimStarter {
                                 e.printStackTrace();
                             }
                         }
-                        k++;
                     }
-                    j++;
                 }
-                i++;
             }
         }
+
+        destroy();
     }
 }

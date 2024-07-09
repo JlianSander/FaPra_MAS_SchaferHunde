@@ -87,44 +87,23 @@ task run (type: JavaExec, dependsOn: 'classes') {
     classpath sourceSets.main.runtimeClasspath
 }
 
-// task simOne (type: JavaExec, dependsOn: 'classes') {
-//     group = 'JaCaMo'
-//     description = 'Runs a single JaCaMo simulation'
-//     doFirst {
-//         mkdir 'log'
-//         mkdir 'simulations/results'
-
-//         def simulationName = project.hasProperty('s') ? project.s : null
-//         if (simulationName == null) {
-//             throw new GradleException("Please provide the simulation name using -Ps=<name>")
-//         }
-        
-//         def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
-
-//         args = ["simulations/scenarios/${simulationName}.jcm"]
-//         jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${simulationName}"
-//     }
-//     mainClass = 'jacamo.infra.JaCaMoLauncher'
-//     classpath = sourceSets.main.runtimeClasspath
-// }
-
 task simOne (dependsOn: 'classes') {
     group = 'JaCaMo'
     description = 'Runs a single JaCaMo simulation'
     
-    def simulationName = project.hasProperty('s') ? project.s : null
-    if (simulationName == null) {
-        throw new GradleException("Please provide the simulation name using -Ps=<name>")
-    }
-
-    def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
-
     doFirst {
         mkdir 'log'
         mkdir 'simulations/results'
     }
 
     doLast {
+        def simulationName = project.hasProperty('s') ? project.s : null
+        if (simulationName == null) {
+            throw new GradleException("Please provide the simulation name using -Ps=<name>")
+        }
+
+        def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
+        
         // loop through 'times' to run the simulation 'times' times
         for (int i = 0; i < times; i++) {
             javaexec {
