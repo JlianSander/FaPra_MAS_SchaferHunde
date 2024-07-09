@@ -10,6 +10,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.javatuples.Pair;
+
+import model.HoundDriveStrategyConfig;
 import model.ScenarioInfo;
 
 public class SimulationFileWriter {
@@ -31,7 +33,14 @@ public class SimulationFileWriter {
             new File(fullDir).mkdir();
         }
 
-        String filePath = String.format("%s/%s.xlsx", fullDir, simName);
+        int houndDriveStrategyClusterSwarm = HoundDriveStrategyConfig.getClusterSwarm();
+        int houndDriveStrategySelectSwarm = HoundDriveStrategyConfig.getSelectSwarm();
+        int houndDriveStrategyDrive = HoundDriveStrategyConfig.getDrive();
+
+        String houndDriveStrategy = String.format("%s%s%s", houndDriveStrategyClusterSwarm,
+                houndDriveStrategySelectSwarm,
+                houndDriveStrategyDrive);
+        String filePath = String.format("%s/%s_%s.xlsx", fullDir, simName, houndDriveStrategy);
         Workbook workbook;
 
         if (new File(filePath).exists()) {

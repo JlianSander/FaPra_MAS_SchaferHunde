@@ -1,4 +1,4 @@
-package jia;
+package jia.common;
 
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;

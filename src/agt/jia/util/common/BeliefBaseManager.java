@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +20,7 @@ import jason.asSyntax.SetTerm;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
+import jia.util.hounds.SwarmManipulator;
 
 public class BeliefBaseManager {
 
@@ -34,15 +35,15 @@ public class BeliefBaseManager {
                     literal.addTerm(new NumberTermImpl((Integer) object));
                 } else if (object instanceof Double) {
                     literal.addTerm(new NumberTermImpl((Double) object));
-                } else if (object instanceof String){
+                } else if (object instanceof String) {
                     literal.addTerm(new StringTermImpl((String) object));
-                }else if (object instanceof Atom){
+                } else if (object instanceof Atom) {
                     literal.addTerm((Atom) object);
-                }else{
+                } else {
                     throw new Exception("Invalid object type");
                 }
             }
-            if(source != null){
+            if (source != null) {
                 Term TSource = Pred.createSource(source);
                 literal.addAnnot(TSource);
             }
@@ -52,45 +53,45 @@ public class BeliefBaseManager {
         }
     }
 
-    public static Iterator<Literal> getBeliefs(TransitionSystem ts, String name, int arity){
+    public static Iterator<Literal> getBeliefs(TransitionSystem ts, String name, int arity) {
         BeliefBase beliefBase = ts.getAg().getBB();
-        return beliefBase.getCandidateBeliefs(new PredicateIndicator(name, arity));  
+        return beliefBase.getCandidateBeliefs(new PredicateIndicator(name, arity));
     }
 
-    public static boolean removeBelief(TransitionSystem ts, Literal belief){
+    public static boolean removeBelief(TransitionSystem ts, Literal belief) {
         BeliefBase beliefBase = ts.getAg().getBB();
         return beliefBase.remove(belief);
     }
 
-    public static ArrayList<Location> getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm){
+    public static ArrayList<Location> getPosOfSheep(TransitionSystem ts, SwarmManipulator swarm) {
         Iterator<Literal> itBeliefsSwarms = BeliefBaseManager.getBeliefs(ts, "swarm", 4);
         Iterable<Term> sheepTerms = null;
-        while(itBeliefsSwarms.hasNext()){
+        while (itBeliefsSwarms.hasNext()) {
             Literal literal = itBeliefsSwarms.next();
             Term[] terms = literal.getTermsArray();
             int cX = (int) ((NumberTermImpl) terms[1]).solve();
             int cY = (int) ((NumberTermImpl) terms[2]).solve();
             int r = (int) ((NumberTermImpl) terms[3]).solve();
-            if(cX == swarm.getCenter().x && cY == swarm.getCenter().y && r == swarm.getRadius() ){
-                if(terms[0] instanceof SetTerm){
-                    sheepTerms = (SetTerm) terms[0]; 
-                }else if(terms[0] instanceof ListTerm){
+            if (cX == swarm.getCenter().x && cY == swarm.getCenter().y && r == swarm.getRadius()) {
+                if (terms[0] instanceof SetTerm) {
+                    sheepTerms = (SetTerm) terms[0];
+                } else if (terms[0] instanceof ListTerm) {
                     sheepTerms = (ListTerm) terms[0];
-                }else{
+                } else {
                     throw new RuntimeException("Swarm is neither set nor list");
                 }
-                 
+
                 break;
             }
         }
 
         ArrayList<Location> locationsSheep = new ArrayList<Location>();
-        for(Term sheepT : sheepTerms){
+        for (Term sheepT : sheepTerms) {
             Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
-            while(itBeliefsPos.hasNext()){
+            while (itBeliefsPos.hasNext()) {
                 Literal literal = itBeliefsPos.next();
                 Term[] terms = literal.getTermsArray();
-                if(terms[2].equals(sheepT)){
+                if (terms[2].equals(sheepT)) {
                     int tmpX = (int) ((NumberTermImpl) terms[0]).solve();
                     int tmpY = (int) ((NumberTermImpl) terms[1]).solve();
                     locationsSheep.add(new Location(tmpX, tmpY));

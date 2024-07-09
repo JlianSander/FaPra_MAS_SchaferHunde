@@ -87,48 +87,61 @@ task run (type: JavaExec, dependsOn: 'classes') {
     classpath sourceSets.main.runtimeClasspath
 }
 
-task simOne(type: JavaExec, dependsOn: 'classes') {
+task simOne (dependsOn: 'classes') {
     group = 'JaCaMo'
     description = 'Runs a single JaCaMo simulation'
-    doFirst {
-        mkdir 'log'
-        mkdir 'simulations/results'
-
-        def simulationName = project.hasProperty('s') ? project.s : null
-        if (simulationName == null) {
-            throw new GradleException("Please provide the simulation name using -Ps=<name>")
-        }
-
-        args = ["simulations/scenarios/${simulationName}.jcm"]
-        jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${simulationName}"
-    }
-    mainClass = 'jacamo.infra.JaCaMoLauncher'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
-task simAll(dependsOn: 'classes') {
-    group = 'JaCaMo'
-    description = 'Runs multiple JaCaMo simulations consecutively'
-
-    def jcmFiles = fileTree(dir: 'simulations/scenarios', include: '*.jcm')
-
+    
     doFirst {
         mkdir 'log'
         mkdir 'simulations/results'
     }
 
     doLast {
-        jcmFiles.each { File configFile ->
-            println "Running simulation for ${configFile.name}"
+        def simulationName = project.hasProperty('s') ? project.s : null
+        if (simulationName == null) {
+            throw new GradleException("Please provide the simulation name using -Ps=<name>")
+        }
+
+        def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
+        
+        // loop through 'times' to run the simulation 'times' times
+        for (int i = 0; i < times; i++) {
             javaexec {
+                args = ["simulations/scenarios/${simulationName}.jcm"]
+                jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${simulationName}"
                 mainClass = 'jacamo.infra.JaCaMoLauncher'
-                args = [configFile.path]
                 classpath = sourceSets.main.runtimeClasspath
-                jvmArgs '-Xms16g', '-Xmx16g', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=200', "-DsimName=${configFile.name}"
             }
-            println "Finished simulation for ${configFile.name}"
         }
     }
+}
+
+task simAll(type: JavaExec, dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs all JaCaMo simulations consecutively'
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
+
+        def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
+        jvmArgs "-Dtimes=${times}", "-Dfull=false"
+    }
+    mainClass = 'simulations.SimStarter'
+    classpath sourceSets.main.runtimeClasspath
+}
+
+task simFull(type: JavaExec, dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs all JaCaMo simulations consecutively with all strategies'
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
+
+        def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
+        jvmArgs "-Dtimes=${times}", "-Dfull=true"
+    }
+    mainClass = 'simulations.SimStarter'
+    classpath sourceSets.main.runtimeClasspath
 }
 
 task buildJCMDeps (type: JavaExec, dependsOn: 'classes') {

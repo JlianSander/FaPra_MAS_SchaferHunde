@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.common;
 
 import grid.GridModel;
 import jason.asSemantics.TransitionSystem;

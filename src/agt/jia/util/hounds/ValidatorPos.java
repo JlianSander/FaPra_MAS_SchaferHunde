@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.hounds;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -11,27 +11,31 @@ import org.apache.commons.math3.linear.RealVector;
 import grid.GridModel;
 import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Location;
+import jia.util.common.GeometryCalculator;
 import util.PropertiesLoader;
 
 public class ValidatorPos {
 
-    public static Location ensurePosValid(TransitionSystem ts, Location myLoc, Location targetPos, RealVector evasionDirection, int offsetToSheep) {
+    public static Location ensurePosValid(TransitionSystem ts, Location myLoc, Location targetPos,
+            RealVector evasionDirection, int offsetToSheep) {
         /*ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' myLoc:" + myLoc.toString() + " targetPos:" + targetPos.toString() 
-        + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);   */                                                             //DEBUG
+        + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);   */ //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer maxNumberRecalculations = loader.getProperty("hound_max_recalc_new_target_pos", Integer.class);
 
         Location posOnMap = ensurePosOnMap(ts, model, targetPos);
         //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' posOnMap: " + posOnMap.toString());                                                 //DEBUG
-        Location result  = calculateValidTarget(ts, model, maxNumberRecalculations, offsetToSheep, myLoc, posOnMap, evasionDirection, 1);
+        Location result = calculateValidTarget(ts, model, maxNumberRecalculations, offsetToSheep, myLoc, posOnMap,
+                evasionDirection, 1);
         //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' result: " + result.toString());                                                     //DEBUG
 
         return result;
     }
 
     private static Location calculateValidTarget(TransitionSystem ts, GridModel model, Integer maxNumberRecalculations,
-            Integer keepDistanceToSheep, Location myLoc, Location originalTarget, RealVector evasionDir, int offsetEvasion) {
+            Integer keepDistanceToSheep, Location myLoc, Location originalTarget, RealVector evasionDir,
+            int offsetEvasion) {
         //ts.getLogger().info("--------------'calculateValidTarget'");
         Queue<Location> locsToProcess = new ArrayDeque<Location>();
         locsToProcess.add(originalTarget);
@@ -43,14 +47,14 @@ public class ValidatorPos {
             //ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
             if (numberRecalculations > maxNumberRecalculations) {
                 ts.getLogger()
-                        .info("--------------'get_next_pos::calculateValidTarget' no valid target: reached limit of recalculations");                                  //DEBUG
+                        .info("--------------'get_next_pos::calculateValidTarget' no valid target: reached limit of recalculations"); //DEBUG
                 return myLoc;
             }
 
-            Location targetToProcess = locsToProcess.poll();           
+            Location targetToProcess = locsToProcess.poll();
             /*ts.getLogger()
-                    .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());   */                                //DEBUG
-            if(targetToProcess.equals(myLoc)){
+                    .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());   */ //DEBUG
+            if (targetToProcess.equals(myLoc)) {
                 //current position of the agent is a valid position
                 return myLoc;
             }
@@ -62,7 +66,7 @@ public class ValidatorPos {
 
             if (model.isFree(targetToProcess) && sheepTooCloseBy.isEmpty()) {
                 /* ts.getLogger().info("--------------'calculateValidTarget' calculated new valid target: "
-                        + targetToProcess.toString());  */                                                                                                //DEBUG
+                        + targetToProcess.toString());  */ //DEBUG
                 return targetToProcess;
             }
             // --------------------------------------------------
@@ -125,7 +129,7 @@ public class ValidatorPos {
                 if (model.inGrid(calculatedNewTarget)) {
                     locsToProcess.add(calculatedNewTarget);
                     /* ts.getLogger()
-                    .info("--------------'calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString()); */        //DEBUG
+                    .info("--------------'calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString()); */ //DEBUG
                 }
             }
 
@@ -141,13 +145,13 @@ public class ValidatorPos {
                     if (model.inGrid(loc)) {
                         locsToProcess.add(loc);
                         /* ts.getLogger()
-                        .info("--------------'calculateValidTarget' added Target based on evasion: " + loc.toString()); */                       //DEBUG
+                        .info("--------------'calculateValidTarget' added Target based on evasion: " + loc.toString()); */ //DEBUG
                     }
                 }
             }
         }
 
-        ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process");                                    //DEBUG
+        ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process"); //DEBUG
         return myLoc;
     }
 
@@ -166,7 +170,7 @@ public class ValidatorPos {
         //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' actVal: " + actVal);                                    //DEBUG
         //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' maxLimit: " + maxLimit);                                    //DEBUG
         int output = actVal > 0 ? actVal : 0;
-        output =  output < maxLimit ? output : maxLimit;
+        output = output < maxLimit ? output : maxLimit;
         //ts.getLogger().info("--------------'ValidatorPos::stay_within_limit' output: " + output);                                    //DEBUG
         return output;
     }

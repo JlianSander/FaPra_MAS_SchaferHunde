@@ -1,4 +1,4 @@
-package jia;
+package jia.hounds;
 
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -7,11 +7,11 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-import jia.util.SwarmManipulator;
+import jia.util.hounds.SwarmManipulator;
 
 public class get_evasion_directions extends DefaultInternalAction {
-    
-     @Override
+
+    @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         int centerX = (int) ((NumberTerm) args[0]).solve();
         int centerY = (int) ((NumberTerm) args[1]).solve();
