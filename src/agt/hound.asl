@@ -125,6 +125,7 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
     //.drop_desire(makeStepTowards(_,_));
     //.drop_desire(walkTowards(_,_));
     //.drop_desire(reachDestination(_,_));
+    fail_goal(makeStepTowards(X,Y));
     .
 
 -!makeStepTowards(X,Y) 

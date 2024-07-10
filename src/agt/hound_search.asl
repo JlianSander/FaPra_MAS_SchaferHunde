@@ -17,29 +17,30 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
-+!startSearch
++!startSearch : not is_driving
     <- .print("Search started");
     ?search_strategy(X);
     if(X == 1){
-        !!searchStrategy1;
+        !searchStrategy1;
     }elif(X == 2){
-        !!searchStrategy2;
+        !searchStrategy2;
     }else{
         .print("ERROR no such search strategy!");
     }
     .
 
+-!startSearch <- !!startSearch.
+
++!startSearch <- true.
+
 //------------------------------------------------------- searchStrategy1 -------------------------------------------------------
-+!searchStrategy1 : not .desire(reachDestination(L,M))
++!searchStrategy1
     <-
     jia.hounds.get_random_position(TargetX, TargetY);
     !reachDestination(TargetX, TargetY);
-    !!searchStrategy1;
+    !!startSearch;
     .
 
-+!searchStrategy1 <- true.
-
--!searchStrategy1 <- !!searchStrategy1.
 
 //------------------------------------------------------- searchStrategy2 -------------------------------------------------------
 
