@@ -92,20 +92,22 @@ public class BeliefBaseManager {
             }
         }
 
-        for(Term sheepT : sheepTerms){
-            Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
-            while(itBeliefsPos.hasNext()){
-                Literal literal = itBeliefsPos.next();
-                Term[] terms = literal.getTermsArray();
-                if(terms[2].equals(sheepT)){
-                    int tmpX = (int) ((NumberTermImpl) terms[0]).solve();
-                    int tmpY = (int) ((NumberTermImpl) terms[1]).solve();
-                    locationsSheep.add(new Location(tmpX, tmpY));
-                    break;
+        if(sheepTerms != null){
+            for(Term sheepT : sheepTerms){
+                Iterator<Literal> itBeliefsPos = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
+                while(itBeliefsPos.hasNext()){
+                    Literal literal = itBeliefsPos.next();
+                    Term[] terms = literal.getTermsArray();
+                    if(terms[2].equals(sheepT)){
+                        int tmpX = (int) ((NumberTermImpl) terms[0]).solve();
+                        int tmpY = (int) ((NumberTermImpl) terms[1]).solve();
+                        locationsSheep.add(new Location(tmpX, tmpY));
+                        break;
+                    }
                 }
             }
         }
-
+        
         return locationsSheep;
     }
 

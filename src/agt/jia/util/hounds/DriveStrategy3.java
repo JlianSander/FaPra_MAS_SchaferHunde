@@ -30,7 +30,7 @@ public class DriveStrategy3 implements IDrivePositioner {
         //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' angleIncr: " + angleIncr.toString());                                                                            //DEBUG
 
         RealVector directionSwarm = swarm.getDirectionTo(ts, corral.center());
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' directionSwarm: " + directionSwarm.toString());                                                                  //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' directionSwarm: " + directionSwarm.toString());                                                                  //DEBUG
         RealVector invertedDirection = directionSwarm.mapMultiply(-1.0);
         //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' invertedDirection: " + invertedDirection.toString());                                                            //DEBUG
 

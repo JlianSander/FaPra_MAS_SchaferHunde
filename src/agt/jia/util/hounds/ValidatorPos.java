@@ -46,8 +46,8 @@ public class ValidatorPos {
             numberRecalculations++;
             //ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
             if (numberRecalculations > maxNumberRecalculations) {
-                ts.getLogger()
-                        .info("--------------'get_next_pos::calculateValidTarget' no valid target: reached limit of recalculations"); //DEBUG
+                /*ts.getLogger()
+                        .info("--------------'ValidatorPos::calculateValidTarget' no valid target: reached limit of recalculations"); */ //DEBUG
                 return myLoc;
             }
 
