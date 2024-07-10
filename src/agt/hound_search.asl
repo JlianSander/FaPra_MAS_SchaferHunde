@@ -9,16 +9,32 @@
 
 is_sheep_of_interest(S) :- ignoredSheep(IgnoredSheep) & not .member(S, IgnoredSheep).
 
-situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive können weitere Kriterien z.B. über eine jia definiert werden um die Situation näher zu untersuchen               
-
-// situation_ok_to_drive :- 
-//     .findall(S, sheep(S), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3.        //starts driving if the positions of more than 3 sheep are known 
-//situation_ok_to_drive:- jia.check_nearby_sheep.
-
+situation_ok_to_drive :- not is_driving.            
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
-+!startSearch : not is_driving
+@startSearch[atomic]
++!startSearch : not is_driving & not .desire(selectSearchStrategy)
     <- .print("Search started");
+    !selectSearchStrategy.
+
++!startSearch <- true.
+
+-!startSearch <- !!startSearch.
+
+//------------------------------------------------------- selectSearchStrategy -------------------------------------------------------
+i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
+
++!selectSearchStrategy : i_know_sheep_pos 
+    <- //.print("searchStrategy2 i_know_sheep_pos");                                                                                                                                   //DEBUG
+    .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
+    .nth(0, List_Sheep, S1);
+    ?pos_agent(X, Y, S1);
+    !reachDestination(X,Y);
+    !!startSearch;
+    .
+
++!selectSearchStrategy : not i_know_sheep_pos
+    <- .print("selectSearchStrategy");
     ?search_strategy(X);
     if(X == 1){
         !searchStrategy1;
@@ -29,10 +45,6 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
     }
     .
 
--!startSearch <- !!startSearch.
-
-+!startSearch <- true.
-
 //------------------------------------------------------- searchStrategy1 -------------------------------------------------------
 +!searchStrategy1
     <-
@@ -41,28 +53,18 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
     !!startSearch;
     .
 
-
 //------------------------------------------------------- searchStrategy2 -------------------------------------------------------
 
-i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
-
-+!searchStrategy2 : i_know_sheep_pos 
-    <- //.print("searchStrategy2 i_know_sheep_pos");                                                                                                                                   //DEBUG
-    .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
-    .nth(0, List_Sheep, S1);
-    ?pos_agent(X, Y, S1);
-    !reachDestination(X,Y);
-    !!startSearch.
-
-+!searchStrategy2 : not i_know_sheep_pos & not search_pattern(_, _, _, _, _, _)
++!searchStrategy2 : not search_pattern(_, _, _, _, _, _)
     <- //.print("searchStrategy2 I");                                                                                                                                   //DEBUG
     jia.hounds.get_search_area(X,Y);
     //.print("searchStrategy2 search middle point: (", X, ",", Y, ")");                                                                                                 //DEBUG
     //TODO IsInverse in jia.get_search_area bestimmen
     +search_pattern(X, Y, 0, 0, -1, -1);
-    !proceedSearchStrat2.
+    !proceedSearchStrat2;
+    .
 
-+!searchStrategy2 : not i_know_sheep_pos & search_pattern(Xq, Yq, I, IsInverse, XSearchPos, YSearchPos)
++!searchStrategy2 : search_pattern(Xq, Yq, I, IsInverse, XSearchPos, YSearchPos)
     <- //.print("searchStrategy2 II");                                                                                                                                   //DEBUG    
     //check if search area stays the same
     if(jia.hounds.check_search_area(Xq, Yq)){
@@ -78,7 +80,8 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         !!startSearch;
     }
     .
-    
+
+//------------------------------------------------------- proceedSearchStrat2 -------------------------------------------------------    
 
 +!proceedSearchStrat2 : search_pattern(X, Y, I, IsInverse, XSearchPos, YSearchPos) & XSearchPos \== -1 & YSearchPos \== -1  // plan to reach calculated pos in search pattern
     <- //.print("proceedSearchStrat2  I Middle-Point:(", X, ",", Y , ")");                                                                                                                                   //DEBUG
@@ -112,6 +115,8 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     }
     .
 
+//------------------------------------------------------- searchStucked -------------------------------------------------------    
+
 +!searchStucked
     <- //.print("searchStucked");                                                                                                                                   //DEBUG
     ?search_jammed_retries(Lim_Retries);
@@ -128,4 +133,5 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         ?search_wait_jammed(W);
         .wait(W);
     }
-    !!startSearch.
+    !!startSearch;
+    .
