@@ -122,8 +122,10 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 -!makeStepTowards(X,Y) : is_jammed
     <- -+jammed(0);
     .print("end retrying");
-    //+last_step_not_OK;
-    false.
+    //.drop_desire(makeStepTowards(_,_));
+    //.drop_desire(walkTowards(_,_));
+    //.drop_desire(reachDestination(_,_));
+    .
 
 -!makeStepTowards(X,Y) 
     <- .print("waiting (jammed)");                                                                                                    
