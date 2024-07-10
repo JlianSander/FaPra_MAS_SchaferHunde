@@ -19,8 +19,6 @@ situation_ok_to_drive :- not is_driving.
 
 +!startSearch <- true.
 
--!startSearch <- !!startSearch.
-
 //------------------------------------------------------- selectSearchStrategy -------------------------------------------------------
 i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
 
@@ -29,8 +27,14 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
     .nth(0, List_Sheep, S1);
     ?pos_agent(X, Y, S1);
-    !reachDestination(X,Y);
+    if(pos(X, Y)){ //hound stands on same spot
+        .print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!standing at same spot");
+        .abolish(pos_agent(X, Y, S1));
+        !!startSearch;
+    }else{
+        !reachDestination(X,Y);
     !!startSearch;
+    }
     .
 
 +!selectSearchStrategy : not i_know_sheep_pos
@@ -44,6 +48,9 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         .print("ERROR no such search strategy!");
     }
     .
+
+-!selectSearchStrategy
+    <- !!startSearch.
 
 //------------------------------------------------------- searchStrategy1 -------------------------------------------------------
 +!searchStrategy1

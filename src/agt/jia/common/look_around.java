@@ -27,10 +27,16 @@ public class look_around extends DefaultInternalAction {
 
         for (int i = -range; i < range + 1; i++) {
             for (int j = -range; j < range + 1; j++) {
-                if (i == 0 && j == 0)
-                    continue; //don't obeserve own position
-
                 Location loc = new Location(ownLoc.x + i, ownLoc.y + j);
+                
+                if (i == 0 && j == 0){
+                    //own position
+                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                        return posX == loc.x && posY == loc.y;
+                    });
+                    continue;
+                }
+                
                 //check if the location is in line of sight
                 Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
                         new Term[] { new NumberTermImpl(ownLoc.x),
