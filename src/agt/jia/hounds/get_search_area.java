@@ -37,6 +37,9 @@ public class get_search_area extends DefaultInternalAction {
             }
         }
 
+        ArrayList<Integer> excludedQs = QuadrantProcessor.GetExcludedFromBelief(ts);
+        excludedQs.add(chosenQ);
+        QuadrantProcessor.UpdateExcludedInBelief(ts, excludedQs);
         var result = QuadrantProcessor.GetLocToQ(chosenQ);
         return un.unifies(args[0], new NumberTermImpl(result.x)) && un.unifies(args[1], new NumberTermImpl(result.y));
     }

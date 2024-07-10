@@ -41,10 +41,6 @@ public class get_next_search_pos extends DefaultInternalAction {
             }
 
             if(!model.inGrid(posX, posY)){
-                int currentQ = QuadrantProcessor.GetQFromLoc(new Location(middleX, middleY));
-                ArrayList<Integer> excludedQs = QuadrantProcessor.GetExcludedFromBelief(ts);
-                excludedQs.add(currentQ);
-                QuadrantProcessor.UpdateExcludedInBelief(ts, excludedQs);
                 return un.unifies(args[5], new NumberTermImpl(-1)) && un.unifies(args[6], new NumberTermImpl(-1)) && un.unifies(args[7], new NumberTermImpl(-1));
             } 
         }
@@ -70,10 +66,6 @@ public class get_next_search_pos extends DefaultInternalAction {
                         break;
                 }
                 if(!model.inGrid(posX, posY)){
-                    int currentQ = QuadrantProcessor.GetQFromLoc(new Location(middleX, middleY));
-                    ArrayList<Integer> excludedQs = QuadrantProcessor.GetExcludedFromBelief(ts);
-                    excludedQs.add(currentQ);
-                    QuadrantProcessor.UpdateExcludedInBelief(ts, excludedQs);
                     return un.unifies(args[5], new NumberTermImpl(-1)) && un.unifies(args[6], new NumberTermImpl(-1)) && un.unifies(args[7], new NumberTermImpl(-1));
                 } 
 
