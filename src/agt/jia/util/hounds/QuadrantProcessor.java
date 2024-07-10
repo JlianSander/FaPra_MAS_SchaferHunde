@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.hounds;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +12,7 @@ import jason.asSyntax.SetTerm;
 import jason.asSyntax.SetTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import jia.util.common.BeliefBaseManager;
 
 public class QuadrantProcessor {
 

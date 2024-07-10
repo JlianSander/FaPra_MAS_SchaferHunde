@@ -11,10 +11,10 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
-import jia.util.AgentUtil;
-import jia.util.GeometryCalculator;
-import jia.util.QuadrantProcessor;
-import jia.util.ValidatorPos;
+import jia.util.common.AgentUtil;
+import jia.util.common.GeometryCalculator;
+import jia.util.hounds.ValidatorPos;
+import jia.util.hounds.QuadrantProcessor;
 
 public class get_next_search_pos extends DefaultInternalAction {
 

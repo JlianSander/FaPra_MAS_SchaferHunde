@@ -12,9 +12,9 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-import jia.util.AgentUtil;
-import jia.util.BeliefBaseManager;
-import jia.util.QuadrantProcessor;
+import jia.util.common.AgentUtil;
+import jia.util.common.BeliefBaseManager;
+import jia.util.hounds.QuadrantProcessor;
 
 public class get_search_area extends DefaultInternalAction {
 
