@@ -1,4 +1,5 @@
-package jia.util;
+package jia.util.hounds;
+
 import org.apache.commons.math3.linear.*;
 
 import jason.environment.grid.Location;
@@ -10,7 +11,8 @@ import util.PropertiesLoader;
 
 public class DriveStrategy1 implements IDrivePositioner {
 
-    public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral, int positionNumber){
+    public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral,
+            int positionNumber) {
         //ts.getLogger().info("--------------'DriveStrategy1::calculateAgentPosition' positionNumber: " + positionNumber);                                                            //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
@@ -22,7 +24,8 @@ public class DriveStrategy1 implements IDrivePositioner {
         //ts.getLogger().info("--------------'DriveStrategy1::calculateAgentPosition' directionSwarm: " + directionSwarm);                                                            //DEBUG
         RealVector invertedDirection = directionSwarm.mapMultiply(-1.0);
         //ts.getLogger().info("--------------'DriveStrategy1::calculateAgentPosition' invertedDirection: " + invertedDirection);                                                      //DEBUG
-        
-        return DriveStrategyCommon.calculatePosition(ts, myLoc, positionNumber, angleIncr, invertedDirection, swarm.getRadius(), houndDistanceToSwarm, swarm.getCenter(), model);
+
+        return DriveStrategyCommon.calculatePosition(ts, myLoc, positionNumber, angleIncr, invertedDirection,
+                swarm.getRadius(), houndDistanceToSwarm, swarm.getCenter(), model);
     }
 }

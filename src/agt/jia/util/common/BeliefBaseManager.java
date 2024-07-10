@@ -1,4 +1,4 @@
-package jia.util;
+package jia.util.common;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,11 +19,12 @@ import jason.asSyntax.SetTermImpl;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
+import jia.util.hounds.SwarmManipulator;
 import service.AgentDB;
 
 public class BeliefBaseManager {
 
-    public static void addBelief(TransitionSystem ts, String name, Atom source, Object... terms) {
+   public static void addBelief(TransitionSystem ts, String name, Atom source, Object... terms) {
         try {
             //BeliefBase bb = ts.getAg().getBB();
             Agent agent = ts.getAg();

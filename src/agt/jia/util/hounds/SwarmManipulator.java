@@ -1,7 +1,8 @@
-package jia.util;
+package jia.util.hounds;
 
 import jason.asSemantics.TransitionSystem;
 import jason.environment.grid.Location;
+import jia.util.common.GeometryCalculator;
 
 import org.apache.commons.math3.linear.RealVector;
 
@@ -57,7 +58,7 @@ public class SwarmManipulator {
         return new Location(xPosUnBlocked, yPosUnBlocked);
     }
 
-    public RealVector getDirectionTo(TransitionSystem ts, Location target){
+    public RealVector getDirectionTo(TransitionSystem ts, Location target) {
         //get position, where the swarm is to drive to        
         //ts.getLogger().info("--------------'getDirectionTo' Swarm.Center: (" + this.center().x + "," + this.center().y + ")");                                     //DEBUG
         var nextPos = this.getNextPositionTo(ts, target);

@@ -4,7 +4,7 @@ jammed(0).
 +!init : true
     <- .my_name(Me);
        .broadcast(tell, hound(Me));
-       jia.get_corral_area(TLX,TLY,BRX,BRY);
+       jia.hounds.get_corral_area(TLX,TLY,BRX,BRY);
        +corral_area(TLX,TLY,BRX,BRY);
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
        .set.create(S);
@@ -17,7 +17,7 @@ jammed(0).
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
 i_am_lower_than(H):- .my_name(Me) & Me < H.
 
-distance_between_agents(A1, A2, D):-  pos_agent(A1X,A1Y, A1) & pos_agent(A2X,A2Y, A2) & jia.get_distance(A1X,A1Y,A2X,A2Y,D).
+distance_between_agents(A1, A2, D):-  pos_agent(A1X,A1Y, A1) & pos_agent(A2X,A2Y, A2) & jia.common.get_distance(A1X,A1Y,A2X,A2Y,D).
 
 distance_between_swarms_closest_members(Ss1, Ss2, Min_D):-  
             Ss1 \== Ss2 
@@ -33,12 +33,12 @@ distance_between_swarms_farest_members(Ss1, Ss2, Max_D):-
             & .findall(D, .member(S1, Ss1) & .member(S2, Ss2) & S1 \== S2 & distance_between_agents(S1, S2, D), Distances)
             & .max(Distances, Max_D).
 
-distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.get_distance(X,Y,Me_X,Me_Y,D_Me).
+distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.common.get_distance(X,Y,Me_X,Me_Y,D_Me).
 
-distance_me_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.get_distance(CX,CY,ME_X,ME_Y,D).
+distance_me_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.common.get_distance(CX,CY,ME_X,ME_Y,D).
 
 distance_other_hound_to_pos(X,Y,H, DH):- 
-    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(X,Y,HX,HY,DH).
+    pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(X,Y,HX,HY,DH).
 
 is_closer_to_pos(X,Y,H) :- 
     distance_other_hound_to_pos(X,Y,H, DH) & 
@@ -51,7 +51,7 @@ is_equal_away_to_pos(X,Y,H) :-
     DH = D_Me.
 
 is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) & 
-    pos_agent(HX,HY, H) & hound(H) & jia.get_distance(CX,CY,HX,HY,DH) & 
+    pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(CX,CY,HX,HY,DH) & 
     distance_me_to_swarm(Ss, D_ME) &
     DH < D_ME.
 
@@ -73,7 +73,7 @@ exists_close_swarms_complete_linkage :-
     & .length(CloseSwarms, CloseSwarms_Len) 
     & CloseSwarms_Len > 0.
 
-is_in_corral(S) :- pos_agent(SX,SY, S) & jia.is_in_corral(SX, SY).
+is_in_corral(S) :- pos_agent(SX,SY, S) & jia.common.is_in_corral(SX, SY).
 
 is_jammed :- jammed(J) & limit_jammed_retries(N) & J > N.
 
@@ -136,7 +136,7 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 
 +!perceiveSurrounding 
     <- //.print("perceiveSurrounding");
-    jia.look_around;
+    jia.common.look_around;
     ?wait_perception(W);
     .wait(W);
     !!perceiveSurrounding.

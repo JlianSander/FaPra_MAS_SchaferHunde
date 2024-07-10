@@ -1,4 +1,4 @@
-package jia;
+package jia.common;
 
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
@@ -10,12 +10,11 @@ import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-
+import jia.util.common.AgentUtil;
+import jia.util.common.BeliefBaseManager;
 import util.PropertiesLoader;
 import model.AgentInfo;
 import service.AgentDB;
-import jia.util.AgentUtil;
-import jia.util.BeliefBaseManager;
 
 public class look_around extends DefaultInternalAction {
 
@@ -41,11 +40,11 @@ public class look_around extends DefaultInternalAction {
                     continue;
 
                 AgentInfo seenAgent = agentDB.getAgentByLocation(loc.x, loc.y);
-                if (seenAgent == null){
+                if (seenAgent == null) {
                     removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
                         return posX == loc.x && posY == loc.y;
                     });
-                }else{
+                } else {
                     //remove all beliefs about this agent's old position or other agents at this position
                     removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
                         return agentID.equals(seenAgent.getJasonId()) || posX == loc.x && posY == loc.y;
@@ -61,7 +60,8 @@ public class look_around extends DefaultInternalAction {
         return true;
     }
 
-    private void removeOutdatedBeliefs(TransitionSystem ts, Location loc, Function3<Integer, Integer, String, Boolean> filter) {
+    private void removeOutdatedBeliefs(TransitionSystem ts, Location loc,
+            Function3<Integer, Integer, String, Boolean> filter) {
         var beliefs = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
         if (beliefs != null) {
             while (beliefs.hasNext()) {
@@ -70,7 +70,7 @@ public class look_around extends DefaultInternalAction {
                     int posX = (int) ((NumberTerm) belief.getTerm(0)).solve();
                     int posY = (int) ((NumberTerm) belief.getTerm(1)).solve();
                     String agentID = ((Atom) belief.getTerm(2)).toString();
-                    if(filter.apply(posX, posY, agentID)) {
+                    if (filter.apply(posX, posY, agentID)) {
                         //other belief about same agent or belief about some other agent, who was thouhgt to be on this position
                         BeliefBaseManager.removeBelief(ts, belief);
                     }
@@ -86,7 +86,3 @@ public class look_around extends DefaultInternalAction {
         public Result apply(One one, Two two, Three three);
     }
 }
-
-
-
-
