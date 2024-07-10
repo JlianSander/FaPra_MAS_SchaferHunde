@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Toolkit;
+import java.awt.Dimension;
 
 public class GridView extends GridWorldView {
     private static final Logger logger = Logger.getLogger(GridModel.class.getName());
@@ -28,6 +30,12 @@ public class GridView extends GridWorldView {
     public GridView(GridWorldModel model, boolean drawCoords) {
         super(model, "Grid World", 800);
         this.drawCoords = drawCoords;
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = screenSize.width - getWidth();
+        int y = screenSize.height - getHeight();
+        setLocation(x / 2, y / 2);
+
         setVisible(true);
 
         PropertiesLoader loader = PropertiesLoader.getInstance();

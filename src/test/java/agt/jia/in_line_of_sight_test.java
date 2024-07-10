@@ -10,7 +10,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.*;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-import jia.in_line_of_sight;
+import jia.common.in_line_of_sight;
 import util.PropertiesLoader;
 
 public class in_line_of_sight_test {

@@ -65,7 +65,7 @@
                 ?swarm_temp(LS);
                 ?swarm(LS, CX, CY, R);
                 //.print("swarm_data_updated:",LS,CX,CY, Size, R);                                                                          //DEBUG
-                if(jia.get_distance(SX,SY,CX,CY,D) & D > Limit_rad){
+                if(jia.common.get_distance(SX,SY,CX,CY,D) & D > Limit_rad){
                     if(outsiders(Outsiders)){
                         .set.add(Outsiders, S);
                     }else{

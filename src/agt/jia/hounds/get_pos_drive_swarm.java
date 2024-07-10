@@ -1,12 +1,11 @@
-package jia;
+package jia.hounds;
 
-import jia.util.AgentUtil;
-import jia.util.DriveStrategy1;
-import jia.util.DriveStrategy2;
-import jia.util.DriveStrategy3;
-import jia.util.IDrivePositioner;
-import jia.util.SwarmManipulator;
-
+import jia.util.common.AgentUtil;
+import jia.util.hounds.DriveStrategy1;
+import jia.util.hounds.DriveStrategy2;
+import jia.util.hounds.DriveStrategy3;
+import jia.util.hounds.IDrivePositioner;
+import jia.util.hounds.SwarmManipulator;
 import util.PropertiesLoader;
 
 import org.apache.xpath.functions.WrongNumberArgsException;
@@ -39,14 +38,14 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
         Integer stratID = loader.getProperty("hound_strategy_drive", Integer.class);
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
 
-        Location agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, ownLoc, swarm, corral, positionNumber);
-            return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
+        Location agentLoc = chooseStrategy(ts, stratID).calculateAgentPosition(ts, ownLoc, swarm, corral,
+                positionNumber);
+        return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
                 && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
     }
-            
 
-    private IDrivePositioner chooseStrategy(TransitionSystem ts,int stratId) throws WrongNumberArgsException{
-        switch(stratId){
+    private IDrivePositioner chooseStrategy(TransitionSystem ts, int stratId) throws WrongNumberArgsException {
+        switch (stratId) {
             case 1:
                 return new DriveStrategy1();
             case 2:
@@ -54,8 +53,8 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
             case 3:
                 return new DriveStrategy3();
             default:
-            ts.getAg().getLogger().info("ERROR strategy unknown");
-            throw new WrongNumberArgsException("1");
+                ts.getAg().getLogger().info("ERROR strategy unknown");
+                throw new WrongNumberArgsException("1");
         }
     }
 }

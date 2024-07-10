@@ -6,7 +6,7 @@
        !!flock;
        .
        
-is_in_corral :- pos(AgX, AgY) & jia.is_in_corral(AgX, AgY).
+is_in_corral :- pos(AgX, AgY) & jia.common.is_in_corral(AgX, AgY).
 
 target_not_reached(AgX, AgY, TargetX, TargetY) :- pos(AgX, AgY) &
             destination(TargetX, TargetY) &
@@ -23,7 +23,7 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
 
 +!flock : do_flock(AgX, AgY)
     <- 
-    jia.flocking_pos(TargetX, TargetY);
+    jia.sheep.flocking_pos(TargetX, TargetY);
     .my_name(Me);
     .print("Calculated new flocking pos. Start: ", AgX, " , ", AgY, " - Target: (", TargetX, " , ", TargetY, ")");
     !!setTarget(TargetX, TargetY);
@@ -38,7 +38,7 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
 +!takeStep : is_in_corral
     <-
     sheepCaptured;
-    jia.util.kill_and_decommission_agent;
+    jia.util.common.kill_and_decommission_agent;
     .
 
 +!takeStep : target_not_reached(AgX, AgY, TargetX, TargetY)

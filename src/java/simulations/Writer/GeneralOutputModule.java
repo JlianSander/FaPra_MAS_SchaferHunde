@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import model.HoundDriveStrategyConfig;
 import model.ScenarioInfo;
 
 public class GeneralOutputModule {
@@ -41,5 +42,21 @@ public class GeneralOutputModule {
         row = sheet.createRow(rowIndex++);
         row.createCell(0).setCellValue("Hunde Timeout relativ:");
         row.createCell(1).setCellValue(scenarioInfo.getHoundRelativeWaitTime());
+
+        rowIndex++;
+        row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("Hunde Strategie");
+
+        row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("Cluster swarm:");
+        row.createCell(1).setCellValue(HoundDriveStrategyConfig.getClusterSwarm());
+
+        row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("Select swarm:");
+        row.createCell(1).setCellValue(HoundDriveStrategyConfig.getSelectSwarm());
+
+        row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("Drive:");
+        row.createCell(1).setCellValue(HoundDriveStrategyConfig.getDrive());
     }
 }

@@ -24,7 +24,7 @@ situation_ok_to_drive :- not is_driving.   //TODO in situation_ok_to_drive könn
 
 +!setMove : not .desire(reachDestination(L,M))
     <-
-    jia.get_random_position(TargetX, TargetY);
+    jia.hounds.get_random_position(TargetX, TargetY);
     !reachDestination(TargetX, TargetY);
     !!setMove;
     .

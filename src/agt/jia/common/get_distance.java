@@ -1,4 +1,4 @@
-package jia;
+package jia.common;
 
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -17,7 +17,7 @@ public class get_distance extends DefaultInternalAction {
         int y2 = (int) ((NumberTerm) args[3]).solve();
 
         var loc = new Location(x1, y1);
-        int distanceChebyshev = new Location(x2,y2).distanceChebyshev(loc);
+        int distanceChebyshev = new Location(x2, y2).distanceChebyshev(loc);
 
         //ts.getLogger().info("--------------'get_distance' for (" + x1 + ", " + y1 + ") <-> (" + x2 + "," + y2 + "): " + distanceChebyshev);
         return un.unifies(args[4], new NumberTermImpl(distanceChebyshev));

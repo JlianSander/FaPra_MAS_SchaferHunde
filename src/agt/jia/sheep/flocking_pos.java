@@ -1,5 +1,5 @@
 
-package jia;
+package jia.sheep;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +16,8 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
-import jia.util.AgentUtil;
+import jia.common.in_line_of_sight;
+import jia.util.common.AgentUtil;
 import util.PropertiesLoader;
 
 public class flocking_pos extends DefaultInternalAction {
