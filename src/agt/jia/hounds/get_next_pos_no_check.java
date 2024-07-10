@@ -1,4 +1,4 @@
-package jia;
+package jia.hounds;
 
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
