@@ -1,8 +1,11 @@
 package grid.util;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +39,7 @@ public class Pathfinder {
     protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
     protected Pathfinder() {
+        logger.setLevel(Level.SEVERE);
         ds = new DStarLite();
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -67,10 +71,21 @@ public class Pathfinder {
     }
 
     private void excludeObstacles() {
-        ObstacleMap obstacleMap = GridModel.getInstance().getObstacleMap();
+        GridModel model = GridModel.getInstance();
+        ObstacleMap obstacleMap = model.getObstacleMap();
         gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, user),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
+
+        // make a virtual wall around the grid
+        for (int x = -1; x <= model.getWidth(); x++) {
+            for (int y = -1; y <= model.getHeight(); y++) {
+                if (x < 0 || x >= model.getWidth() || y < 0 || y >= model.getHeight()) {
+                    ds.updateCell(x, y, -1);
+                }
+            }
+        }
+
         excludeCustomObjects();
     }
 
@@ -130,6 +145,7 @@ public class Pathfinder {
         GridModel model = GridModel.getInstance();
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
+
         if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
                 || s.x >= model.getWidth() || s.y >= model.getHeight())) {
             throw new NoPathFoundException("No path found");

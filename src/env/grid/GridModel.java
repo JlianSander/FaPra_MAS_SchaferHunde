@@ -143,8 +143,7 @@ public class GridModel extends GridWorldModel {
                 for (int x = 0; x < width; x++) {
                     if (agentInfo.getAgentType() == SHEEP && gridData[y][x] == 'S' ||
                             agentInfo.getAgentType() == HOUND && gridData[y][x] == 'H') {
-                        // if (!isFree(SHEEP, x, y) || !isFree(HOUND, x, y)) {
-                        if (!isFree(x, y)) {
+                        if (!isFree(x, y) || getObjectsAt(x, y).contains(GridModel.CORRAL)) {
                             continue;
                         }
 
@@ -294,7 +293,7 @@ public class GridModel extends GridWorldModel {
         return getObjectsAt(new Location(x, y));
     }
 
-    public Location getCenter(){
-        return new Location( Math.round(getWidth() / 2f), Math.round(getHeight() / 2f));
+    public Location getCenter() {
+        return new Location(Math.round(getWidth() / 2f), Math.round(getHeight() / 2f));
     }
 }
