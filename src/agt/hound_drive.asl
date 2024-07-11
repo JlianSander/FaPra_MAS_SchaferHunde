@@ -4,6 +4,8 @@ has_enough_info(S) :- pos_agent(SX,SY, S) & corral_area(TLX,TLY,BRX,BRY).
 
 has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
+has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.common.in_line_of_sight(Xme, Yme, XS, YS).
+
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- startDrive -------------------------------------------------------
@@ -29,7 +31,11 @@ has_enough_info :- corral_area(TLX,TLY,BRX,BRY).
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
-+!processDriving  
++!processDriving : not has_sheep_in_sight
+    <- .fail_goal(processDriving);
+    .
+
++!processDriving : has_sheep_in_sight 
     <- .print("processDriving");                                                                                                                //DEBUG
     !clusterSwarms;
     .findall(Swarm, swarm(Swarm,_,_,_),Swarms);

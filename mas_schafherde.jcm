@@ -30,7 +30,7 @@ mas mas_schafherde {
     
     agent hound: hound.asl {
         join: world
-        instances: 5
+        instances: 4
         focus: world.grid
         roles: driver in hounds
     }

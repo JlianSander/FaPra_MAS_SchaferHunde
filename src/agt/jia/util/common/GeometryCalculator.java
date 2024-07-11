@@ -49,8 +49,8 @@ public class GeometryCalculator {
 
     public static Location calcStraightIntersection(TransitionSystem ts, Location p1, RealVector dir1, Location p2,
             RealVector dir2) throws InvalidAlgorithmParameterException {
-        ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersection' p1:" + p1.toString()
-                + " dir1:" + dir1.toString() + " p2:" + p2.toString() + " dir2:" + dir2.toString()); //DEBUG
+        /*ts.getLogger().info("--------------'GeometryCalculator::calcStraightIntersection' p1:" + p1.toString()
+                + " dir1:" + dir1.toString() + " p2:" + p2.toString() + " dir2:" + dir2.toString()); */ //DEBUG
         //check that directions are not parallel
         if (checkParallel(dir1, dir2)) {
             throw new InvalidAlgorithmParameterException("The two direction must not be parallel");
