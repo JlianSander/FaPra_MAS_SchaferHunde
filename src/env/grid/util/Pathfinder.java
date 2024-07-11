@@ -38,12 +38,6 @@ public class Pathfinder {
     private Set<Location> customExcludedObjects = new HashSet<>();
     protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
-    private final PrintStream dummyOut = new PrintStream(new OutputStream() {
-        @Override
-        public void write(int b) {
-        }
-    });
-
     protected Pathfinder() {
         logger.setLevel(Level.SEVERE);
         ds = new DStarLite();
@@ -152,17 +146,10 @@ public class Pathfinder {
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
 
-        PrintStream originalOut = System.out;
-        try {
-            System.setOut(dummyOut);
-
-            if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
-                    || s.x >= model.getWidth() || s.y >= model.getHeight())) {
-                throw new NoPathFoundException("No path found");
-            }
-            return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
-        } finally {
-            System.setOut(originalOut);
+        if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
+                || s.x >= model.getWidth() || s.y >= model.getHeight())) {
+            throw new NoPathFoundException("No path found");
         }
+        return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
     }
 }
