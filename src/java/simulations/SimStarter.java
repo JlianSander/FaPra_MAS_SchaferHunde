@@ -73,16 +73,19 @@ public class SimStarter {
 
         String dir = "simulations/scenarios";
         List<String> scenarios = FileLister.getFileNames(dir, false);
+        scenarios.sort(String::compareTo);
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
 
         int maxI = loader.getProperty("hound_strategy_cluster_swarm_amount", Integer.class);
         int maxJ = loader.getProperty("hound_strategy_select_swarm_amount", Integer.class);
         int maxK = loader.getProperty("hound_strategy_drive_amount", Integer.class);
+        int maxL = loader.getProperty("hound_search_strategy_amount", Integer.class);
 
         int initialI = loader.getProperty("hound_strategy_cluster_swarm", Integer.class);
         int initialJ = loader.getProperty("hound_strategy_select_swarm", Integer.class);
         int initialK = loader.getProperty("hound_strategy_drive", Integer.class);
+        int initialL = loader.getProperty("hound_search_strategy", Integer.class);
 
         System.out.println("=== Starting simulation a total of " + times + " times ===\n");
         if (full) {
@@ -93,37 +96,41 @@ public class SimStarter {
             for (int i = full ? 1 : initialI; i <= (full ? maxI : initialI); i++) {
                 for (int j = full ? 1 : initialJ; j <= (full ? maxJ : initialJ); j++) {
                     for (int k = full ? 1 : initialK; k <= (full ? maxK : initialK); k++) {
-                        logger.info("+++ Starting simulation +++");
-                        logger.info("Hound DRIVE strategy:");
-                        logger.info("ClusterSwarm: " + i);
-                        logger.info("SelectSwarm: " + j);
-                        logger.info("Drive: " + k);
+                        for (int l = full ? 1 : initialL; l <= (full ? maxL : initialL); l++) {
+                            logger.info("+++ Starting simulation +++");
+                            logger.info("Hound DRIVE strategy:");
+                            logger.info("ClusterSwarm: " + i);
+                            logger.info("SelectSwarm: " + j);
+                            logger.info("Drive: " + k);
+                            logger.info("Search: " + l);
 
-                        for (String scenario : scenarios) {
+                            for (String scenario : scenarios) {
 
-                            // Spawn the simulation in a separate JVM process
-                            ProcessBuilder processBuilder = new ProcessBuilder(
-                                    "java",
-                                    "-Xms16g",
-                                    "-Xmx16g",
-                                    "-XX:+UseG1GC",
-                                    "-XX:MaxGCPauseMillis=200",
-                                    "-DsimName=" + scenario,
-                                    "-DhoundStrategyClusterSwarm=" + i,
-                                    "-DhoundStrategySelectSwarm=" + j,
-                                    "-DhoundStrategyDrive=" + k,
-                                    "-cp",
-                                    System.getProperty("java.class.path"),
-                                    JaCaMoLauncher.class.getName(),
-                                    dir + "/" + scenario);
+                                // Spawn the simulation in a separate JVM process
+                                ProcessBuilder processBuilder = new ProcessBuilder(
+                                        "java",
+                                        "-Xms16g",
+                                        "-Xmx16g",
+                                        "-XX:+UseG1GC",
+                                        "-XX:MaxGCPauseMillis=200",
+                                        "-DsimName=" + scenario,
+                                        "-DhoundStrategyClusterSwarm=" + i,
+                                        "-DhoundStrategySelectSwarm=" + j,
+                                        "-DhoundStrategyDrive=" + k,
+                                        "-DhoundSearchStrategy=" + l,
+                                        "-cp",
+                                        System.getProperty("java.class.path"),
+                                        JaCaMoLauncher.class.getName(),
+                                        dir + "/" + scenario);
 
-                            try {
-                                Process simulationProcess = processBuilder.start();
+                                try {
+                                    Process simulationProcess = processBuilder.start();
 
-                                // Wait for the sim to complete
-                                simulationProcess.waitFor();
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                    // Wait for the sim to complete
+                                    simulationProcess.waitFor();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
