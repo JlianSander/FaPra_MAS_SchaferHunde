@@ -2,6 +2,7 @@ package env.grid.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -61,6 +62,23 @@ public class PathfinderTest {
         Location targetPos = new Location(4, 0);
         model.setAgPos(hound, targetPos);
         targetPos = new Location(4, 1);
+
+        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
+        assertNotEquals(startPos, nextPos);
+    }
+
+    @Test
+    public void testPathfinderFar() {
+        GridModel model = GridModel.create("src/test/resources/templates/6_test.txt");
+        AgentInfo sheep = new AgentInfo(GridModel.SHEEP, 5, "sheep");
+        model.initAgent(sheep);
+        Location startPos = new Location(1, 20);
+        model.setAgPos(sheep, startPos);
+        Location targetPos = new Location(10, 10);
+
+        assertTrue(model.getObjectsAt(startPos).contains(GridModel.SHEEP));
+        assertTrue(model.getObjectsAt(targetPos).contains(GridModel.CORRAL));
 
         Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
