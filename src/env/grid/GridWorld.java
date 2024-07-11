@@ -1,6 +1,7 @@
 package grid;
 
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import cartago.*;
 import jason.environment.grid.Location;
@@ -31,6 +32,7 @@ public class GridWorld extends Artifact {
     }
 
     private void commonInit() {
+        logger.setLevel(Level.SEVERE);
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Boolean drawCoords = loader.getProperty("draw_coords", Boolean.class);

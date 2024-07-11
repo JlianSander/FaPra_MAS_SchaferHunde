@@ -1,8 +1,11 @@
 package grid.util;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +38,14 @@ public class Pathfinder {
     private Set<Location> customExcludedObjects = new HashSet<>();
     protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
+    private final PrintStream dummyOut = new PrintStream(new OutputStream() {
+        @Override
+        public void write(int b) {
+        }
+    });
+
     protected Pathfinder() {
+        logger.setLevel(Level.SEVERE);
         ds = new DStarLite();
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
@@ -141,10 +151,18 @@ public class Pathfinder {
         GridModel model = GridModel.getInstance();
         ds.init(start.x, start.y, target.x, target.y);
         excludeObstacles();
-        if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
-                || s.x >= model.getWidth() || s.y >= model.getHeight())) {
-            throw new NoPathFoundException("No path found");
+
+        PrintStream originalOut = System.out;
+        try {
+            System.setOut(dummyOut);
+
+            if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0
+                    || s.x >= model.getWidth() || s.y >= model.getHeight())) {
+                throw new NoPathFoundException("No path found");
+            }
+            return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
+        } finally {
+            System.setOut(originalOut);
         }
-        return ds.getPath().stream().map(s -> new Location(s.x, s.y)).collect(Collectors.toList());
     }
 }
