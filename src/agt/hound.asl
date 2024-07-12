@@ -1,5 +1,4 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Init ////////////////////////////////////////////////////////////////////////////////////////////////////
-jammed(0).
 
 +!init : true
     <- .my_name(Me);
@@ -75,8 +74,6 @@ exists_close_swarms_complete_linkage :-
 
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.common.is_in_corral(SX, SY).
 
-is_jammed :- jammed(J) & limit_jammed_retries(N) & J > N.
-
 +pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
 
 swarms_are_close_to_eachother_single_linkage(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
@@ -116,24 +113,8 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
     <- 
     .print("makeStepTowards(", X, ", ", Y, ")");
     nextStep(X,Y, NewX, NewY);
-    //.print("stepped to new position: (",NewX,",",NewY,")");
-    !updatePos(NewX,NewY).       
-
--!makeStepTowards(X,Y) : is_jammed
-    <- -+jammed(0);
-    .print("end retrying");
-    //.drop_desire(makeStepTowards(_,_));
-    //.drop_desire(walkTowards(_,_));
-    //.drop_desire(reachDestination(_,_));
-    fail_goal(makeStepTowards(X,Y));
-    .
-
--!makeStepTowards(X,Y) 
-    <- .print("waiting (jammed)");                                                                                                    
-    ?jammed(J);
-    -+jammed(J + 1);
-    !waitToMove;
-    !makeStepTowards(X,Y).     //retry making step 
+    .print("stepped to new position: (",NewX,",",NewY,")");
+    !updatePos(NewX,NewY).
 
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 

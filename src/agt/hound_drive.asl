@@ -61,6 +61,15 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
         .fail_goal(processDriving);
     }.    
 
+    -!processDriving: same_pos(I) & stay_on_same_position(N) & I > N
+        <- .print("processDriving too long on same position");
+        .abolish(same_pos(_));
+        .fail_goal(endDrive).
+
+    -!processDriving 
+        <- .print("processDriving retry");
+        !processDriving.
+
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
 +!driveSwarm(LS) 
@@ -78,7 +87,6 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
     .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 
-        //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
         !processStayingOnSamePos(LS);
     }else{
         .abolish(same_pos(_));
@@ -87,15 +95,13 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 
 //------------------------------------------------------- processStayingOnSamePos -------------------------------------------------------
 
-+!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I > N
++!processStayingOnSamePos(LS) : same_pos(I) & stay_on_same_position(N) & I > N
     <-  .print("processStayingOnSamePos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! abort Drive");                                                                                                                             //DEBUG 
     !ignoreSheep(LS);
     !!forgetIgnoreSheep(LS);
-    .abolish(same_pos(_));
-    .print("fail processDriving");
-    .fail_goal(processDriving).
+    fail_goal(processStayingOnSamePos(LS)).
 
-+!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I <= N
++!processStayingOnSamePos(LS) : same_pos(I) & stay_on_same_position(N) & I <= N
     <- .print("processStayingOnSamePos ", I);                                                                                                                               //DEBUG   
     -+same_pos(I + 1);
     !waitToMove.
