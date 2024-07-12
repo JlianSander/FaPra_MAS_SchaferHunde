@@ -39,7 +39,7 @@ public class get_next_pos extends DefaultInternalAction {
                     && un.unifies(args[7], new NumberTermImpl(myLoc.y));
         }
 
-        Location validTarget = ValidatorPos.ensurePosValid(ts, myLoc, targetLoc, evasionDirection, keepDistanceToSheep);
+        Location validTarget = ValidatorPos.ensurePosValid(ts, myLoc, targetLoc, evasionDirection, keepDistanceToSheep, false);
         //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                        // DEBUG
         Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
         //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                     // DEBUG

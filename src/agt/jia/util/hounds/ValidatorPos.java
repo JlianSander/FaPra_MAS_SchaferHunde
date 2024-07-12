@@ -17,7 +17,7 @@ import util.PropertiesLoader;
 public class ValidatorPos {
 
     public static Location ensurePosValid(TransitionSystem ts, Location myLoc, Location targetPos,
-            RealVector evasionDirection, int offsetToSheep) {
+            RealVector evasionDirection, int offsetToSheep, boolean ignoreHounds) {
         /*ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' myLoc:" + myLoc.toString() + " targetPos:" + targetPos.toString() 
         + " evasionDirection:" + evasionDirection.toString() + " offsetSheep:" + offsetToSheep);   */ //DEBUG
         GridModel model = GridModel.getInstance();
@@ -27,7 +27,7 @@ public class ValidatorPos {
         Location posOnMap = ensurePosOnMap(ts, model, targetPos);
         //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' posOnMap: " + posOnMap.toString());                                                 //DEBUG
         Location result = calculateValidTarget(ts, model, maxNumberRecalculations, offsetToSheep, myLoc, posOnMap,
-                evasionDirection, 1);
+                evasionDirection, 1, ignoreHounds);
         //ts.getLogger().info("--------------'ValidatorPos::ensurePosValid' result: " + result.toString());                                                     //DEBUG
 
         return result;
@@ -35,7 +35,7 @@ public class ValidatorPos {
 
     private static Location calculateValidTarget(TransitionSystem ts, GridModel model, Integer maxNumberRecalculations,
             Integer keepDistanceToSheep, Location myLoc, Location originalTarget, RealVector evasionDir,
-            int offsetEvasion) {
+            int offsetEvasion, boolean ignoreHounds) {
         //ts.getLogger().info("--------------'calculateValidTarget'");
         Queue<Location> locsToProcess = new ArrayDeque<Location>();
         locsToProcess.add(originalTarget);
@@ -64,7 +64,7 @@ public class ValidatorPos {
                 return objects.contains(GridModel.SHEEP);
             });
 
-            if (model.isFree(targetToProcess) && sheepTooCloseBy.isEmpty()) {
+            if (CheckPosFree(model, targetToProcess, ignoreHounds) && sheepTooCloseBy.isEmpty()) {
                 /* ts.getLogger().info("--------------'calculateValidTarget' calculated new valid target: "
                         + targetToProcess.toString());  */ //DEBUG
                 return targetToProcess;
@@ -76,7 +76,7 @@ public class ValidatorPos {
             {
                 Location calculatedNewTarget;
 
-                if (!model.isFree(targetToProcess)) {
+                if (!CheckPosFree(model, targetToProcess, ignoreHounds)) {
                     // target position itself is not valid
                     // calculate direction towards the target
                     RealVector directionToTarget = MatrixUtils.createRealVector(new double[] {
@@ -151,8 +151,16 @@ public class ValidatorPos {
             }
         }
 
-        ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process"); //DEBUG
+        //ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process"); //DEBUG
         return myLoc;
+    }
+
+    private static boolean CheckPosFree(GridModel model, Location loc, boolean ignoreHounds) {
+        if(!ignoreHounds) return model.isFree(loc);
+        else{
+            var objs = model.getObjectsAt(loc);
+            return !objs.contains(GridModel.SHEEP) && !objs.contains(GridModel.OBSTACLE);
+        }
     }
 
     private static Location ensurePosOnMap(TransitionSystem ts, GridModel model, Location targetPos) {

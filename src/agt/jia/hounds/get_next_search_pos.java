@@ -1,7 +1,5 @@
 package jia.hounds;
 
-import java.util.ArrayList;
-
 import grid.GridModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -14,7 +12,6 @@ import jason.environment.grid.Location;
 import jia.util.common.AgentUtil;
 import jia.util.common.GeometryCalculator;
 import jia.util.hounds.ValidatorPos;
-import jia.util.hounds.QuadrantProcessor;
 
 public class get_next_search_pos extends DefaultInternalAction {
 
@@ -78,7 +75,7 @@ public class get_next_search_pos extends DefaultInternalAction {
         var myLoc = AgentUtil.getAgentPositionFromTs(ts);
         var dirToMiddle = GeometryCalculator.calcDirection(ts, myLoc, middle);
         var dirAwayFromMiddle = dirToMiddle.mapMultiply(-1);
-        var result = ValidatorPos.ensurePosValid(ts, myLoc, new Location(posX, posY), dirAwayFromMiddle, 0);
+        var result = ValidatorPos.ensurePosValid(ts, myLoc, new Location(posX, posY), dirAwayFromMiddle, 0, false);
 
         return un.unifies(args[5], new NumberTermImpl(result.x)) && un.unifies(args[6], new NumberTermImpl(result.y)) && un.unifies(args[7], new NumberTermImpl(limitIterations));
     }
