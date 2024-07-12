@@ -98,14 +98,12 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 +!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I <= N
     <- .print("processStayingOnSamePos ", I);                                                                                                                               //DEBUG   
     -+same_pos(I + 1);
-    ?wait_cant_reach_driving_pos(W);
-    .wait(W).
+    !waitToMove.
 
 +!processStayingOnSamePos(LS) : not same_pos(_) 
     <- .print("processStayingOnSamePos 0");                                                                                                                               //DEBUG   
     +same_pos(1);
-    ?wait_cant_reach_driving_pos(W);
-    .wait(W).
+    !waitToMove.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

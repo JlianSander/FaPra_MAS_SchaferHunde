@@ -32,7 +32,11 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         .abolish(pos_agent(X, Y, S1));
         !!startSearch;
     }else{
-        !reachDestination(X,Y);
+        ?pos(Xme, Yme);
+        jia.hounds.get_next_pos(Xme, Yme, 0, 0, X, Y, XNext, YNext);
+        if(XNext \== Xme & YNext \== Xme){
+            !reachDestination(XNext,YNext);
+        }
     !!startSearch;
     }
     .
