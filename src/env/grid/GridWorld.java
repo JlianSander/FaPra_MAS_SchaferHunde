@@ -5,8 +5,9 @@ import java.util.logging.Level;
 
 import cartago.*;
 import jason.environment.grid.Location;
-
+import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
+import grid.util.SheepPathfinder;
 import grid.util.Pathfinder.UnwalkableTargetCellException;
 import model.AgentInfo;
 import model.ScenarioInfo;
@@ -67,7 +68,19 @@ public class GridWorld extends Artifact {
     void nextStep(int targetX, int targetY, OpFeedbackParam<Integer> newX, OpFeedbackParam<Integer> newY) {
         AgentInfo agent = AgentDB.getInstance().getAgentByCartagoId(this.getCurrentOpAgentId().getLocalId());
         GridModel model = GridModel.getInstance();
-        Pathfinder pathfinder = Pathfinder.getInstance(agent.getAgentType());
+        Pathfinder pathfinder = null;
+        switch (agent.getAgentType()) {
+            case GridModel.SHEEP:
+                pathfinder = SheepPathfinder.getInstance();
+                break;
+            case GridModel.HOUND:
+                pathfinder = HoundPathfinder.getInstance();
+                break;
+            default:
+                logger.warning("Unknown agent type!");
+                failed("move_failed");
+                return;
+        }
         Location startPos = model.getAgPos(agent.getCartagoId());
         Location targetPos = new Location(targetX, targetY);
         //logger.info("GridWorld::nextStep called by " + agent.getJasonId() + " from " + startPos + " to " + targetPos);

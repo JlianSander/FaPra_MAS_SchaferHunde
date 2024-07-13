@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,7 @@ import jason.environment.grid.Location;
 
 import grid.GridModel;
 
-public class Pathfinder {
+public abstract class Pathfinder {
     public class UnwalkableTargetCellException extends RuntimeException {
         public UnwalkableTargetCellException(String message) {
             super(message);
@@ -27,39 +26,50 @@ public class Pathfinder {
         }
     }
 
+    protected Set<Location> customExcludedObjects = new HashSet<>();
     private static final Logger logger = Logger.getLogger(Pathfinder.class.getName());
 
     protected CustomDStarLite ds;
-    private GridProcessor gridProcessor;
-    private int user;
-    private Set<Location> customExcludedObjects = new HashSet<>();
+    protected GridProcessor gridProcessor;
     protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
-    protected Pathfinder() {
+    protected Pathfinder(int maxSteps) {
         logger.setLevel(Level.SEVERE);
-        ds = new CustomDStarLite(30000);
+        ds = new CustomDStarLite(maxSteps);
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
 
-    public static Pathfinder getInstance(Integer user) {
+    protected void excludeObstacles() {
+    };
+
+    protected abstract boolean targetIsWalkable(Location target);
+
+    protected static <T extends Pathfinder> T getInstance(Class<T> clazz) {
         for (var entry : instances.entrySet()) {
+            if (entry.getKey().getClass() != clazz) {
+                continue;
+            }
+
             if (entry.getValue().compareAndSet(false, true)) {
-                Pathfinder instance = entry.getKey();
-                instance.user = user;
+                @SuppressWarnings("unchecked")
+                T instance = (T) entry.getKey();
                 return instance;
             }
         }
 
         synchronized (Pathfinder.class) {
-            Pathfinder pf = new Pathfinder();
-            instances.put(pf, new AtomicBoolean(true));
-            pf.user = user;
-            return pf;
+            try {
+                T pf = clazz.getDeclaredConstructor().newInstance();
+                instances.put(pf, new AtomicBoolean(true));
+                return pf;
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create instance of " + clazz.getName(), e);
+            }
         }
     }
 
-    protected void releaseInstance() {
+    private void releaseInstance() {
         customExcludedObjects.clear();
         AtomicBoolean inUse = instances.get(this);
         if (inUse != null) {
@@ -67,18 +77,7 @@ public class Pathfinder {
         }
     }
 
-    protected void excludeObstacles() {
-        GridModel model = GridModel.getInstance();
-        ObstacleMap obstacleMap = model.getObstacleMap();
-        gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, user),
-                loc -> ds.updateCell(loc.x, loc.y, -1),
-                c -> false);
-
-        makeVirtualWall();
-        excludeCustomObjects();
-    }
-
-    protected void makeVirtualWall() {
+    private void makeVirtualWall() {
         GridModel model = GridModel.getInstance();
         for (int x = -1; x <= model.getWidth(); x++) {
             for (int y = -1; y <= model.getHeight(); y++) {
@@ -87,31 +86,6 @@ public class Pathfinder {
                 }
             }
         }
-    }
-
-    private void excludeCustomObjects() {
-        for (Location location : customExcludedObjects) {
-            //System.out.println("Excluding custom object at: " + location);
-            ds.updateCell(location.x, location.y, -1);
-        }
-    }
-
-    public void excludeObjects(Location callerPosition, int objectType, int range) {
-        GridModel model = GridModel.getInstance();
-        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
-        List<Location> objectLocations = new ArrayList<>();
-        gridProcessor.processEntireGrid(
-                loc -> !loc.equals(callerPosition)
-                        && GridModel.getInstance().getObjectsAt(loc.x, loc.y).contains(objectType),
-                loc -> objectLocations.add(loc),
-                c -> false);
-
-        for (Location location : objectLocations) {
-            customExcludedObjects.add(location);
-            customExcludedObjects.addAll(model.getNeighborhood(location, range, loc -> true));
-        }
-
-        customExcludedObjects.remove(callerPosition);
     }
 
     public Location getNextPosition(Location start, Location target)
@@ -127,11 +101,6 @@ public class Pathfinder {
         }
     }
 
-    protected boolean targetIsWalkable(Location target) {
-        return !(GridModel.getInstance().getObstacleMap().isObstacle(target, user)
-                || customExcludedObjects.contains(target));
-    }
-
     private List<Location> getPath(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         if (start.equals(target)) {
@@ -144,6 +113,8 @@ public class Pathfinder {
 
         GridModel model = GridModel.getInstance();
         ds.init(start.x, start.y, target.x, target.y);
+
+        makeVirtualWall();
         excludeObstacles();
 
         if (!ds.replan() || ds.getPath().stream().anyMatch(s -> s.x < 0 || s.y < 0

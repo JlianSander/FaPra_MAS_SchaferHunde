@@ -11,6 +11,7 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.util.hounds.ValidatorPos;
 import grid.GridModel;
+import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
 import util.PropertiesLoader;
 
@@ -41,9 +42,9 @@ public class get_next_pos extends DefaultInternalAction {
 
         Location validTarget = ValidatorPos.ensurePosValid(ts, myLoc, targetLoc, evasionDirection, keepDistanceToSheep);
         //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                        // DEBUG
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
+        HoundPathfinder pathfinder = HoundPathfinder.getInstance();
         //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                     // DEBUG
-        pathfinder.excludeObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
+        pathfinder.excludeCustomObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
         Location nextPos = pathfinder.getNextPosition(myLoc, validTarget);
         /*ts.getLogger().info("--------------'get_next_pos' valid Target: (" + validTarget.x + "," + validTarget.y
                 + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");  */ // DEBUG

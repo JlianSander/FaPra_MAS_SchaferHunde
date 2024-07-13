@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import grid.GridModel;
 import grid.util.BypassPathfinder;
+import grid.util.ObstaclePathfinder;
 import grid.util.Pathfinder;
 import jason.environment.grid.Location;
 import model.AgentInfo;
@@ -16,7 +17,7 @@ public class PathfinderTest {
     @Test
     public void testPathfinderBounds1() {
         GridModel.create("src/test/resources/templates/3_test.txt");
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder pathfinder = ObstaclePathfinder.getInstance();
         Location startPos = new Location(0, 0);
         Location targetPos = new Location(2, 2);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
@@ -26,7 +27,7 @@ public class PathfinderTest {
     @Test
     public void testPathfinderBounds2() {
         GridModel.create("src/test/resources/templates/4_test.txt");
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder pathfinder = ObstaclePathfinder.getInstance();
         Location startPos = new Location(4, 4);
         Location targetPos = new Location(2, 2);
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
@@ -45,7 +46,7 @@ public class PathfinderTest {
         Location targetPos = new Location(4, 0);
         model.setAgPos(hound, targetPos);
 
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder pathfinder = ObstaclePathfinder.getInstance();
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         assertEquals(startPos, nextPos);
     }
@@ -63,7 +64,7 @@ public class PathfinderTest {
         model.setAgPos(hound, targetPos);
         targetPos = new Location(4, 1);
 
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder pathfinder = ObstaclePathfinder.getInstance();
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         assertNotEquals(startPos, nextPos);
     }
@@ -80,7 +81,7 @@ public class PathfinderTest {
         assertTrue(model.getObjectsAt(startPos).contains(GridModel.SHEEP));
         assertTrue(model.getObjectsAt(targetPos).contains(GridModel.CORRAL));
 
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder pathfinder = ObstaclePathfinder.getInstance();
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         assertNotEquals(startPos, nextPos);
     }
@@ -130,7 +131,7 @@ public class PathfinderTest {
         Location targetPos = new Location(7, 8);
 
         Pathfinder bypassPathfinder = BypassPathfinder.getInstance();
-        Pathfinder regularPathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Pathfinder regularPathfinder = ObstaclePathfinder.getInstance();
         Location nextPosBypass = bypassPathfinder.getNextPosition(startPos, targetPos);
         Location nextPosRegular = regularPathfinder.getNextPosition(startPos, targetPos);
         assertEquals(new Location(7, 12), nextPosBypass);
