@@ -71,7 +71,7 @@ do_flock(AgX, AgY) :- doflock & pos(AgX, AgY).
     -formerPos(X,Y);
     if(F < 2) {
         -+failed(F + 1);
-        .print("I failed ", F, " times in a row. Trying again");
+        .print("I failed ", F + 1, " times in a row. Trying again");
     } else {
         !stuckSleep;
     }
