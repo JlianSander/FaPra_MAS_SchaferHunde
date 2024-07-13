@@ -47,13 +47,10 @@ public abstract class Pathfinder {
 
     protected static <T extends Pathfinder> T getInstance(Class<T> clazz) {
         for (var entry : instances.entrySet()) {
-            if (entry.getKey().getClass() != clazz) {
-                continue;
-            }
-
-            if (entry.getValue().compareAndSet(false, true)) {
+            Pathfinder pf = entry.getKey();
+            if (pf.getClass() == clazz && entry.getValue().compareAndSet(false, true)) {
                 @SuppressWarnings("unchecked")
-                T instance = (T) entry.getKey();
+                T instance = (T) pf;
                 return instance;
             }
         }
