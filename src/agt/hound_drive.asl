@@ -38,7 +38,7 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 +!processDriving : has_sheep_in_sight 
     <- .print("processDriving");                                                                                                                //DEBUG
     !clusterSwarms;
-    .findall(Swarm, swarm(Swarm,_,_,_),Swarms);
+    .findall(Swarm, swarm(Swarm,_,_,_) & .member(S, Swarm) & ignoredSheep(IS) & not .member(S, IS),Swarms);
     //.print("found swarms: ", Swarms);                                                                                                         //DEBUG
     if(.length(Swarms, 0)){
         //no swarm found
