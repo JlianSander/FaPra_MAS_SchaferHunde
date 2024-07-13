@@ -4,7 +4,6 @@
     !updateSwarmData(Swarm).
 
 //------------------------------------------------------- guessWhoDrivingWhat -------------------------------------------------------
-//TODO change name of plan
   +!guessWhoDrivingWhat
     <- //.print("guessWhoDrivingWhat");                                                                                                                                     //DEBUG
     if(hound_drives(_,_)){
@@ -16,7 +15,8 @@
     //.print("All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
     .findall(Ss, swarm(Ss, _, _, _), Swarms);
     //.print("All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
-    ?limit_distance_assumption_hound_driving(Limit_Distance_Driving);
+    ?offset_to_drive_pos_for_assuming(Offset_To_Drive_Pos);
+    ?keep_distance_to_sheep(Keep_Distance_to_sheep);
     for(.member(H_in_focus, All_Hounds)){
         ?pos_agent(HX,HY, H_in_focus);
         for(.member(Ss_2, Swarms)){
@@ -24,7 +24,7 @@
             jia.common.get_distance(HX,HY,CX_2,CY_2,D_Ss_2);
 
             //check if hound is within limit to drive, otherwise suspect that hound is not driving the swarm
-            if(D_Ss_2 < Limit_Distance_Driving){
+            if(D_Ss_2 < R_2 + Keep_Distance_to_sheep + Offset_To_Drive_Pos){
                 if(not hound_drives(H_in_focus,_)){
                     //.print("hound ", H_in_focus, " drives ", Ss_2);                                                                                                               //DEBUG
                     +hound_drives(H_in_focus, Ss_2);
@@ -42,8 +42,8 @@
         }
     }
 
-    //.findall(drives(H,Ss),hound_drives(H, Ss), Drivers);                                                                                                                        //DEBUG
-    //.print("Guessed: ", Drivers);                                                                                                                                               //DEBUG
+    .findall(drives(H,Ss),hound_drives(H, Ss), Drivers);                                                                                                                        //DEBUG
+    .print("Guessed: ", Drivers);                                                                                                                                               //DEBUG
     .
 
     //------------------------------------------------------- updateSwarmData -------------------------------------------------------

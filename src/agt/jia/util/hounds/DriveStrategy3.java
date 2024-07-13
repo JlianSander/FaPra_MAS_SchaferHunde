@@ -22,20 +22,20 @@ public class DriveStrategy3 implements IDrivePositioner {
     @Override
     public Location calculateAgentPosition(TransitionSystem ts, Location myLoc, SwarmManipulator swarm, Area corral,
             int positionNumber) {
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' positionNumber: " + positionNumber);                                                                             //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' positionNumber: " + positionNumber);                                                                             //DEBUG
         GridModel model = GridModel.getInstance();
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer houndDistanceToSwarm = loader.getProperty("hound_keep_distance_to_sheep", Integer.class);
         Double angleIncr = loader.getProperty("hound_drive_angle_increment", Double.class);
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' angleIncr: " + angleIncr.toString());                                                                            //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' angleIncr: " + angleIncr.toString());                                                                            //DEBUG
 
         RealVector directionSwarm = swarm.getDirectionTo(ts, corral.center());
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' directionSwarm: " + directionSwarm.toString());                                                                  //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' directionSwarm: " + directionSwarm.toString());                                                                  //DEBUG
         RealVector invertedDirection = directionSwarm.mapMultiply(-1.0);
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' invertedDirection: " + invertedDirection.toString());                                                            //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' invertedDirection: " + invertedDirection.toString());                                                            //DEBUG
 
         var lstPosSwarm = BeliefBaseManager.getPosOfSheep(ts, swarm);
-        ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' lstPosSwarm: " + lstPosSwarm.toString());                                                                        //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calculateAgentPosition' lstPosSwarm: " + lstPosSwarm.toString());                                                                        //DEBUG
 
         if (positionNumber != 3) {
             return calcTranslatedAgtPos(ts, myLoc, swarm, positionNumber, model, houndDistanceToSwarm, angleIncr,
@@ -51,9 +51,9 @@ public class DriveStrategy3 implements IDrivePositioner {
             Integer offsetToSheep,
             RealVector invertedDirection, ArrayList<Location> lstPosSwarm) {
         var posAgent = calcPosBehindSheep(ts, swarm, offsetToSheep + 1, lstPosSwarm, invertedDirection);
-        ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
         Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep, true);
-        ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
+        //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
         return afterEnsureValid;
     }
 
