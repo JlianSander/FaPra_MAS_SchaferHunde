@@ -42,6 +42,25 @@ public class GridWorld extends Artifact {
         Double houndWaitRatio = loader.getProperty("hound_wait_ratio", Double.class);
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
+
+        createTicker();
+    }
+
+    void createTicker() {
+        // make a thread that outputs the running time, every x ms (checks for thread lock)
+        long ms = 100;
+        long startTime = System.currentTimeMillis();
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(ms);
+                    long elapsedTime = System.currentTimeMillis() - startTime;
+                    logger.info("Elapsed time: " + elapsedTime + "ms");
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
     }
 
     @OPERATION

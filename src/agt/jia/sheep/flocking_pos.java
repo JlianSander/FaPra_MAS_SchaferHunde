@@ -26,6 +26,14 @@ public class flocking_pos extends DefaultInternalAction {
         GridModel model = GridModel.getInstance();
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
 
+        // check if we're stuck
+        List<Location> immediateNeighbors = model.getNeighborhood(ownLoc, 1, loc -> {
+            return model.inGrid(loc);
+        });
+        if (immediateNeighbors.stream().allMatch(loc -> !model.isFree(loc))) {
+            return false;
+        }
+
         // collect all neighboring cells
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer range = loader.getProperty("vision_range", Integer.class);
