@@ -4,8 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +12,6 @@ import java.util.stream.Collectors;
 
 import jason.environment.grid.Location;
 
-import dstarlite.DStarLite;
 import grid.GridModel;
 
 public class Pathfinder {
@@ -32,7 +29,7 @@ public class Pathfinder {
 
     private static final Logger logger = Logger.getLogger(Pathfinder.class.getName());
 
-    protected DStarLite ds;
+    protected CustomDStarLite ds;
     private GridProcessor gridProcessor;
     private int user;
     private Set<Location> customExcludedObjects = new HashSet<>();
@@ -40,7 +37,7 @@ public class Pathfinder {
 
     protected Pathfinder() {
         logger.setLevel(Level.SEVERE);
-        ds = new DStarLite();
+        ds = new CustomDStarLite(200);
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
