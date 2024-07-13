@@ -45,7 +45,9 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
         .print("no swarm found");                                                                                                               //DEBUG
         .fail_goal(processDriving);
     }
-    !selectSwarmToDrive(Swarms);
+    .my_name(Me);
+    !guessWhoDrivingWhat;
+    !selectSwarmToDrive(Swarms, Me);
     if(swarm_chosen_to_drive(_)){
         ?swarm_chosen_to_drive(Swarm_Chosen);
         .print("Swarm chosen to drive: ", Swarm_Chosen);

@@ -36,6 +36,8 @@ distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.common.get_distance(X,Y,M
 
 distance_me_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.common.get_distance(CX,CY,ME_X,ME_Y,D).
 
+distance_other_hound_to_swarm(Ss, H, D):- swarm(Ss, CX, CY, R) & pos_agent(XH, YH, H)  & jia.common.get_distance(CX, CY, XH, YH,D).
+
 distance_other_hound_to_pos(X,Y,H, DH):- 
     pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(X,Y,HX,HY,DH).
 
@@ -53,6 +55,12 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(CX,CY,HX,HY,DH) & 
     distance_me_to_swarm(Ss, D_ME) &
     DH < D_ME.
+
+is_H2_closer_to_swarm(H1, H2, Ss):-
+    pos_agent(H2X,H2Y, H2) & distance_other_hound_to_swarm(Ss, H1, D1)
+    & pos_agent(H1X,H1Y, H1) & distance_other_hound_to_swarm(Ss, H2, D2)
+    & distance_me_to_swarm(Ss, D_ME) 
+    & D2 < D1.
 
 exists_close_swarms_single_linkage :- 
     .setof(Ss2, 
