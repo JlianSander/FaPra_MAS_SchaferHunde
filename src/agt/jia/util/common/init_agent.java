@@ -54,9 +54,6 @@ public class init_agent extends DefaultInternalAction {
                                 BeliefBaseManager.addBelief(ts, "search_space_between_lines", null,
                                                 loader.getProperty("hound_search_space_between_lines", Integer.class));
 
-                                BeliefBaseManager.addBelief(ts, "search_wait_jammed", null,
-                                                loader.getProperty("hound_search_wait_jammed", Integer.class));
-
                                 BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null,
                                                 loader.getProperty("hound_select_swarm_weight_proximity",
                                                                 Integer.class));
