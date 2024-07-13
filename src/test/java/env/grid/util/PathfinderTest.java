@@ -101,4 +101,39 @@ public class PathfinderTest {
         Location nextPos = pathfinder.getNextPosition(startPos, targetPos);
         assertNotEquals(startPos, nextPos);
     }
+
+    @Test
+    public void testPathfinderBypass2() {
+        GridModel model = GridModel.create("src/test/resources/templates/7_test.txt");
+
+        AgentInfo sheep = new AgentInfo(GridModel.SHEEP, 5, "sheep");
+        model.initAgent(sheep);
+        model.setAgPos(sheep, new Location(6, 13));
+
+        AgentInfo sheep2 = new AgentInfo(GridModel.SHEEP, 6, "sheep");
+        model.initAgent(sheep2);
+        model.setAgPos(sheep2, new Location(7, 12));
+
+        AgentInfo sheep3 = new AgentInfo(GridModel.SHEEP, 7, "sheep");
+        model.initAgent(sheep3);
+        model.setAgPos(sheep3, new Location(7, 13));
+
+        AgentInfo sheep4 = new AgentInfo(GridModel.SHEEP, 8, "sheep");
+        model.initAgent(sheep4);
+        model.setAgPos(sheep4, new Location(7, 14));
+
+        AgentInfo sheep5 = new AgentInfo(GridModel.SHEEP, 9, "sheep");
+        model.initAgent(sheep5);
+        model.setAgPos(sheep5, new Location(8, 13));
+
+        Location startPos = new Location(7, 13);
+        Location targetPos = new Location(7, 8);
+
+        Pathfinder bypassPathfinder = BypassPathfinder.getInstance();
+        Pathfinder regularPathfinder = Pathfinder.getInstance(GridModel.SHEEP);
+        Location nextPosBypass = bypassPathfinder.getNextPosition(startPos, targetPos);
+        Location nextPosRegular = regularPathfinder.getNextPosition(startPos, targetPos);
+        assertEquals(new Location(7, 12), nextPosBypass);
+        assertNotEquals(nextPosBypass, nextPosRegular);
+    }
 }

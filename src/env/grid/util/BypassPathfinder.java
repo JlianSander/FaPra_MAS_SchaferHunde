@@ -33,6 +33,11 @@ public class BypassPathfinder extends Pathfinder {
     }
 
     @Override
+    protected void excludeObstacles() {
+        makeVirtualWall();
+    }
+
+    @Override
     protected void releaseInstance() {
         AtomicBoolean inUse = instances.get(this);
         if (inUse != null) {

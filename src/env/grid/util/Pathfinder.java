@@ -37,7 +37,7 @@ public class Pathfinder {
 
     protected Pathfinder() {
         logger.setLevel(Level.SEVERE);
-        ds = new CustomDStarLite(10000);
+        ds = new CustomDStarLite(30000);
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
@@ -67,14 +67,19 @@ public class Pathfinder {
         }
     }
 
-    private void excludeObstacles() {
+    protected void excludeObstacles() {
         GridModel model = GridModel.getInstance();
         ObstacleMap obstacleMap = model.getObstacleMap();
         gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, user),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
 
-        // make a virtual wall around the grid
+        makeVirtualWall();
+        excludeCustomObjects();
+    }
+
+    protected void makeVirtualWall() {
+        GridModel model = GridModel.getInstance();
         for (int x = -1; x <= model.getWidth(); x++) {
             for (int y = -1; y <= model.getHeight(); y++) {
                 if (x < 0 || x >= model.getWidth() || y < 0 || y >= model.getHeight()) {
@@ -82,8 +87,6 @@ public class Pathfinder {
                 }
             }
         }
-
-        excludeCustomObjects();
     }
 
     private void excludeCustomObjects() {
