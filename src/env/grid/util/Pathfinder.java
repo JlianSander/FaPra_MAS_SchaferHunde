@@ -37,7 +37,7 @@ public class Pathfinder {
 
     protected Pathfinder() {
         logger.setLevel(Level.SEVERE);
-        ds = new CustomDStarLite(200);
+        ds = new CustomDStarLite(10000);
         GridModel model = GridModel.getInstance();
         gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
     }
