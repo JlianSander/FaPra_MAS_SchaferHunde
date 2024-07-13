@@ -18,8 +18,6 @@ situation_ok_to_drive :- not is_driving.
 
 +!startSearch <- true.
 
--!startSearch <- !!startSearch.
-
 //------------------------------------------------------- selectSearchStrategy -------------------------------------------------------
 i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
 
@@ -60,6 +58,11 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     }
     .
 
+-!selectSearchStrategy 
+    <- .print("selectSearchStrategy   failed");
+    !waitToMove;
+    !!startSearch.
+
 //------------------------------------------------------- searchStrategy1 -------------------------------------------------------
 +!searchStrategy1
     <-
@@ -74,7 +77,6 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     <- //.print("searchStrategy2 I");                                                                                                                                   //DEBUG
     jia.hounds.get_search_area(X,Y);
     //.print("searchStrategy2 search middle point: (", X, ",", Y, ")");                                                                                                 //DEBUG
-    //TODO IsInverse in jia.get_search_area bestimmen
     +search_pattern(X, Y, 0, 0, -1, -1);
     !proceedSearchStrat2;
     .
@@ -106,9 +108,12 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     //.print("My Pos: ", Xme, ",", Yme, " Search Pos: ", XSearchPos, ",", YSearchPos , ", Next Step to Pos ", XNext, ",", YNext);                                   //DEBUG
     if(Xme == XNext & Yme == YNext){
         //can't reach desired target 
-        !searchStucked;
+        -+search_pattern(X, Y, I, IsInverse, -1, -1);
+        !proceedSearchStrat2;
     }else{
+        //make one step
         !reachDestination(XNext, YNext);
+        //reassess situation after one step
         !!startSearch;
     }
     .
@@ -121,31 +126,15 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     ?pos(Xme, Yme);
     if(XSearchPos == -1 & YSearchPos == -1){
         //has finished search pattern
-        .abolish(search_stucked(_));
         .abolish(search_pattern(_, _, _, _, _, _));
         !waitToMove;
         !!startSearch;
     }elif(XSearchPos == Xme & YSearchPos == Yme){
-        !searchStucked;
+        //the next pos in the pattern is not reachable
+        ?search_pattern(X, Y, I, IsInverse, _, _);
+        -+search_pattern(X, Y, I, IsInverse, -1, -1);       
+        !proceedSearchStrat2;
     }else{
         !proceedSearchStrat2;
     }
-    .
-
-//------------------------------------------------------- searchStucked -------------------------------------------------------    
-
-+!searchStucked
-    <- //.print("searchStucked");                                                                                                                                   //DEBUG
-    ?search_jammed_retries(Lim_Retries);
-    if(search_stucked(J) & J > Lim_Retries){
-        .abolish(search_stucked(_));
-        ?search_pattern(X, Y, I, IsInverse, _, _);
-        -+search_pattern(X, Y, I, IsInverse, -1, -1);       //the next pos in the pattern is not reachable
-    }elif(search_stucked(J) & J <= Lim_Retries){
-        -+search_stucked(J + 1);
-    }else{
-        +search_stucked(1);
-    }
-    !waitToMove;
-    !!startSearch;
     .
