@@ -43,7 +43,7 @@ public class GridWorld extends Artifact {
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
 
-        createTicker();
+        // createTicker();
     }
 
     void createTicker() {
