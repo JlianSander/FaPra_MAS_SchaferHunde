@@ -8,7 +8,6 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.util.common.AgentUtil;
-import grid.GridModel;
 import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
 

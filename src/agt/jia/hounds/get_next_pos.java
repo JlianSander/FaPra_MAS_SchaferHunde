@@ -12,7 +12,6 @@ import jason.environment.grid.Location;
 import jia.util.hounds.ValidatorPos;
 import grid.GridModel;
 import grid.util.HoundPathfinder;
-import grid.util.Pathfinder;
 import util.PropertiesLoader;
 
 public class get_next_pos extends DefaultInternalAction {
