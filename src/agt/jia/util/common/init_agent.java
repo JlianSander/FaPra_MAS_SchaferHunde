@@ -24,6 +24,10 @@ public class init_agent extends DefaultInternalAction {
                         case GridModel.HOUND:
                                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
+                                if(loader.getProperty("hound_no_driving", Boolean.class)){
+                                        BeliefBaseManager.addBelief(ts, "no_driving", null);
+                                }
+                                
                                 BeliefBaseManager.addBelief(ts, "search_strategy", null,
                                                 HoundSearchStrategyConfig.getStrategy());
 

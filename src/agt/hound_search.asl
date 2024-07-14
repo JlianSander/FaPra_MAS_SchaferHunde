@@ -12,7 +12,7 @@
 
 is_sheep_of_interest(S) :- ignoredSheep(IgnoredSheep) & not .member(S, IgnoredSheep).
 
-situation_ok_to_drive :- not is_driving.            
+situation_ok_to_drive :- not is_driving & not no_driving.            
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +39,7 @@ situation_ok_to_drive :- not is_driving.
     !!startSearch.
 
 //------------------------------------------------------- continueSearch -------------------------------------------------------
-i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
+i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S) & not no_driving.
 
 +!continueSearch : i_know_sheep_pos 
     <- //.print("searchStrategy2 i_know_sheep_pos");                                                                                                                                   //DEBUG
