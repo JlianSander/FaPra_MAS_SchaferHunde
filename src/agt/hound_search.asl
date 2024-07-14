@@ -3,7 +3,7 @@
 @newPosAgent[atomic]
 +pos_agent(X,Y,S) : sheep(S) & is_sheep_of_interest(S) &  situation_ok_to_drive //starts the drive, whenever a sheep was sighted and further criteria are met
     <- 
-    .print("pos_agent new pos accepted for ", S);
+    //.print("pos_agent new pos accepted for ", S);
     .drop_desire(startSearch);
     .drop_desire(continueSearch);
     .drop_desire(endSearch);

@@ -51,7 +51,7 @@ public class get_pos_drive_swarm extends DefaultInternalAction {
                 positionNumber);
         }
 
-        ts.getLogger().info("--------------'get_pos_drive_swarm::execute' return Location " + agentLoc.toString());                                              //DEBUG
+        //ts.getLogger().info("--------------'get_pos_drive_swarm::execute' return Location " + agentLoc.toString());                                              //DEBUG
         return un.unifies(args[4], new NumberTermImpl(agentLoc.x))
                 && un.unifies(args[5], new NumberTermImpl(agentLoc.y));
     }
