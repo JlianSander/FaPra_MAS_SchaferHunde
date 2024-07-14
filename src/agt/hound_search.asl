@@ -28,15 +28,15 @@ situation_ok_to_drive :- not is_driving.
 //------------------------------------------------------- endSearch -------------------------------------------------------
 
 +!endSearch
-    <- !continueSearch.
+    <- !continueSearch;
+    -is_searching;
+    !!startSearch.
 
--!endSearch : not .desire(continueSearch)
+-!endSearch
     <- .print("endSearch restart search");
     -is_searching;
     !waitToMove;
     !!startSearch.
-
--!endSearch <- .print("endSearch II").
 
 //------------------------------------------------------- continueSearch -------------------------------------------------------
 i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
@@ -156,7 +156,6 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         //has finished search pattern
         .abolish(search_pattern(_, _, _, _, _, _));
         !waitToMove;
-        !continueSearch;
     }elif(XSearchPos == Xme & YSearchPos == Yme){
         //the next pos in the pattern is not reachable
         ?search_pattern(X, Y, I, IsInverse, _, _);

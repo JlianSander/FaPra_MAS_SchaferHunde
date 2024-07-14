@@ -22,7 +22,8 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 //------------------------------------------------------- endDrive -------------------------------------------------------
 
 +!endDrive 
-    <- !processDriving.
+    <- !processDriving;
+    -is_driving.
 
 -!endDrive : not .desire(processDriving)
     <- .print("endDrive start search");
@@ -73,7 +74,8 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 
     -!processDriving 
         <- .print("processDriving retry");
-        !processDriving.
+        .fail_goal(endDrive);
+        .
 
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
