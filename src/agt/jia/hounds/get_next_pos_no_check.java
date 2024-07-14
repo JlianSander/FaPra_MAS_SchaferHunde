@@ -9,6 +9,7 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.util.common.AgentUtil;
 import grid.GridModel;
+import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
 
 public class get_next_pos_no_check extends DefaultInternalAction {
@@ -21,16 +22,15 @@ public class get_next_pos_no_check extends DefaultInternalAction {
         int targetY = (int) ((NumberTerm) args[1]).solve();
         var targetLoc = new Location(targetX, targetY);
 
-        if(targetLoc.equals(myLoc)){
+        if (targetLoc.equals(myLoc)) {
             return un.unifies(args[2], new NumberTermImpl(myLoc.x))
-                && un.unifies(args[3], new NumberTermImpl(myLoc.y));
+                    && un.unifies(args[3], new NumberTermImpl(myLoc.y));
         }
 
-        Pathfinder pathfinder = Pathfinder.getInstance(GridModel.HOUND);
+        Pathfinder pathfinder = HoundPathfinder.getInstance();
         Location nextPos = pathfinder.getNextPosition(myLoc, targetLoc);
         //ts.getLogger().info("--------------'get_next_pos_no_check' myLoc: " + myLoc.toString() + " Target: " + targetLoc.toString() + " Next_Pos: " + nextPos.toString());                                                                               // DEBUG
         return un.unifies(args[2], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[3], new NumberTermImpl(nextPos.y));
     }
 }
-
