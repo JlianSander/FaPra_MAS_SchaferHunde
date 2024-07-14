@@ -24,15 +24,17 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 +!endDrive 
     <- !processDriving.
 
--!endDrive
-    <- .print("endDrive");
+-!endDrive : not .desire(processDriving)
+    <- .print("endDrive start search");
     -is_driving;
     !!startSearch.
+
+-!endDrive <- .print("endDrive II").
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
 +!processDriving : not has_sheep_in_sight
-    <- .fail_goal(processDriving);
+    <- .print("processDriving no sheep in sight");
     .
 
 +!processDriving : has_sheep_in_sight 
@@ -43,7 +45,7 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-        .fail_goal(processDriving);
+        .fail_goal(endDrive);
     }
     .my_name(Me);
     !guessWhoDrivingWhat;
@@ -60,7 +62,7 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
         .setof(S, sheep(S) & pos_agent(_,_,S), LS);
         !ignoreSheep(LS);
         !!forgetIgnoreSheep(LS);
-        .fail_goal(processDriving);
+        .fail_goal(endDrive);
     }.    
 
     -!processDriving: same_pos(I) & stay_on_same_position(N) & I > N

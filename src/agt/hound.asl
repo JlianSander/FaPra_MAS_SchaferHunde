@@ -82,8 +82,6 @@ exists_close_swarms_complete_linkage :-
 
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.common.is_in_corral(SX, SY).
 
-+pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
-
 swarms_are_close_to_eachother_single_linkage(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
 
 swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1) 
