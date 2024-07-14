@@ -35,6 +35,7 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 
 +!processDriving : not has_sheep_in_sight
     <- .print("processDriving no sheep in sight");
+    .fail_goal(endDrive);
     .
 
 +!processDriving : has_sheep_in_sight 
