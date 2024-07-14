@@ -36,7 +36,7 @@ public class ValidatorPos {
     private static Location calculateValidTarget(TransitionSystem ts, GridModel model, Integer maxNumberRecalculations,
             Integer keepDistanceToSheep, Location myLoc, Location originalTarget, RealVector evasionDir,
             int offsetEvasion, boolean ignoreHounds) {
-        //ts.getLogger().info("--------------'calculateValidTarget'");
+        //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget'");
         Queue<Location> locsToProcess = new ArrayDeque<Location>();
         locsToProcess.add(originalTarget);
         int numberRecalculations = 0;
@@ -44,16 +44,14 @@ public class ValidatorPos {
         while (!locsToProcess.isEmpty()) {
             // avoid StackOverflow
             numberRecalculations++;
-            //ts.getLogger().info("--------------'calculateValidTarget' numberRecalculations++");
+            //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' numberRecalculations++");
             if (numberRecalculations > maxNumberRecalculations) {
-                /*ts.getLogger()
-                        .info("--------------'ValidatorPos::calculateValidTarget' no valid target: reached limit of recalculations"); */ //DEBUG
+                //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' no valid target: reached limit of recalculations");  //DEBUG
                 return myLoc;
             }
 
             Location targetToProcess = locsToProcess.poll();
-            /*ts.getLogger()
-                    .info("--------------'calculateValidTarget' new target to process: " + targetToProcess.toString());   */ //DEBUG
+            //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' new target to process: " + targetToProcess.toString());                         //DEBUG
             if (targetToProcess.equals(myLoc)) {
                 //current position of the agent is a valid position
                 return myLoc;
@@ -65,8 +63,7 @@ public class ValidatorPos {
             });
 
             if (CheckPosFree(model, targetToProcess, ignoreHounds) && sheepTooCloseBy.isEmpty()) {
-                /* ts.getLogger().info("--------------'calculateValidTarget' calculated new valid target: "
-                        + targetToProcess.toString());  */ //DEBUG
+                //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' calculated new valid target: " + targetToProcess.toString());              //DEBUG
                 return targetToProcess;
             }
             // --------------------------------------------------
@@ -128,8 +125,7 @@ public class ValidatorPos {
 
                 if (model.inGrid(calculatedNewTarget)) {
                     locsToProcess.add(calculatedNewTarget);
-                    /* ts.getLogger()
-                    .info("--------------'calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString()); */ //DEBUG
+                    //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' added Target based on direction: " + calculatedNewTarget.toString());       //DEBUG
                 }
             }
 
@@ -144,14 +140,13 @@ public class ValidatorPos {
                 for (var loc : evasionTargets) {
                     if (model.inGrid(loc)) {
                         locsToProcess.add(loc);
-                        /* ts.getLogger()
-                        .info("--------------'calculateValidTarget' added Target based on evasion: " + loc.toString()); */ //DEBUG
+                        //ts.getLogger().info("--------------'ValidatorPos::calculateValidTarget' added Target based on evasion: " + loc.toString());                 //DEBUG
                     }
                 }
             }
         }
 
-        //ts.getLogger().info("--------------'get_next_pos::calculateValidTarget' no valid target: no places to process"); //DEBUG
+        //ts.getLogger().info("--------------'ValidatorPos::get_next_pos::calculateValidTarget' no valid target: no places to process");                          //DEBUG
         return myLoc;
     }
 
