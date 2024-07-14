@@ -92,10 +92,8 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 //------------------------------------------------------- reachDestination -------------------------------------------------------
  
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
-    <- .print("drop intention of reaching (",L,",",M,")");
-    .drop_desire(walkTowards(L,M));   //ensure only walking in one direction at the same time
-    .print("start reaching :(",X,",",Y,")"); 
-    !walkTowards(X,Y).
+    <- .print("can't reach (", X, ",", Y, ") since I'm reaching (",L,",",M,")");
+    !waitToMove. 
 
 +!reachDestination(X,Y) <- .print("start reaching :(",X,",",Y,")"); 
     !walkTowards(X,Y).
