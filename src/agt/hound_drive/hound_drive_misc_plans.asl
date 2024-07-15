@@ -4,7 +4,16 @@
     !updateSwarmData(Swarm).
 
 //------------------------------------------------------- guessWhoDrivingWhat -------------------------------------------------------
-//TODO change name of plan
+
+    swarm_is_in_range_for(H, Ss) :-
+        swarm(Ss, CX, CY, R) 
+        & pos_agent(HX,HY, H)
+        & jia.common.get_distance(HX, HY, CX, CY, D_Ss)
+        & offset_to_drive_pos_for_assuming(Offset_To_Drive_Pos)
+        & keep_distance_to_sheep(Keep_Distance_to_sheep)
+        & D_Ss < R + Keep_Distance_to_sheep + Offset_To_Drive_Pos.
+
+
   +!guessWhoDrivingWhat
     <- //.print("guessWhoDrivingWhat");                                                                                                                                     //DEBUG
     if(hound_drives(_,_)){
@@ -13,33 +22,23 @@
 
     //get all hounds, which positions are known and all known swarms of sheep
     .setof(H, pos_agent(_,_, H) & hound(H) , All_Hounds);
-    //.print("All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
+    //.print("guessWhoDrivingWhat All hounds, which position I know: ", All_Hounds);                                                                                                                  //DEBUG
     .findall(Ss, swarm(Ss, _, _, _), Swarms);
-    //.print("All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
-    ?limit_distance_assumption_hound_driving(Limit_Distance_Driving);
+    //.print("guessWhoDrivingWhat All Swarms I know: ", Swarms);                                                                                                                                      //DEBUG
     for(.member(H_in_focus, All_Hounds)){
-        ?pos_agent(HX,HY, H_in_focus);
-        for(.member(Ss_2, Swarms)){
-            ?swarm(Ss_2, CX_2, CY_2, R_2);
-            jia.common.get_distance(HX,HY,CX_2,CY_2,D_Ss_2);
-
-            //check if hound is within limit to drive, otherwise suspect that hound is not driving the swarm
-            if(D_Ss_2 < Limit_Distance_Driving){
-                if(not hound_drives(H_in_focus,_)){
-                    //.print("hound ", H_in_focus, " drives ", Ss_2);                                                                                                               //DEBUG
-                    +hound_drives(H_in_focus, Ss_2);
-                }else{
-                    // suspect hound to drive the swarm he's closer to
-                    ?hound_drives(H_in_focus, Ss_3);
-                    ?swarm(Ss_3, CX_3, CY_3, R_3);
-                    jia.common.get_distance(HX,HY,CX_3,CY_3,D_Ss_3);
-                    if(D_Ss_2 < D_Ss_3){
-                        //.print("hound ", H_in_focus, " drives ", Ss_2);                                                                                                           //DEBUG
-                        -+hound_drives(H_in_focus, Ss_2);
-                    }
-                }
-            }
+        //.print("guessWhoDrivingWhat ", H_in_focus, " of ", All_Hounds);
+        .findall(Ss_2, .member(Ss_2, Swarms) & swarm_is_in_range_for(H_in_focus, Ss_2), Swarms_in_range);
+        //.print("guessWhoDrivingWhat Swarms in range: ", Swarms_in_range);
+        !selectSwarmToDrive(Swarms_in_range, H_in_focus);
+        if(swarm_chosen_to_drive(_)){
+            ?swarm_chosen_to_drive(Swarm_Chosen);
+            +hound_drives(H_in_focus, Swarm_Chosen);
+            //.print("guessWhoDrivingWhat chosen swarm ", Swarm_Chosen);
+        }else{
+            //.print("guessWhoDrivingWhat no swarm chosen");
         }
+
+        .abolish(swarm_chosen_to_drive(_));
     }
 
     //.findall(drives(H,Ss),hound_drives(H, Ss), Drivers);                                                                                                                        //DEBUG

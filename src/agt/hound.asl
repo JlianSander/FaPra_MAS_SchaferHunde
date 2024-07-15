@@ -1,5 +1,4 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Init ////////////////////////////////////////////////////////////////////////////////////////////////////
-jammed(0).
 
 +!init : true
     <- .my_name(Me);
@@ -37,6 +36,8 @@ distance_me_to_pos(X,Y, D_Me):- pos(Me_X, Me_Y)  & jia.common.get_distance(X,Y,M
 
 distance_me_to_swarm(Ss, D):- swarm(Ss, CX, CY, R) & pos(ME_X, ME_Y)  & jia.common.get_distance(CX,CY,ME_X,ME_Y,D).
 
+distance_other_hound_to_swarm(Ss, H, D):- swarm(Ss, CX, CY, R) & pos_agent(XH, YH, H)  & jia.common.get_distance(CX, CY, XH, YH,D).
+
 distance_other_hound_to_pos(X,Y,H, DH):- 
     pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(X,Y,HX,HY,DH).
 
@@ -54,6 +55,12 @@ is_closer_to_swarm(H, Ss):- swarm(Ss, CX, CY, R) &
     pos_agent(HX,HY, H) & hound(H) & jia.common.get_distance(CX,CY,HX,HY,DH) & 
     distance_me_to_swarm(Ss, D_ME) &
     DH < D_ME.
+
+is_H2_closer_to_swarm(H1, H2, Ss):-
+    pos_agent(H2X,H2Y, H2) & distance_other_hound_to_swarm(Ss, H1, D1)
+    & pos_agent(H1X,H1Y, H1) & distance_other_hound_to_swarm(Ss, H2, D2)
+    & distance_me_to_swarm(Ss, D_ME) 
+    & D2 < D1.
 
 exists_close_swarms_single_linkage :- 
     .setof(Ss2, 
@@ -75,10 +82,6 @@ exists_close_swarms_complete_linkage :-
 
 is_in_corral(S) :- pos_agent(SX,SY, S) & jia.common.is_in_corral(SX, SY).
 
-is_jammed :- jammed(J) & limit_jammed_retries(N) & J > N.
-
-+pos_agent(X,Y,S) : sheep(S) & .findall(S1, sheep(S1), Ss) & .length(Ss, Len_Ss) & Len_Ss > 3 <- !!startDrive.
-
 swarms_are_close_to_eachother_single_linkage(Ss1, Ss2) :-  distance_between_swarms_closest_members(Ss1, Ss2, D) & cluster_swarm_limit_distance_member(Limit_distance) & D <= Limit_distance.
 
 swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1) 
@@ -89,10 +92,8 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 //------------------------------------------------------- reachDestination -------------------------------------------------------
  
 +!reachDestination(X,Y) : .desire(reachDestination(L,M)) & (L \== X | M \== Y) 
-    <- .print("drop intention of reaching (",L,",",M,")");
-    .drop_desire(walkTowards(L,M));   //ensure only walking in one direction at the same time
-    .print("start reaching :(",X,",",Y,")"); 
-    !walkTowards(X,Y).
+    <- .print("can't reach (", X, ",", Y, ") since I'm reaching (",L,",",M,")");
+    !waitToMove. 
 
 +!reachDestination(X,Y) <- .print("start reaching :(",X,",",Y,")"); 
     !walkTowards(X,Y).
@@ -116,24 +117,8 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
     <- 
     .print("makeStepTowards(", X, ", ", Y, ")");
     nextStep(X,Y, NewX, NewY);
-    //.print("stepped to new position: (",NewX,",",NewY,")");
-    !updatePos(NewX,NewY).       
-
--!makeStepTowards(X,Y) : is_jammed
-    <- -+jammed(0);
-    .print("end retrying");
-    //.drop_desire(makeStepTowards(_,_));
-    //.drop_desire(walkTowards(_,_));
-    //.drop_desire(reachDestination(_,_));
-    fail_goal(makeStepTowards(X,Y));
-    .
-
--!makeStepTowards(X,Y) 
-    <- .print("waiting (jammed)");                                                                                                    
-    ?jammed(J);
-    -+jammed(J + 1);
-    !waitToMove;
-    !makeStepTowards(X,Y).     //retry making step 
+    .print("stepped to new position: (",NewX,",",NewY,")");
+    !updatePos(NewX,NewY).
 
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
 

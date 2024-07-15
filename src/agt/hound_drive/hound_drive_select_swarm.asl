@@ -6,18 +6,24 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //------------------------------------------------------- selectSwarmToDrive -------------------------------------------------------
-+!selectSwarmToDrive(Swarms)
++!selectSwarmToDrive(Swarms, Hme)
     <- //.print("selectSwarmToDrive(", Swarms, ")");                                                                                                                              //DEBUG
     if(swarm_chosen_to_drive(_)){
         .abolish(swarm_chosen_to_drive(_));
     }
-    !guessWhoDrivingWhat;
 
     for(.member(Swarm_to_Evaluate, Swarms)){
         //.print(Swarm_to_Evaluate, " of ", Swarms);                                                                                                                              //DEBUG
         //?swarm(Swarm_to_Evaluate, CX, CY, R);                                                                                                                             //DEBUG
         //.print("Swarm: ", Swarm_to_Evaluate, " Center: (", CX, ",", XY, ")");                                                                                                   //DEBUG
-        .setof(H, hound_drives(H, Swarm_to_Evaluate) & is_closer_to_swarm(H, Swarm_to_Evaluate), Drivers);
+        
+        .my_name(Me);
+        if(Hme \== Me){
+            .setof(H, hound_drives(H, Swarm_to_Evaluate) & is_H2_closer_to_swarm(Hme, H, Ss) & H \== Hme, Drivers);
+        }else{
+            .setof(H, hound_drives(H, Swarm_to_Evaluate) & is_closer_to_swarm(H, Swarm_to_Evaluate), Drivers);
+        }
+
         .length(Drivers, Len_Drivers);
         //.setof(H, hound_drives(H, Swarm_to_Evaluate) , Drivers_Debug);                                                                                                          //DEBUG
         //.print("Drivers closer to swarm: ", Drivers, " Length: ", Len_Drivers, " All Drivers: ", Drivers_Debug);                                                                //DEBUG                                                                                                                                                     //DEBUG
@@ -28,7 +34,7 @@
                 +swarm_chosen_to_drive(Swarm_to_Evaluate);
             }else{
                 ?strategy_select_swarm(StratID);
-                !chooseStrategy_selectSwarm(Swarm_to_Evaluate, StratID);
+                !chooseStrategy_selectSwarm(Swarm_to_Evaluate, Hme, StratID);
             }
         } else{
             /* if( i_am_close_enough_to_swarm(Swarm_to_Evaluate)){

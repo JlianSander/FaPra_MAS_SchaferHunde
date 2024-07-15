@@ -22,30 +22,36 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 //------------------------------------------------------- endDrive -------------------------------------------------------
 
 +!endDrive 
-    <- !processDriving.
+    <- !processDriving;
+    -is_driving.
 
--!endDrive
-    <- .print("endDrive");
+-!endDrive : not .desire(processDriving)
+    <- .print("endDrive start search");
     -is_driving;
     !!startSearch.
+
+-!endDrive <- .print("endDrive II").
 
 //------------------------------------------------------- processDriving -------------------------------------------------------
 
 +!processDriving : not has_sheep_in_sight
-    <- .fail_goal(processDriving);
+    <- .print("processDriving no sheep in sight");
+    .fail_goal(endDrive);
     .
 
 +!processDriving : has_sheep_in_sight 
     <- .print("processDriving");                                                                                                                //DEBUG
     !clusterSwarms;
-    .findall(Swarm, swarm(Swarm,_,_,_),Swarms);
+    .findall(Swarm, swarm(Swarm,_,_,_) & .member(S, Swarm) & ignoredSheep(IS) & not .member(S, IS),Swarms);
     //.print("found swarms: ", Swarms);                                                                                                         //DEBUG
     if(.length(Swarms, 0)){
         //no swarm found
         .print("no swarm found");                                                                                                               //DEBUG
-        .fail_goal(processDriving);
+        .fail_goal(endDrive);
     }
-    !selectSwarmToDrive(Swarms);
+    .my_name(Me);
+    !guessWhoDrivingWhat;
+    !selectSwarmToDrive(Swarms, Me);
     if(swarm_chosen_to_drive(_)){
         ?swarm_chosen_to_drive(Swarm_Chosen);
         .print("Swarm chosen to drive: ", Swarm_Chosen);
@@ -58,8 +64,18 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
         .setof(S, sheep(S) & pos_agent(_,_,S), LS);
         !ignoreSheep(LS);
         !!forgetIgnoreSheep(LS);
-        .fail_goal(processDriving);
+        .fail_goal(endDrive);
     }.    
+
+    -!processDriving: same_pos(I) & stay_on_same_position(N) & I > N
+        <- .print("processDriving too long on same position");
+        .abolish(same_pos(_));
+        .fail_goal(endDrive).
+
+    -!processDriving 
+        <- .print("processDriving retry");
+        .fail_goal(endDrive);
+        .
 
 //------------------------------------------------------- driveSwarm -------------------------------------------------------
 
@@ -78,7 +94,6 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
     .print("My Pos: ", ME_X, ",", ME_Y, " Target Pos: ", ME_TARGET_X, ",", ME_TARGET_Y , ", Next Step to Pos ", ME_NXT_X, ",", ME_NXT_Y);                                   //DEBUG
     if(ME_X == ME_NXT_X & ME_Y == ME_NXT_Y){
         //can't reach desired target 
-        //TODO hier Zähler hochzählen und ab Grenzwert Plan B starten (zurückweichen oder Herde sprengen)
         !processStayingOnSamePos(LS);
     }else{
         .abolish(same_pos(_));
@@ -87,25 +102,21 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 
 //------------------------------------------------------- processStayingOnSamePos -------------------------------------------------------
 
-+!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I > N
++!processStayingOnSamePos(LS) : same_pos(I) & stay_on_same_position(N) & I > N
     <-  .print("processStayingOnSamePos !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! abort Drive");                                                                                                                             //DEBUG 
     !ignoreSheep(LS);
     !!forgetIgnoreSheep(LS);
-    .abolish(same_pos(_));
-    .print("fail processDriving");
-    .fail_goal(processDriving).
+    fail_goal(processStayingOnSamePos(LS)).
 
-+!processStayingOnSamePos(LS) : same_pos(I) & limit_jammed_retries(N) & I <= N
++!processStayingOnSamePos(LS) : same_pos(I) & stay_on_same_position(N) & I <= N
     <- .print("processStayingOnSamePos ", I);                                                                                                                               //DEBUG   
     -+same_pos(I + 1);
-    ?wait_cant_reach_driving_pos(W);
-    .wait(W).
+    !waitToMove.
 
 +!processStayingOnSamePos(LS) : not same_pos(_) 
     <- .print("processStayingOnSamePos 0");                                                                                                                               //DEBUG   
     +same_pos(1);
-    ?wait_cant_reach_driving_pos(W);
-    .wait(W).
+    !waitToMove.
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Includes ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -52,7 +52,7 @@ public class DriveStrategy3 implements IDrivePositioner {
             RealVector invertedDirection, ArrayList<Location> lstPosSwarm) {
         var posAgent = calcPosBehindSheep(ts, swarm, offsetToSheep + 1, lstPosSwarm, invertedDirection);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
-        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep);
+        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep, true);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
         return afterEnsureValid;
     }
@@ -98,7 +98,7 @@ public class DriveStrategy3 implements IDrivePositioner {
             //should not happen since directions cant be parallel to each other
             throw new RuntimeException(e);
         }
-        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, p5, dir2Perp, offsetToSheep);
+        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, p5, dir2Perp, offsetToSheep, true);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' afterEnsureValid: " + afterEnsureValid.toString());                                                       //DEBUG
         return afterEnsureValid;
     }

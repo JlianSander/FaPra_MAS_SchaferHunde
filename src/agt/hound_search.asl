@@ -1,43 +1,86 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs //////////////////////////////////////////////////////////////////////////////////////////////////// 
-
+@newPosAgent[atomic]
 +pos_agent(X,Y,S) : sheep(S) & is_sheep_of_interest(S) &  situation_ok_to_drive //starts the drive, whenever a sheep was sighted and further criteria are met
     <- 
-    .drop_desire(walkTowards(_,_));
-    .drop_desire(reachDestination(_,_));
-    !!startDrive.  
+    //.print("pos_agent new pos accepted for ", S);
+    .drop_desire(startSearch);
+    .drop_desire(continueSearch);
+    .drop_desire(endSearch);
+    -is_searching;
+    !!startDrive.
 
 is_sheep_of_interest(S) :- ignoredSheep(IgnoredSheep) & not .member(S, IgnoredSheep).
 
-situation_ok_to_drive :- not is_driving.            
+situation_ok_to_drive :- not is_driving & not no_driving.            
 
 //////////////////////////////////////////////////////////////////////////////////////////////////// Plans ////////////////////////////////////////////////////////////////////////////////////////////////////
-@startSearch[atomic]
-+!startSearch : not is_driving & not .desire(selectSearchStrategy)
-    <- .print("Search started");
-    !selectSearchStrategy.
 
+//------------------------------------------------------- startSearch -------------------------------------------------------
+@startSearch[atomic]
++!startSearch : not is_driving & not is_searching
+    <- .print("Search started");
+    +is_searching;
+    !!endSearch.
+    
 +!startSearch <- true.
 
-//------------------------------------------------------- selectSearchStrategy -------------------------------------------------------
-i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
+//------------------------------------------------------- endSearch -------------------------------------------------------
 
-+!selectSearchStrategy : i_know_sheep_pos 
++!endSearch
+    <- !continueSearch;
+    -is_searching;
+    !!startSearch.
+
+-!endSearch
+    <- .print("endSearch restart search");
+    -is_searching;
+    !waitToMove;
+    !!startSearch.
+
+//------------------------------------------------------- continueSearch -------------------------------------------------------
+i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S) & not no_driving.
+
++!continueSearch : i_know_sheep_pos 
     <- //.print("searchStrategy2 i_know_sheep_pos");                                                                                                                                   //DEBUG
     .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
     .nth(0, List_Sheep, S1);
     ?pos_agent(X, Y, S1);
     if(pos(X, Y)){ //hound stands on same spot
-        .print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!standing at same spot");
-        .abolish(pos_agent(X, Y, S1));
-        !!startSearch;
+        !searchWithout(S1);
     }else{
-        !reachDestination(X,Y);
-    !!startSearch;
+        ?pos(Xme, Yme);
+        jia.hounds.get_next_pos(Xme, Yme, 0, 0, X, Y, XNext, YNext);
+        .print("continueSearch myLoc (", Xme, ",", Yme, ") Target:(", X, ",", Y, ") Next:(", XNext, ",", YNext, ")");
+        if(XNext == Xme & YNext == Yme){
+            //can't reach that sheep
+            !searchWithout(S1);
+        }else{
+            !reachDestination(XNext,YNext);
+            !continueSearch;
+        }
     }
     .
 
-+!selectSearchStrategy : not i_know_sheep_pos
+ +!continueSearch : not i_know_sheep_pos
+    <- .print("continue Search");
+    !selectSearchStrategy;
+    .
+
+//------------------------------------------------------- searchWithout -------------------------------------------------------
++!searchWithout(S) 
+    <- .print("searchWithout ", S);
+    .set.create(LS);
+    .set.add(LS, S);
+    .print("searchWithout add to ignore ", LS);
+    !ignoreSheep(LS);
+    !!forgetIgnoreSheep(LS);
+    !waitToMove;
+    !continueSearch;
+    .
+
+//------------------------------------------------------- selectSearchStrategy -------------------------------------------------------
++!selectSearchStrategy 
     <- .print("selectSearchStrategy");
     ?search_strategy(X);
     if(X == 1){
@@ -48,16 +91,12 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
         .print("ERROR no such search strategy!");
     }
     .
-
--!selectSearchStrategy
-    <- !!startSearch.
-
 //------------------------------------------------------- searchStrategy1 -------------------------------------------------------
 +!searchStrategy1
     <-
     jia.hounds.get_random_position(TargetX, TargetY);
     !reachDestination(TargetX, TargetY);
-    !!startSearch;
+    !continueSearch;
     .
 
 //------------------------------------------------------- searchStrategy2 -------------------------------------------------------
@@ -66,7 +105,6 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     <- //.print("searchStrategy2 I");                                                                                                                                   //DEBUG
     jia.hounds.get_search_area(X,Y);
     //.print("searchStrategy2 search middle point: (", X, ",", Y, ")");                                                                                                 //DEBUG
-    //TODO IsInverse in jia.get_search_area bestimmen
     +search_pattern(X, Y, 0, 0, -1, -1);
     !proceedSearchStrat2;
     .
@@ -84,7 +122,8 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     }else{
         //.print("searchStrategy2 II - reset search pattern");                                                                                                               //DEBUG
         .abolish(search_pattern(_, _, _, _, _, _));
-        !!startSearch;
+        !waitToMove;
+        !continueSearch;
     }
     .
 
@@ -97,10 +136,13 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     //.print("My Pos: ", Xme, ",", Yme, " Search Pos: ", XSearchPos, ",", YSearchPos , ", Next Step to Pos ", XNext, ",", YNext);                                   //DEBUG
     if(Xme == XNext & Yme == YNext){
         //can't reach desired target 
-        !searchStucked;
+        -+search_pattern(X, Y, I, IsInverse, -1, -1);
+        !proceedSearchStrat2;
     }else{
+        //make one step
         !reachDestination(XNext, YNext);
-        !!startSearch;
+        //reassess situation after one step
+        !continueSearch;
     }
     .
 
@@ -112,33 +154,14 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S).
     ?pos(Xme, Yme);
     if(XSearchPos == -1 & YSearchPos == -1){
         //has finished search pattern
-        .abolish(search_stucked(_));
         .abolish(search_pattern(_, _, _, _, _, _));
-        !!startSearch;
+        !waitToMove;
     }elif(XSearchPos == Xme & YSearchPos == Yme){
-        !searchStucked;
-    }else{
-        !!proceedSearchStrat2;
-    }
-    .
-
-//------------------------------------------------------- searchStucked -------------------------------------------------------    
-
-+!searchStucked
-    <- //.print("searchStucked");                                                                                                                                   //DEBUG
-    ?search_jammed_retries(Lim_Retries);
-    if(search_stucked(J) & J > Lim_Retries){
-        .abolish(search_stucked(_));
+        //the next pos in the pattern is not reachable
         ?search_pattern(X, Y, I, IsInverse, _, _);
-        -+search_pattern(X, Y, I, IsInverse, -1, -1);       //the next pos in the pattern is not reachable
-    }elif(search_stucked(J) & J <= Lim_Retries){
-        -+search_stucked(J + 1);
-        ?search_wait_jammed(W);
-        .wait(W);
+        -+search_pattern(X, Y, I, IsInverse, -1, -1);       
+        !proceedSearchStrat2;
     }else{
-        +search_stucked(1);
-        ?search_wait_jammed(W);
-        .wait(W);
+        !proceedSearchStrat2;
     }
-    !!startSearch;
     .

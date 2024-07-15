@@ -12,7 +12,6 @@ import jason.environment.grid.Location;
 import jia.util.hounds.ValidatorPos;
 import grid.GridModel;
 import grid.util.HoundPathfinder;
-import grid.util.Pathfinder;
 import util.PropertiesLoader;
 
 public class get_next_pos extends DefaultInternalAction {
@@ -27,27 +26,30 @@ public class get_next_pos extends DefaultInternalAction {
         int myY = (int) ((NumberTerm) args[1]).solve();
         var myLoc = new Location(myX, myY);
 
-        int evasionX = (int) ((NumberTerm) args[2]).solve(); // [-1,0,1] signals if evasion shall be in +x or -x direction
-        int evasionY = (int) ((NumberTerm) args[3]).solve();
-        RealVector evasionDirection = MatrixUtils.createRealVector(new double[] { evasionX, evasionY });
-
         int targetX = (int) ((NumberTerm) args[4]).solve();
         int targetY = (int) ((NumberTerm) args[5]).solve();
         var targetLoc = new Location(targetX, targetY);
-
         if (targetLoc.equals(myLoc)) {
             return un.unifies(args[6], new NumberTermImpl(myLoc.x))
                     && un.unifies(args[7], new NumberTermImpl(myLoc.y));
         }
 
-        Location validTarget = ValidatorPos.ensurePosValid(ts, myLoc, targetLoc, evasionDirection, keepDistanceToSheep);
+        int evasionX = (int) ((NumberTerm) args[2]).solve(); // [-1,0,1] signals if evasion shall be in +x or -x direction
+        int evasionY = (int) ((NumberTerm) args[3]).solve();
+        RealVector evasionDirection;
+        if(evasionX == 0 && evasionY == 0){
+            evasionDirection = MatrixUtils.createRealVector(new double[] { targetX - myX, targetY -  myY});
+        }else{
+            evasionDirection = MatrixUtils.createRealVector(new double[] { evasionX, evasionY });
+        }
+
+        Location validTarget = ValidatorPos.ensurePosValid(ts, myLoc, targetLoc, evasionDirection, keepDistanceToSheep, false);
         //ts.getLogger().info("--------------'get_next_pos' next Line: Pathfinder.getInstance");                                                        // DEBUG
         HoundPathfinder pathfinder = HoundPathfinder.getInstance();
         //ts.getLogger().info("--------------'get_next_pos' next Line: pathfinder.excludeObjects");                                                     // DEBUG
         pathfinder.excludeCustomObjects(myLoc, GridModel.SHEEP, keepDistanceToSheep);
         Location nextPos = pathfinder.getNextPosition(myLoc, validTarget);
-        /*ts.getLogger().info("--------------'get_next_pos' valid Target: (" + validTarget.x + "," + validTarget.y
-                + ") Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");  */ // DEBUG
+        //ts.getLogger().info("--------------'get_next_pos' valid Target: " + validTarget.toString() + " Next_Pos: " + nextPos.toString());   // DEBUG
         return un.unifies(args[6], new NumberTermImpl(nextPos.x))
                 && un.unifies(args[7], new NumberTermImpl(nextPos.y));
     }
