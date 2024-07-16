@@ -4,6 +4,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 
 import org.apache.commons.math3.linear.RealVector;
 
@@ -51,7 +52,7 @@ public class DriveStrategy3 implements IDrivePositioner {
             RealVector invertedDirection, ArrayList<Location> lstPosSwarm) {
         var posAgent = calcPosBehindSheep(ts, swarm, offsetToSheep + 1, lstPosSwarm, invertedDirection);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' posAgent: " + posAgent.toString());                                                                               //DEBUG
-        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep);
+        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, posAgent, invertedDirection, offsetToSheep, true);
         //ts.getLogger().info("--------------'DriveStrategy3::calcCenterPos' afterEnsureValid: " + afterEnsureValid.toString());                                                               //DEBUG
         return afterEnsureValid;
     }
@@ -97,7 +98,7 @@ public class DriveStrategy3 implements IDrivePositioner {
             //should not happen since directions cant be parallel to each other
             throw new RuntimeException(e);
         }
-        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, p5, dir2Perp, offsetToSheep);
+        Location afterEnsureValid = ValidatorPos.ensurePosValid(ts, myLoc, p5, dir2Perp, offsetToSheep, true);
         //ts.getLogger().info("--------------'DriveStrategy3::calcTranslatedAgtPos' afterEnsureValid: " + afterEnsureValid.toString());                                                       //DEBUG
         return afterEnsureValid;
     }
@@ -107,7 +108,12 @@ public class DriveStrategy3 implements IDrivePositioner {
         //ts.getLogger().info("--------------'DriveStrategy3::calcPosBehindSheep' directionFromCenter: " + directionFromCenter.toString());                                                                //DEBUG
         //get the sheep, which is positioned farest away from the center in the specified direction
         CompDistanceInDir comp2 = new CompDistanceInDir(ts, directionFromCenter, swarm.getCenter());
-        var sheep = Collections.max(lstPosSwarm, comp2);
+        Location sheep;
+        try{
+            sheep = Collections.max(lstPosSwarm, comp2);
+        }catch(NoSuchElementException e){
+            sheep = swarm.getCenter();
+        }
         //ts.getLogger().info("--------------'DriveStrategy3::calcPosBehindSheep' sheep: " + sheep.toString());                                                                             //DEBUG
         //create a location in the desired direction but behind the sheep with an offset
         double distanceSheep = Math

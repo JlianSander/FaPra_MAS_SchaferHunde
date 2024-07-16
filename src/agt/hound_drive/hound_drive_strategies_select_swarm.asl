@@ -2,11 +2,11 @@
 
 //------------------------------------------------------- choose_Strategy_select_Swarm -------------------------------------------------------
 
-+! chooseStrategy_selectSwarm(Swarm, StratID)
++! chooseStrategy_selectSwarm(Swarm, Hme, StratID)
     <- if(StratID == 1){
-        !startStrategy_selectSwarm_1(Swarm);
+        !startStrategy_selectSwarm_1(Swarm, Hme);
     }elif(StratID == 2){
-        !startStrategy_selectSwarm_2(Swarm);
+        !startStrategy_selectSwarm_2(Swarm, Hme);
     }else{
         .print("ERROR no such strategy known");
         false;
@@ -14,7 +14,7 @@
 
 //------------------------------------------------------- startStrategy_selectSwarm_1 -------------------------------------------------------
 
-+! startStrategy_selectSwarm_1(Swarm_to_Evaluate)
++! startStrategy_selectSwarm_1(Swarm_to_Evaluate, Hme)
     <- ?swarm_chosen_to_drive(Swarm_Chosen);
     //.print("startStrategy_selectSwarm_1 (", Swarm_to_Evaluate, ")");                                                                                              //DEBUG
     //choose new swarm if it contains more sheep
@@ -28,7 +28,7 @@
 
 //------------------------------------------------------- startStrategy_selectSwarm_2 -------------------------------------------------------
 
-+! startStrategy_selectSwarm_2(Swarm_to_Evaluate)
++! startStrategy_selectSwarm_2(Swarm_to_Evaluate, H)
     <- 
     //.print("startStrategy_selectSwarm_2 (", Swarm_to_Evaluate, ")");                                                                                      //DEBUG
     ?swarm_chosen_to_drive(Swarm_Chosen);
@@ -47,8 +47,15 @@
         //.print(Swarm_Chosen , " and ", Swarm_to_Evaluate, " are of equal size.");                                                                         //DEBUG
     }
     
-    ?distance_me_to_swarm(Swarm_to_Evaluate, D_eval);
-    ?distance_me_to_swarm(Swarm_Chosen, D_cho);
+    .my_name(Me);
+    if(H == Me){
+        ?distance_me_to_swarm(Swarm_to_Evaluate, D_eval);
+        ?distance_me_to_swarm(Swarm_Chosen, D_cho);
+    }else{
+        ?distance_other_hound_to_swarm(Swarm_to_Evaluate, H, D_eval);
+        ?distance_other_hound_to_swarm(Swarm_Chosen, H, D_cho);
+    }
+    
     if(D_eval < D_cho){
         Decision_Proximity = 1;
         //.print(Swarm_to_Evaluate , " is closer.");                                                                                                        //DEBUG

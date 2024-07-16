@@ -6,6 +6,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 import model.HoundDriveStrategyConfig;
+import model.HoundSearchStrategyConfig;
 import util.PropertiesLoader;
 
 public class init_agent extends DefaultInternalAction {
@@ -23,6 +24,13 @@ public class init_agent extends DefaultInternalAction {
                         case GridModel.HOUND:
                                 waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
 
+                                if(loader.getProperty("hound_no_driving", Boolean.class)){
+                                        BeliefBaseManager.addBelief(ts, "no_driving", null);
+                                }
+                                
+                                BeliefBaseManager.addBelief(ts, "search_strategy", null,
+                                                HoundSearchStrategyConfig.getStrategy());
+
                                 BeliefBaseManager.addBelief(ts, "strategy_cluster_swarm", null,
                                                 HoundDriveStrategyConfig.getClusterSwarm());
 
@@ -35,17 +43,23 @@ public class init_agent extends DefaultInternalAction {
                                 BeliefBaseManager.addBelief(ts, "cluster_swarm_limit_distance_member", null,
                                                 loader.getProperty("hound_cluster_swarm_limit_distance_member",
                                                                 Integer.class));
-
-                                BeliefBaseManager.addBelief(ts, "limit_distance_assumption_hound_driving", null,
-                                                loader.getProperty("hound_limit_distance_assumption_hound_driving",
+                                
+                                BeliefBaseManager.addBelief(ts, "keep_distance_to_sheep", null,
+                                                loader.getProperty("hound_keep_distance_to_sheep",
                                                                 Integer.class));
-
-                                BeliefBaseManager.addBelief(ts, "limit_jammed_retries", null,
-                                                loader.getProperty("hound_limit_jammed_retries", Integer.class));
 
                                 BeliefBaseManager.addBelief(ts, "limit_number_agents_driving_swarm", null,
                                                 loader.getProperty("hound_limit_number_agents_driving_swarm",
                                                                 Integer.class));
+
+                                BeliefBaseManager.addBelief(ts, "offset_to_drive_pos_for_assuming", null,
+                                                loader.getProperty("hound_offset_to_drive_pos_for_assuming", Integer.class));
+
+                                BeliefBaseManager.addBelief(ts, "search_jammed_retries", null,
+                                                loader.getProperty("hound_search_jammed_retries", Integer.class));
+
+                                BeliefBaseManager.addBelief(ts, "search_space_between_lines", null,
+                                                loader.getProperty("hound_search_space_between_lines", Integer.class));
 
                                 BeliefBaseManager.addBelief(ts, "select_swarm_weight_proximity", null,
                                                 loader.getProperty("hound_select_swarm_weight_proximity",
@@ -54,11 +68,11 @@ public class init_agent extends DefaultInternalAction {
                                 BeliefBaseManager.addBelief(ts, "select_swarm_weight_size", null,
                                                 loader.getProperty("hound_select_swarm_weight_size", Integer.class));
 
+                                BeliefBaseManager.addBelief(ts, "stay_on_same_position", null,
+                                        loader.getProperty("hound_stay_on_same_position", Integer.class));
+
                                 BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
                                                 loader.getProperty("hound_wait_between_driving", Integer.class));
-
-                                BeliefBaseManager.addBelief(ts, "wait_cant_reach_driving_pos", null,
-                                                loader.getProperty("hound_wait_cant_reach_driving_pos", Integer.class));
 
                                 BeliefBaseManager.addBelief(ts, "wait_ignore_sheep_forget", null,
                                                 loader.getProperty("hound_wait_ignore_sheep_forget", Integer.class));

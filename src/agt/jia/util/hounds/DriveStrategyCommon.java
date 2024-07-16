@@ -16,7 +16,7 @@ public class DriveStrategyCommon {
 
         Location agentPos = calcPosOnCircle(ts, center, directionFromCenter, angle, radiusSwarm + offsetToSheep + 1);
 
-        return ValidatorPos.ensurePosValid(ts, ownLocation, agentPos, directionFromCenter, offsetToSheep);
+        return ValidatorPos.ensurePosValid(ts, ownLocation, agentPos, directionFromCenter, offsetToSheep, true);
     }
 
     public static double calcAngle(TransitionSystem ts, int positionNumber, Double angle_incr) {

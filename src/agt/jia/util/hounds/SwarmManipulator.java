@@ -20,10 +20,10 @@ public class SwarmManipulator {
     }
 
     public Location getNextPositionTo(TransitionSystem ts, Location targetLocation) {
-        //ts.getLogger().info("--------------'getNextPositionTo' get next step from " + this.center.toString() + " to " + targetLocation.toString());                                                               //DEBUG
+        //ts.getLogger().info("--------------'SwarmManipulator:getNextPositionTo' get next step from " + this.center.toString() + " to " + targetLocation.toString());                                                               //DEBUG
         var nextPosCenter = BypassPathfinder.getInstance().getNextPosition(this.center, targetLocation);
         //var nextPosCenter = Pathfinder.getInstance(GridModel.SHEEP).getNextPosition(this.center, targetLocation);
-        //ts.getLogger().info("--------------'getNextPositionTo' nextPosCenter: " + nextPosCenter.toString());                                                               //DEBUG
+        //ts.getLogger().info("--------------'SwarmManipulator:getNextPositionTo' nextPosCenter: " + nextPosCenter.toString());                                                               //DEBUG
 
         var edgePosTR = new Location(nextPosCenter.x + radius, nextPosCenter.y + radius);
         var edgePosTL = new Location(nextPosCenter.x + radius, nextPosCenter.y - radius);
@@ -60,9 +60,13 @@ public class SwarmManipulator {
 
     public RealVector getDirectionTo(TransitionSystem ts, Location target) {
         //get position, where the swarm is to drive to        
-        //ts.getLogger().info("--------------'getDirectionTo' Swarm.Center: (" + this.center().x + "," + this.center().y + ")");                                     //DEBUG
+        //ts.getLogger().info("--------------'SwarmManipulator::getDirectionTo' Swarm.Center: (" + this.getCenter().x + "," + this.getCenter().y + ")");                                     //DEBUG
         var nextPos = this.getNextPositionTo(ts, target);
-        //ts.getLogger().info("--------------'getDirectionTo' Swarm_Next_Pos: (" + swarmTargetLoc.x + "," + swarmTargetLoc.y + ")");                                     //DEBUG
+        //ts.getLogger().info("--------------'SwarmManipulator::getDirectionTo' Swarm_Next_Pos: (" + nextPos.x + "," + nextPos.y + ")");                                     //DEBUG
+
+        if(getCenter().equals(nextPos)){
+            return GeometryCalculator.calcDirection(ts, this.center, target);
+        }
 
         return GeometryCalculator.calcDirection(ts, this.center, nextPos);
     }
