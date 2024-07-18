@@ -9,24 +9,24 @@ import jason.environment.grid.Location;
 /**
  * Backwards-compatibility (behaves like old sheep pathfinder)
  */
-public class ObstaclePathfinder extends Pathfinder {
-    protected ObstaclePathfinder() {
+public class AgentPathfinder extends Pathfinder {
+    protected AgentPathfinder() {
         this(40000);
     }
 
-    protected ObstaclePathfinder(int maxSteps) {
+    protected AgentPathfinder(int maxSteps) {
         super(maxSteps);
     }
 
-    public static ObstaclePathfinder getInstance() {
-        return Pathfinder.getInstance(ObstaclePathfinder.class);
+    public static AgentPathfinder getInstance() {
+        return Pathfinder.getInstance(AgentPathfinder.class);
     }
 
     @Override
     protected void excludeObstacles() {
         GridModel model = GridModel.getInstance();
         ObstacleMap obstacleMap = model.getObstacleMap();
-        gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, GridModel.SHEEP),
+        gridProcessor.processEntireGrid(loc -> obstacleMap.isBlocked(loc.x, loc.y, GridModel.SHEEP),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
 
@@ -42,7 +42,6 @@ public class ObstaclePathfinder extends Pathfinder {
 
     public void excludeCustomObjects(Location callerPosition, int objectType, int range) {
         GridModel model = GridModel.getInstance();
-        GridProcessor gridProcessor = new GridProcessor(model.getWidth(), model.getHeight());
         List<Location> objectLocations = new ArrayList<>();
         gridProcessor.processEntireGrid(
                 loc -> !loc.equals(callerPosition)
@@ -60,7 +59,7 @@ public class ObstaclePathfinder extends Pathfinder {
 
     @Override
     protected boolean targetIsWalkable(Location target) {
-        return !(GridModel.getInstance().getObstacleMap().isObstacle(target, GridModel.SHEEP)
+        return !(GridModel.getInstance().getObstacleMap().isBlocked(target, GridModel.SHEEP)
                 || customExcludedObjects.contains(target));
     }
 }

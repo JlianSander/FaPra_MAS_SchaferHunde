@@ -6,7 +6,7 @@ import jason.environment.grid.Location;
 /**
  * Behaves like old hound pathfinder
  */
-public class HoundPathfinder extends ObstaclePathfinder {
+public class HoundPathfinder extends AgentPathfinder {
     public static HoundPathfinder getInstance() {
         return Pathfinder.getInstance(HoundPathfinder.class);
     }
@@ -15,7 +15,7 @@ public class HoundPathfinder extends ObstaclePathfinder {
     protected void excludeObstacles() {
         GridModel model = GridModel.getInstance();
         ObstacleMap obstacleMap = model.getObstacleMap();
-        gridProcessor.processEntireGrid(loc -> obstacleMap.isObstacle(loc.x, loc.y, GridModel.HOUND),
+        gridProcessor.processEntireGrid(loc -> obstacleMap.isBlocked(loc.x, loc.y, GridModel.HOUND),
                 loc -> ds.updateCell(loc.x, loc.y, -1),
                 c -> false);
 
@@ -24,7 +24,7 @@ public class HoundPathfinder extends ObstaclePathfinder {
 
     @Override
     protected boolean targetIsWalkable(Location target) {
-        return !(GridModel.getInstance().getObstacleMap().isObstacle(target, GridModel.HOUND)
+        return !(GridModel.getInstance().getObstacleMap().isBlocked(target, GridModel.HOUND)
                 || customExcludedObjects.contains(target));
     }
 }
