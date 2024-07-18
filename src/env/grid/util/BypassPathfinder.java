@@ -52,12 +52,31 @@ public class BypassPathfinder extends Pathfinder {
                 throw new UnwalkableTargetCellException("Target location is an obstacle");
             }
 
-            if (!bypassCache.containsKey(new Pair<>(start, target))) {
+            Pair<Location, Location> key = new Pair<>(start, target);
+            if (!bypassCache.containsKey(key)) {
                 throw new NoPathFoundException("No path found");
             }
 
-            List<Location> path = bypassCache.get(new Pair<>(start, target));
+            List<Location> path = bypassCache.get(key);
             return path.size() > 1 ? path.get(1) : path.get(0);
+        } finally {
+            releaseInstance();
+        }
+    }
+
+    public int getDistance(Location start, Location target)
+            throws UnwalkableTargetCellException, NoPathFoundException {
+        try {
+            if (!targetIsWalkable(target)) {
+                throw new UnwalkableTargetCellException("Target location is an obstacle");
+            }
+
+            Pair<Location, Location> key = new Pair<>(start, target);
+            if (!bypassCache.containsKey(key)) {
+                throw new NoPathFoundException("No path found");
+            }
+
+            return bypassCache.get(key).size();
         } finally {
             releaseInstance();
         }

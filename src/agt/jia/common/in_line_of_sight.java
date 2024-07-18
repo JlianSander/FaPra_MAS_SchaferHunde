@@ -20,6 +20,12 @@ public class in_line_of_sight extends DefaultInternalAction {
         PropertiesLoader loader = PropertiesLoader.getInstance();
         Integer range = loader.getProperty("vision_range", Integer.class);
 
+        // Not part of the grid
+        GridModel model = GridModel.getInstance();
+        if (!model.inGrid(new Location(AgX, AgY)) || !model.inGrid(new Location(TargetX, TargetY))) {
+            return false;
+        }
+
         // Out of range
         if (Math.abs(TargetX - AgX) > range || Math.abs(TargetY - AgY) > range) {
             return false;

@@ -10,6 +10,7 @@ import java.util.Random;
 import org.javatuples.Pair;
 
 import grid.GridModel;
+import grid.util.BypassPathfinder;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -18,40 +19,46 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.common.in_line_of_sight;
 import jia.util.common.AgentUtil;
+import service.GridBFS;
 import util.PropertiesLoader;
 
 public class flocking_pos extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        // 1. BFS
+        // 1a. if BFS == 0 -> stuck
+        // 2. Calculate all weights within the vision range
+        // 3. Within BFS: Find 'dangerAvoidanceCell' that has the greatest distance to all dangers
+        // 4a. Within BFS: if sheep are present: Find all neighbors of sheep -> 'preferableCells'
+        // 4b. Within BFS: if no sheep are present: add all free cells to 'preferableCells'
+        // 5. Within BFS: Go to preferableCell that has largest distance to 'dangerAvoidanceCell'
+
         GridModel model = GridModel.getInstance();
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
 
-        // check if we're stuck
-        List<Location> immediateNeighbors = model.getNeighborhood(ownLoc, 1, loc -> {
-            return model.inGrid(loc);
-        });
-        if (immediateNeighbors.stream().allMatch(loc -> !model.isFree(loc))) {
+        //  BFS
+        int amount = 10;
+        List<Location> reachableLocations = GridBFS.gatherLocations(ownLoc, amount);
+
+        if (reachableLocations.size() == 0) {
             return false;
         }
 
-        // collect all neighboring cells
-        PropertiesLoader loader = PropertiesLoader.getInstance();
-        Integer range = loader.getProperty("vision_range", Integer.class);
-        List<Location> reachableNeighbors = model.getNeighborhood(ownLoc, range, loc -> {
-            return model.inGrid(loc);
-        });
-
-        // calculate weight for each neighboring cell
-        double maxWeight = 0;
-        Map<Location, Double> cellWeights = new HashMap<>();
-        for (Location loc : reachableNeighbors) {
+        // collect all visible cells
+        Integer range = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
+        List<Location> visibleCells = model.getNeighborhood(ownLoc, range, loc -> {
             Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
                     new Term[] { new NumberTermImpl(ownLoc.x),
                             new NumberTermImpl(ownLoc.y), new NumberTermImpl(loc.x),
                             new NumberTermImpl(loc.y) });
 
-            if (!los)
-                continue;
+            return los;
+        });
+
+        // calculate weight for each visible cell
+        double maxWeight = 0;
+        Map<Location, Double> cellWeights = new HashMap<>();
+        for (Location loc : visibleCells) {
 
             int distance = ownLoc.distanceChebyshev(loc);
             double weight = calculateWeight(loc) / distance;
@@ -71,9 +78,11 @@ public class flocking_pos extends DefaultInternalAction {
                 negativeCells.add(new Pair<>(entry.getValue(), entry.getKey()));
             }
         }
+        Location avoidanceCell = getAvoidanceCell(reachableLocations, negativeCells);
+
         // negativeCells.sort((a, b) -> a.getValue0().compareTo(b.getValue0()));
         // System.out.println("Negative cells: " + negativeCells.size());
-        List<Location> oppositeCells = getOppositeCells(ownLoc, negativeCells);
+        // List<Location> oppositeCells = getOppositeCells(ownLoc, negativeCells);
         // for (Location location : oppositeCells) {
         //     System.out.println("Opposite location: " + location);
         // }
@@ -109,17 +118,17 @@ public class flocking_pos extends DefaultInternalAction {
         switch (object) {
             case GridModel.HOUND:
                 // System.out.println("!!!!!!!!!!!!!!found a hound at: " + location);
-                weight = -100;
+                weight = -5;
                 break;
             case GridModel.SHEEP:
                 // System.out.println("!!!!!!!!!!!!!!!found a sheep at: " + location);
-                weight = 40;
+                weight = 5;
                 break;
             case GridModel.OBSTACLE:
-                weight = -10;
+                weight = -1;
                 break;
             case GridModel.CLEAN:
-                weight = 10;
+                weight = 2;
                 break;
             case GridModel.CORRAL:
                 weight = 1;
@@ -128,6 +137,25 @@ public class flocking_pos extends DefaultInternalAction {
                 throw new IllegalArgumentException("Invalid object type");
         }
         return weight;
+    }
+
+    private Location getAvoidanceCell(List<Location> validCells, List<Pair<Double, Location>> negativeCells) {
+        Location avoidanceCell = new Location(-1, -1);
+        double maxDistance = 0;
+        for (Location loc : validCells) {
+            int distance = 0;
+            for (Pair<Double, Location> pair : negativeCells) {
+                int weightedDistance = BypassPathfinder.getInstance().getDistance(loc, pair.getValue1());
+                weightedDistance = Math.max(0, Math.min(weightedDistance, Math.abs(pair.getValue0().intValue())));
+
+                distance += weightedDistance;
+            }
+            if (distance > maxDistance) {
+                maxDistance = distance;
+                avoidanceCell = loc;
+            }
+        }
+        return avoidanceCell;
     }
 
     private List<Location> getOppositeCells(Location agentLocation, List<Pair<Double, Location>> negativeCells) {
