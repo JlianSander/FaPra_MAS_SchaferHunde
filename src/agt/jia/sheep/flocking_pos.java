@@ -2,6 +2,7 @@
 package jia.sheep;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.common.in_line_of_sight;
 import jia.util.common.AgentUtil;
+import model.AgentInfo;
 import service.GridBFS;
 import util.PropertiesLoader;
 
@@ -63,7 +65,7 @@ public class flocking_pos extends DefaultInternalAction {
 
         // calculate weight for each visible cell
         int maxWeight = Integer.MIN_VALUE;
-        int minWeight = Integer.MAX_VALUE;
+        int avoidanceWeight = Integer.MAX_VALUE;
         Map<Location, Integer> cellWeights = new HashMap<>();
         for (Location loc : visibleCells) {
             int weight = getCellWeight(loc);
@@ -72,8 +74,8 @@ public class flocking_pos extends DefaultInternalAction {
                 maxWeight = weight;
             }
 
-            if (weight < minWeight) {
-                minWeight = weight;
+            if (weight < avoidanceWeight && weight < 0) {
+                avoidanceWeight = weight;
             }
 
             cellWeights.put(loc, weight);
@@ -87,7 +89,6 @@ public class flocking_pos extends DefaultInternalAction {
             }
         }
         Location avoidanceCell = getAvoidanceCell(reachableLocations, negativeCells);
-        System.out.println("Avoidance cell: " + avoidanceCell);
         if (avoidanceCell.x == -1 && avoidanceCell.y == -1) {
             avoidanceCell = ownLoc;
         }
@@ -101,9 +102,12 @@ public class flocking_pos extends DefaultInternalAction {
         }
         Location maxCell = getMaxCell(ownLoc, maxCells);
 
-        Location finalCell = getFinalCell(reachableLocations, avoidanceCell, maxCell, minWeight, maxWeight);
-        System.out.println("Final cell: " + finalCell);
-        return finalCell;
+        Location finalCell = getFinalCell(reachableLocations, avoidanceCell, maxCell, avoidanceWeight, maxWeight);
+        AgentInfo sheep = AgentUtil.getAgentInfoFromTs(ts);
+        System.out.println(sheep.getJasonId() + ": Final cell: " + finalCell);
+
+        return un.unifies(args[0], new NumberTermImpl(finalCell.x))
+                && un.unifies(args[1], new NumberTermImpl(finalCell.y));
     }
 
     private int getCellWeight(Location location) {
@@ -155,6 +159,9 @@ public class flocking_pos extends DefaultInternalAction {
     }
 
     private Location getMaxCell(Location sheepLoc, List<Location> maxCells) {
+        // scramble the maxCells list
+        Collections.shuffle(maxCells);
+
         // return the cell out of maxCells that has the shortest step distance to the sheep
         Location maxCell = null;
         int minDistance = Integer.MAX_VALUE;
@@ -180,8 +187,14 @@ public class flocking_pos extends DefaultInternalAction {
 
         if (avoidanceWeight == Integer.MAX_VALUE) {
             Random rand = new Random();
-            avoidanceWeight = (int) (maxPossibleWeight * rand.nextDouble());
+            // avoidanceWeight = (int) -(maxPossibleWeight * rand.nextDouble());
+            avoidanceWeight = -maxPossibleWeight;
         }
+
+        System.out.println("Avoidance cell: " + avoidanceCell);
+        System.out.println("Max cell: " + maxCell);
+        System.out.println("Avoidance weight: " + avoidanceWeight);
+        System.out.println("Max weight: " + maxWeight);
 
         // Normalize the values to a range between 0 and 1 and get avg
         double normalizedNegative = -avoidanceWeight / maxPossibleWeight;
@@ -197,15 +210,30 @@ public class flocking_pos extends DefaultInternalAction {
             }
 
             index = index - i;
-            if (validCells.contains(path.get(index))) {
+            if (index >= 0 && validCells.contains(path.get(index))) {
                 break;
             }
             index = index + i;
-            if (validCells.contains(path.get(index))) {
+            if (index < path.size() && validCells.contains(path.get(index))) {
                 break;
             }
         }
 
-        return path.get(index);
+        GridModel model = GridModel.getInstance();
+        Location finalCell = path.get(index);
+
+        // It's perfectly fine for a sheep to not move, which only happens if there are no dangers
+        // Occasionally choose a different cell if the chosen one is not free
+        if (!model.isFree(finalCell)) {
+            Random rand = new Random();
+            double chance = 0.75;
+            if (rand.nextDouble() <= chance) {
+                finalCell = model.getFirstNeighbor(path.get(index), loc -> {
+                    return validCells.contains(loc) && model.isFree(loc);
+                });
+            }
+        }
+
+        return finalCell;
     }
 }

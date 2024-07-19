@@ -31,8 +31,14 @@ public class BypassPathfinder extends Pathfinder {
                 loc1 -> {
                     gridProcessor.processEntireGrid(loc2 -> targetIsWalkable(loc2),
                             loc2 -> {
-                                List<Location> path = super.getPath(loc1, loc2);
-                                bypassCache.put(new Pair<>(loc1, loc2), path);
+                                Pair<Location, Location> key = new Pair<>(loc1, loc2);
+                                if (!bypassCache.containsKey(key)) {
+                                    List<Location> path = super.getPath(loc1, loc2);
+                                    bypassCache.put(new Pair<>(loc1, loc2), path);
+
+                                    // Add the reverse path as well
+                                    bypassCache.put(new Pair<>(loc2, loc1), path.reversed());
+                                }
                             },
                             c -> false);
                 },
