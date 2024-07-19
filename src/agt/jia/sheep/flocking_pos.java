@@ -30,18 +30,16 @@ public class flocking_pos extends DefaultInternalAction {
         // 1. BFS
         // 1a. if BFS == 0 -> stuck
         // 2. Calculate all weights within the vision range
-        // 3. Within BFS: Find 'dangerAvoidanceCell' that has the greatest distance to all dangers
-        // 4. Within BFS: Find cell with the highest weight
+        // 3. Within BFS: Find 'avoidanceCell' that has the greatest distance to all dangers
+        // 4. Within BFS: Find cell with the highest weight (good cell, like another sheep)
         // 5. Get the pathfinder point between 3 and 4 based on the weights
-        // 4a. Within BFS: if sheep are present: Find all neighbors of sheep -> 'preferableCells'
-        // 4b. Within BFS: if no sheep are present: add all free cells to 'preferableCells'
-        // 5. Within BFS: Go to preferableCell that has largest distance to 'dangerAvoidanceCell'
 
         GridModel model = GridModel.getInstance();
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
+        Integer visionRange = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
 
         //  BFS
-        int amount = 10;
+        int amount = visionRange * 2;
         List<Location> reachableLocations = GridBFS.gatherLocations(ownLoc, amount);
 
         if (reachableLocations.size() == 0) {
@@ -49,8 +47,7 @@ public class flocking_pos extends DefaultInternalAction {
         }
 
         // collect all visible cells
-        Integer range = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
-        List<Location> visibleCells = model.getNeighborhood(ownLoc, range, loc -> {
+        List<Location> visibleCells = model.getNeighborhood(ownLoc, visionRange, loc -> {
             try {
                 Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
                         new Term[] { new NumberTermImpl(ownLoc.x),
