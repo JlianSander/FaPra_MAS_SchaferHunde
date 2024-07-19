@@ -31,7 +31,7 @@ public class BypassPathfinder extends Pathfinder {
                 loc1 -> {
                     gridProcessor.processEntireGrid(loc2 -> targetIsWalkable(loc2),
                             loc2 -> {
-                                List<Location> path = getPath(loc1, loc2);
+                                List<Location> path = super.getPath(loc1, loc2);
                                 bypassCache.put(new Pair<>(loc1, loc2), path);
                             },
                             c -> false);
@@ -64,7 +64,7 @@ public class BypassPathfinder extends Pathfinder {
         }
     }
 
-    public int getDistance(Location start, Location target)
+    public List<Location> getPath(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         try {
             if (!targetIsWalkable(target)) {
@@ -76,9 +76,14 @@ public class BypassPathfinder extends Pathfinder {
                 throw new NoPathFoundException("No path found");
             }
 
-            return bypassCache.get(key).size();
+            return bypassCache.get(key);
         } finally {
             releaseInstance();
         }
+    }
+
+    public int getDistance(Location start, Location target)
+            throws UnwalkableTargetCellException, NoPathFoundException {
+        return getPath(start, target).size();
     }
 }
