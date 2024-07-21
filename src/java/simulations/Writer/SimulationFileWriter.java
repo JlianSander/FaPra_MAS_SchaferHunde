@@ -12,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.javatuples.Pair;
 
 import model.HoundDriveStrategyConfig;
+import model.HoundSearchStrategyConfig;
 import model.ScenarioInfo;
 
 public class SimulationFileWriter {
@@ -33,14 +34,17 @@ public class SimulationFileWriter {
             new File(fullDir).mkdir();
         }
 
+        int houndSearchStrategy = HoundSearchStrategyConfig.getStrategy();
         int houndDriveStrategyClusterSwarm = HoundDriveStrategyConfig.getClusterSwarm();
         int houndDriveStrategySelectSwarm = HoundDriveStrategyConfig.getSelectSwarm();
         int houndDriveStrategyDrive = HoundDriveStrategyConfig.getDrive();
 
-        String houndDriveStrategy = String.format("%s%s%s", houndDriveStrategyClusterSwarm,
+        String houndStrategy = String.format("%s%s%s%s",
+                houndSearchStrategy,
+                houndDriveStrategyClusterSwarm,
                 houndDriveStrategySelectSwarm,
                 houndDriveStrategyDrive);
-        String filePath = String.format("%s/%s_%s.xlsx", fullDir, simName, houndDriveStrategy);
+        String filePath = String.format("%s/%s_%s.xlsx", fullDir, simName, houndStrategy);
         Workbook workbook;
 
         if (new File(filePath).exists()) {

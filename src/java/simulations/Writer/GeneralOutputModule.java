@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import model.HoundDriveStrategyConfig;
+import model.HoundSearchStrategyConfig;
 import model.ScenarioInfo;
 
 public class GeneralOutputModule {
@@ -46,6 +47,10 @@ public class GeneralOutputModule {
         rowIndex++;
         row = sheet.createRow(rowIndex++);
         row.createCell(0).setCellValue("Hunde Strategie");
+
+        row = sheet.createRow(rowIndex++);
+        row.createCell(0).setCellValue("Search:");
+        row.createCell(1).setCellValue(HoundSearchStrategyConfig.getStrategy());
 
         row = sheet.createRow(rowIndex++);
         row.createCell(0).setCellValue("Cluster swarm:");
