@@ -40,7 +40,7 @@ public class flocking_pos extends DefaultInternalAction {
         Integer visionRange = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
 
         //  BFS
-        int amount = visionRange * 20;
+        int amount = visionRange;
         List<Location> reachableLocations = GridBFS.gatherLocations(ownLoc, amount);
 
         if (reachableLocations.size() == 0) {
@@ -119,16 +119,16 @@ public class flocking_pos extends DefaultInternalAction {
                 weight = -5;
                 break;
             case GridModel.SHEEP:
-                weight = 3;
-                break;
-            case GridModel.OBSTACLE:
-                weight = -1;
-                break;
-            case GridModel.CLEAN:
                 weight = 2;
                 break;
-            case GridModel.CORRAL:
+            case GridModel.OBSTACLE:
+                weight = -3;
+                break;
+            case GridModel.CLEAN:
                 weight = 1;
+                break;
+            case GridModel.CORRAL:
+                weight = 0;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid object type");
