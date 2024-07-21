@@ -11,7 +11,7 @@ import jason.environment.grid.Location;
  */
 public class AgentPathfinder extends Pathfinder {
     protected AgentPathfinder() {
-        this(40000);
+        this(80000);
     }
 
     protected AgentPathfinder(int maxSteps) {

@@ -45,26 +45,9 @@ public class GridWorld extends Artifact {
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
 
-        BypassPathfinder.getInstance().prewarm();
-
-        // createTicker();
-    }
-
-    void createTicker() {
-        // make a thread that outputs the running time, every x ms (checks for thread lock)
-        long ms = 100;
-        long startTime = System.currentTimeMillis();
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(ms);
-                    long elapsedTime = System.currentTimeMillis() - startTime;
-                    logger.info("Elapsed time: " + elapsedTime + "ms");
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        }).start();
+        if (System.getProperty("simName") != null) {
+            BypassPathfinder.getInstance().prewarm();
+        }
     }
 
     @OPERATION

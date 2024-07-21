@@ -10,7 +10,7 @@ import grid.GridModel;
 import jason.environment.grid.Location;
 
 public class BypassPathfinder extends Pathfinder {
-    private static Map<Pair<Location, Location>, List<Location>> bypassCache;
+    private static Map<Pair<Location, Location>, List<Location>> bypassCache = new HashMap<>();
 
     protected BypassPathfinder() {
         super(80000);
@@ -21,11 +21,9 @@ public class BypassPathfinder extends Pathfinder {
     }
 
     public void prewarm() {
-        if (bypassCache != null) {
+        if (bypassCache.size() > 0) {
             return;
         }
-
-        bypassCache = new HashMap<>();
 
         gridProcessor.processEntireGrid(loc1 -> targetIsWalkable(loc1),
                 loc1 -> {
@@ -33,16 +31,21 @@ public class BypassPathfinder extends Pathfinder {
                             loc2 -> {
                                 Pair<Location, Location> key = new Pair<>(loc1, loc2);
                                 if (!bypassCache.containsKey(key)) {
-                                    List<Location> path = super.getPath(loc1, loc2);
-                                    bypassCache.put(new Pair<>(loc1, loc2), path);
-
-                                    // Add the reverse path as well
-                                    bypassCache.put(new Pair<>(loc2, loc1), path.reversed());
+                                    cachePath(loc1, loc2);
                                 }
                             },
                             c -> false);
                 },
                 c -> false);
+    }
+
+    private void cachePath(Location start, Location target) {
+        List<Location> path = super.getPath(start, target);
+        Pair<Location, Location> key = new Pair<>(start, target);
+        bypassCache.put(key, path);
+
+        // Add the reverse path as well
+        bypassCache.put(new Pair<>(target, start), path.reversed());
     }
 
     @Override
@@ -54,14 +57,8 @@ public class BypassPathfinder extends Pathfinder {
     public Location getNextPosition(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         try {
-            if (!targetIsWalkable(target)) {
-                throw new UnwalkableTargetCellException("Target location is an obstacle");
-            }
-
             Pair<Location, Location> key = new Pair<>(start, target);
-            if (!bypassCache.containsKey(key)) {
-                throw new NoPathFoundException("No path found");
-            }
+            preCheck(start, target, key);
 
             List<Location> path = bypassCache.get(key);
             return path.size() > 1 ? path.get(1) : path.get(0);
@@ -73,18 +70,24 @@ public class BypassPathfinder extends Pathfinder {
     public List<Location> getPath(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         try {
-            if (!targetIsWalkable(target)) {
-                throw new UnwalkableTargetCellException("Target location is an obstacle");
-            }
-
             Pair<Location, Location> key = new Pair<>(start, target);
-            if (!bypassCache.containsKey(key)) {
-                throw new NoPathFoundException("No path found");
-            }
+            preCheck(start, target, key);
 
             return bypassCache.get(key);
         } finally {
             releaseInstance();
+        }
+    }
+
+    private void preCheck(Location start, Location target, Pair<Location, Location> key)
+            throws UnwalkableTargetCellException, NoPathFoundException {
+        if (!targetIsWalkable(target)) {
+            throw new UnwalkableTargetCellException("Target location is an obstacle");
+        }
+
+        if (!bypassCache.containsKey(key)) {
+            // throw new NoPathFoundException("No path found");
+            cachePath(start, target);
         }
     }
 
