@@ -20,11 +20,12 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jia.common.in_line_of_sight;
 import jia.util.common.AgentUtil;
-import model.AgentInfo;
 import service.GridBFS;
 import util.PropertiesLoader;
 
 public class flocking_pos extends DefaultInternalAction {
+    Random rand = new Random();
+
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         // 1. BFS
@@ -39,7 +40,7 @@ public class flocking_pos extends DefaultInternalAction {
         Integer visionRange = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
 
         //  BFS
-        int amount = visionRange * 2;
+        int amount = visionRange * 20;
         List<Location> reachableLocations = GridBFS.gatherLocations(ownLoc, amount);
 
         if (reachableLocations.size() == 0) {
@@ -49,12 +50,10 @@ public class flocking_pos extends DefaultInternalAction {
         // collect all visible cells
         List<Location> visibleCells = model.getNeighborhood(ownLoc, visionRange, loc -> {
             try {
-                Boolean los = (Boolean) new in_line_of_sight().execute(ts, un,
+                return (Boolean) new in_line_of_sight().execute(ts, un,
                         new Term[] { new NumberTermImpl(ownLoc.x),
                                 new NumberTermImpl(ownLoc.y), new NumberTermImpl(loc.x),
                                 new NumberTermImpl(loc.y) });
-
-                return los;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -100,8 +99,9 @@ public class flocking_pos extends DefaultInternalAction {
         Location maxCell = getMaxCell(ownLoc, maxCells);
 
         Location finalCell = getFinalCell(reachableLocations, avoidanceCell, maxCell, avoidanceWeight, maxWeight);
-        AgentInfo sheep = AgentUtil.getAgentInfoFromTs(ts);
-        System.out.println(sheep.getJasonId() + ": Final cell: " + finalCell);
+        if (ownLoc.equals(finalCell)) {
+            return false;
+        }
 
         return un.unifies(args[0], new NumberTermImpl(finalCell.x))
                 && un.unifies(args[1], new NumberTermImpl(finalCell.y));
@@ -183,20 +183,16 @@ public class flocking_pos extends DefaultInternalAction {
         maxPossibleWeight = Math.max(maxPossibleWeight, Math.abs(getObjectWeight(GridModel.CORRAL)));
 
         if (avoidanceWeight == Integer.MAX_VALUE) {
-            Random rand = new Random();
-            // avoidanceWeight = (int) -(maxPossibleWeight * rand.nextDouble());
-            avoidanceWeight = -maxPossibleWeight;
+            // avoidanceWeight = -maxPossibleWeight;
+            avoidanceWeight = 0;
         }
 
-        System.out.println("Avoidance cell: " + avoidanceCell);
-        System.out.println("Max cell: " + maxCell);
-        System.out.println("Avoidance weight: " + avoidanceWeight);
-        System.out.println("Max weight: " + maxWeight);
+        // System.out.println("Avoidance cell: " + avoidanceCell);
+        // System.out.println("Max cell: " + maxCell);
+        // System.out.println("Avoidance weight: " + avoidanceWeight);
+        // System.out.println("Max weight: " + maxWeight);
 
-        // Normalize the values to a range between 0 and 1 and get avg
-        double normalizedNegative = -avoidanceWeight / maxPossibleWeight;
-        double normalizedPositive = maxWeight / maxPossibleWeight;
-        double avg = (normalizedNegative + normalizedPositive) / 2.0;
+        double avg = scale(avoidanceWeight + maxWeight, -maxPossibleWeight, maxPossibleWeight, 0, 1);
 
         // Get the pathfinder point between the two points based on the weights
         List<Location> path = BypassPathfinder.getInstance().getPath(avoidanceCell, maxCell);
@@ -219,12 +215,12 @@ public class flocking_pos extends DefaultInternalAction {
         GridModel model = GridModel.getInstance();
         Location finalCell = path.get(index);
 
-        // It's perfectly fine for a sheep to not move, which only happens if there are no dangers
-        // Occasionally choose a different cell if the chosen one is not free
+        // It's perfectly fine for a sheep to not move, which only happens if the avoidance cell is where the sheep is
+        // Majority of the time we want to choose a different cell for variety
         if (!model.isFree(finalCell)) {
-            Random rand = new Random();
-            double chance = 0.75;
-            if (rand.nextDouble() <= chance) {
+            int chance = 70;
+            double roll = rand.nextInt(100);
+            if (roll <= chance) {
                 finalCell = model.getFirstNeighbor(path.get(index), loc -> {
                     return validCells.contains(loc) && model.isFree(loc);
                 });
@@ -232,5 +228,9 @@ public class flocking_pos extends DefaultInternalAction {
         }
 
         return finalCell;
+    }
+
+    private double scale(double value, double oldMin, double oldMax, double newMin, double newMax) {
+        return ((value - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin;
     }
 }

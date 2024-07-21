@@ -16,7 +16,7 @@ public class GridBFS {
         GridModel model = GridModel.getInstance();
         int rows = model.getHeight();
         int cols = model.getWidth();
-        boolean[][] visited = new boolean[rows][cols];
+        boolean[][] visited = new boolean[cols][rows];
         Queue<Location> queue = new LinkedList<>();
 
         // Add the starting point to the queue but don't add it to the result list
@@ -29,14 +29,14 @@ public class GridBFS {
             Location current = queue.poll();
 
             for (int d = 0; d < 4; d++) {
-                int newRow = current.x + directions[d];
-                int newCol = current.y + directions[d + 1];
+                int newCol = current.x + directions[d];
+                int newRow = current.y + directions[d + 1];
 
-                Location newLoc = new Location(newRow, newCol);
+                Location newLoc = new Location(newCol, newRow);
                 if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols
-                        && model.isFree(newLoc) && !visited[newRow][newCol]) {
+                        && model.isFree(newLoc) && !visited[newCol][newRow]) {
                     queue.add(newLoc);
-                    visited[newRow][newCol] = true;
+                    visited[newCol][newRow] = true;
                     result.add(newLoc);
                     if (result.size() == amount) {
                         break;

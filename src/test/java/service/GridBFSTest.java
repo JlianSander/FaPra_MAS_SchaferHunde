@@ -12,7 +12,7 @@ import jason.environment.grid.Location;
 
 public class GridBFSTest {
     @Test
-    public void TestGridBFS() {
+    public void TestGridBFSEnclosed() {
         GridModel.create("src/test/resources/templates/8_test.txt");
         GridModel model = GridModel.getInstance();
         Location wall = new Location(1, 4);
@@ -39,5 +39,36 @@ public class GridBFSTest {
         assertTrue(locations.contains(new Location(6, 4)));
         assertTrue(locations.contains(new Location(5, 3)));
         assertTrue(locations.contains(new Location(7, 4)));
+    }
+
+    @Test
+    public void TestGridBFSCornerBR() {
+        GridModel.create("src/test/resources/templates/8_test.txt");
+
+        Location free = new Location(7, 8);
+
+        int n = 20;
+        List<Location> locations = GridBFS.gatherLocations(free, n);
+        assertTrue(locations.size() == n);
+        assertTrue(locations.contains(new Location(6, 8)));
+        assertTrue(locations.contains(new Location(7, 7)));
+        assertTrue(locations.contains(new Location(5, 8)));
+        assertTrue(locations.contains(new Location(6, 7)));
+        assertTrue(locations.contains(new Location(7, 6)));
+        assertTrue(locations.contains(new Location(4, 8)));
+        assertTrue(locations.contains(new Location(5, 7)));
+        assertTrue(locations.contains(new Location(7, 5)));
+        assertTrue(locations.contains(new Location(3, 8)));
+        assertTrue(locations.contains(new Location(4, 7)));
+        assertTrue(locations.contains(new Location(7, 4)));
+        assertTrue(locations.contains(new Location(2, 8)));
+        assertTrue(locations.contains(new Location(3, 7)));
+        assertTrue(locations.contains(new Location(6, 4)));
+        assertTrue(locations.contains(new Location(7, 3)));
+        assertTrue(locations.contains(new Location(1, 8)));
+        assertTrue(locations.contains(new Location(2, 7)));
+        assertTrue(locations.contains(new Location(5, 4)));
+        assertTrue(locations.contains(new Location(7, 2)));
+        assertTrue(locations.contains(new Location(0, 8)));
     }
 }

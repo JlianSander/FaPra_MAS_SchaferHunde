@@ -77,7 +77,7 @@ public class GridModel extends GridWorldModel {
         return getInstance();
     }
 
-    private static void commonInit(int width, int height) {
+    private void commonInit(int width, int height) {
         gridProcessor = new GridProcessor(width, height);
     }
 
