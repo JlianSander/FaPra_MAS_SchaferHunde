@@ -16,15 +16,15 @@ public class ObstacleMap {
         houndWalkThroughCorral = loader.getProperty("hound_walk_through_corral", Boolean.class);
     }
 
-    public boolean isObstacle(int x, int y, int user) {
+    public boolean isBlocked(int x, int y, int user) {
         if (x < 0 || y < 0 || x >= data.length || y >= data[0].length) {
             return true;
         }
         return data[x][y] || locIsBlocked(GridModel.getInstance().getObjectsAt(x, y), user);
     }
 
-    public boolean isObstacle(Location loc, int user) {
-        return isObstacle(loc.x, loc.y, user);
+    public boolean isBlocked(Location loc, int user) {
+        return isBlocked(loc.x, loc.y, user);
     }
 
     public void addObstacle(int x, int y) {

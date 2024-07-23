@@ -77,7 +77,7 @@ public class GridModel extends GridWorldModel {
         return getInstance();
     }
 
-    private static void commonInit(int width, int height) {
+    private void commonInit(int width, int height) {
         gridProcessor = new GridProcessor(width, height);
     }
 
@@ -238,9 +238,9 @@ public class GridModel extends GridWorldModel {
         return neighbors;
     }
 
-    public Location getFirstFreeNeighbor(Location location) {
+    public Location getFirstNeighbor(Location location, Predicate<Location> filter) {
         for (int i = 1; i < getWidth(); i++) {
-            List<Location> neighbors = getNeighborhood(location, i, loc -> isFree(loc));
+            List<Location> neighbors = getNeighborhood(location, i, loc -> filter.test(loc));
             if (neighbors.size() > 0) {
                 return neighbors.get((int) (Math.random() * neighbors.size()));
             }
