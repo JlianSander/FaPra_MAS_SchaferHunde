@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import cartago.*;
 import jason.environment.grid.Location;
+import grid.util.BypassPathfinder;
 import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
 import grid.util.SheepPathfinder;
@@ -44,24 +45,9 @@ public class GridWorld extends Artifact {
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
 
-        // createTicker();
-    }
-
-    void createTicker() {
-        // make a thread that outputs the running time, every x ms (checks for thread lock)
-        long ms = 100;
-        long startTime = System.currentTimeMillis();
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Thread.sleep(ms);
-                    long elapsedTime = System.currentTimeMillis() - startTime;
-                    logger.info("Elapsed time: " + elapsedTime + "ms");
-                } catch (InterruptedException e) {
-                    break;
-                }
-            }
-        }).start();
+        if (System.getProperty("simName") != null) {
+            BypassPathfinder.getInstance().prewarm();
+        }
     }
 
     @OPERATION
@@ -101,7 +87,7 @@ public class GridWorld extends Artifact {
             OpFeedbackParam<Integer> newY) {
         GridModel model = GridModel.getInstance();
 
-        if (!model.getObstacleMap().isObstacle(targetLoc, agent.getAgentType())) {
+        if (!model.getObstacleMap().isBlocked(targetLoc, agent.getAgentType())) {
             int agentCartagoId = agent.getCartagoId();
             agent.onAgentMoved(currentLoc, targetLoc);
             model.setAgPos(AgentDB.getInstance().getAgentByCartagoId(agentCartagoId), targetLoc);

@@ -30,8 +30,8 @@ public abstract class Pathfinder {
     private static final Logger logger = Logger.getLogger(Pathfinder.class.getName());
 
     protected CustomDStarLite ds;
-    protected GridProcessor gridProcessor;
-    protected static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
+    protected static GridProcessor gridProcessor;
+    private static final ConcurrentHashMap<Pathfinder, AtomicBoolean> instances = new ConcurrentHashMap<>();
 
     protected Pathfinder(int maxSteps) {
         logger.setLevel(Level.SEVERE);
@@ -66,7 +66,7 @@ public abstract class Pathfinder {
         }
     }
 
-    private void releaseInstance() {
+    protected void releaseInstance() {
         customExcludedObjects.clear();
         AtomicBoolean inUse = instances.get(this);
         if (inUse != null) {
@@ -98,7 +98,7 @@ public abstract class Pathfinder {
         }
     }
 
-    private List<Location> getPath(Location start, Location target)
+    protected List<Location> getPath(Location start, Location target)
             throws UnwalkableTargetCellException, NoPathFoundException {
         if (start.equals(target)) {
             return List.of(start);
