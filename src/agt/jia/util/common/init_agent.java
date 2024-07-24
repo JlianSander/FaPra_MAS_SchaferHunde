@@ -5,6 +5,7 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
+import jason.runtime.RuntimeServicesFactory;
 import model.HoundDriveStrategyConfig;
 import model.HoundSearchStrategyConfig;
 import util.PropertiesLoader;
@@ -22,7 +23,14 @@ public class init_agent extends DefaultInternalAction {
                                 break;
 
                         case GridModel.HOUND:
-                                waitTime = (int) (waitTime * loader.getProperty("hound_wait_ratio", Double.class));
+                                double wait_ratio = 0;
+                                try{
+                                        wait_ratio = getWait_ratio();
+                                }catch (java.rmi.RemoteException e) {
+                                        ts.getLogger().warning("init_agent::execute ERROR");
+                                        e.printStackTrace();
+                                }
+                                waitTime = (int) Math.round(waitTime * wait_ratio);
 
                                 if(loader.getProperty("hound_no_driving", Boolean.class)){
                                         BeliefBaseManager.addBelief(ts, "no_driving", null);
@@ -88,5 +96,16 @@ public class init_agent extends DefaultInternalAction {
                 BeliefBaseManager.addBelief(ts, "waitTime", null, waitTime);
 
                 return true;
+        }
+
+        public static double getWait_ratio() throws java.rmi.RemoteException {
+                PropertiesLoader loader = PropertiesLoader.getInstance();
+                int nbSheep = 0;
+                var agts = RuntimeServicesFactory.get().getAgentsNames();
+                nbSheep = (int) agts.stream().filter(s -> s.contains("sheep")).count();
+                double coeffA = loader.getProperty("hound_wait_ratio_coeff_a", Double.class);
+                double coeffB = loader.getProperty("hound_wait_ratio_coeff_b", Double.class);
+                double wait_ratio = coeffA * Math.exp(coeffB * nbSheep);
+                return wait_ratio;
         }
 }
