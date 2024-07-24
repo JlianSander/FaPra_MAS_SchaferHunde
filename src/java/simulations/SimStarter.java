@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 import jacamo.infra.JaCaMoLauncher;
 import jason.JasonException;
 import util.FileLister;
+import util.PredefinedStrategyLoader;
 import util.PropertiesLoader;
 
 public class SimStarter {
@@ -58,7 +59,7 @@ public class SimStarter {
         System.exit(0);
     }
 
-    public static void main(String[] args) throws JasonException, IOException {
+    public static void main(String[] args) throws JasonException, IOException, InterruptedException {
         createControlWindow();
 
         int times = 0;
@@ -69,11 +70,29 @@ public class SimStarter {
             System.exit(1);
         }
 
-        boolean full = Boolean.parseBoolean(System.getProperty("full"));
+        boolean subSet = Boolean.parseBoolean(System.getProperty("subset"));
+        if (subSet) {
+            runSubset(times);
+        } else {
+            runAll(times);
+        }
 
-        String dir = "simulations/scenarios";
-        List<String> scenarios = FileLister.getFileNames(dir, false);
-        scenarios.sort(String::compareTo);
+        destroy();
+    }
+
+    private static void runSubset(int times) throws IOException, InterruptedException {
+        List<String> strategies = PredefinedStrategyLoader.parseStrategies();
+        for (String strategy : strategies) {
+            int l = Integer.parseInt(strategy.substring(0, 1));
+            int i = Integer.parseInt(strategy.substring(1, 2));
+            int j = Integer.parseInt(strategy.substring(2, 3));
+            int k = Integer.parseInt(strategy.substring(3, 4));
+            runScenarios(l, i, j, k);
+        }
+    }
+
+    private static void runAll(int times) throws IOException, InterruptedException {
+        boolean full = Boolean.parseBoolean(System.getProperty("full"));
 
         PropertiesLoader loader = PropertiesLoader.getInstance();
 
@@ -97,47 +116,52 @@ public class SimStarter {
                 for (int j = full ? 1 : initialJ; j <= (full ? maxJ : initialJ); j++) {
                     for (int k = full ? 1 : initialK; k <= (full ? maxK : initialK); k++) {
                         for (int l = full ? 1 : initialL; l <= (full ? maxL : initialL); l++) {
-                            logger.info("+++ Starting simulation +++");
-                            logger.info("Hound DRIVE strategy:");
-                            logger.info("ClusterSwarm: " + i);
-                            logger.info("SelectSwarm: " + j);
-                            logger.info("Drive: " + k);
-                            logger.info("Search: " + l);
-
-                            for (String scenario : scenarios) {
-
-                                // Spawn the simulation in a separate JVM process
-                                ProcessBuilder processBuilder = new ProcessBuilder(
-                                        "java",
-                                        "-Xms16g",
-                                        "-Xmx16g",
-                                        "-XX:+UseG1GC",
-                                        "-XX:MaxGCPauseMillis=200",
-                                        "-DsimName=" + scenario,
-                                        "-DhoundStrategyClusterSwarm=" + i,
-                                        "-DhoundStrategySelectSwarm=" + j,
-                                        "-DhoundStrategyDrive=" + k,
-                                        "-DhoundSearchStrategy=" + l,
-                                        "-cp",
-                                        System.getProperty("java.class.path"),
-                                        JaCaMoLauncher.class.getName(),
-                                        dir + "/" + scenario);
-
-                                try {
-                                    Process simulationProcess = processBuilder.start();
-
-                                    // Wait for the sim to complete
-                                    simulationProcess.waitFor();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                            runScenarios(l, i, j, k);
                         }
                     }
                 }
             }
         }
+    }
 
-        destroy();
+    private static void runScenarios(int l, int i, int j, int k) throws IOException {
+        String dir = "simulations/scenarios";
+        List<String> scenarios = FileLister.getFileNames(dir, false);
+        scenarios.sort(String::compareTo);
+
+        logger.info("+++ Starting simulation +++");
+        logger.info("HOUND SEARCH strategy: " + l);
+        logger.info("Hound DRIVE strategy:");
+        logger.info("ClusterSwarm: " + i);
+        logger.info("SelectSwarm: " + j);
+        logger.info("Drive: " + k);
+
+        for (String scenario : scenarios) {
+
+            // Spawn the simulation in a separate JVM process
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "java",
+                    // "-Xms16g",
+                    // "-Xmx16g",
+                    // "-XX:+UseG1GC",
+                    // "-XX:MaxGCPauseMillis=200",
+                    "-DsimName=" + scenario,
+                    "-DhoundStrategyClusterSwarm=" + i,
+                    "-DhoundStrategySelectSwarm=" + j,
+                    "-DhoundStrategyDrive=" + k,
+                    "-DhoundSearchStrategy=" + l,
+                    "-cp",
+                    System.getProperty("java.class.path"),
+                    JaCaMoLauncher.class.getName(),
+                    dir + "/" + scenario);
+
+            try {
+                simulationProcess = processBuilder.start();
+                // Wait for the sim to complete
+                simulationProcess.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
