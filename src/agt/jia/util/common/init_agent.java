@@ -70,15 +70,15 @@ public class init_agent extends DefaultInternalAction {
 
                                 BeliefBaseManager.addBelief(ts, "stay_on_same_position", null,
                                         loader.getProperty("hound_stay_on_same_position", Integer.class));
+                                
+                                int waitTimeBetweenDriving = (int) (waitTime * loader.getProperty("hound_wait_ratio_between_driving", Double.class));
+                                BeliefBaseManager.addBelief(ts, "wait_between_driving", null, waitTimeBetweenDriving);
 
-                                BeliefBaseManager.addBelief(ts, "wait_between_driving", null,
-                                                loader.getProperty("hound_wait_between_driving", Integer.class));
+                                int waitTimeIgnoreSheep = (int) (waitTime * loader.getProperty("hound_wait_ratio_ignore_sheep_forget", Double.class));
+                                BeliefBaseManager.addBelief(ts, "wait_ignore_sheep_forget", null, waitTimeIgnoreSheep);
 
-                                BeliefBaseManager.addBelief(ts, "wait_ignore_sheep_forget", null,
-                                                loader.getProperty("hound_wait_ignore_sheep_forget", Integer.class));
-
-                                BeliefBaseManager.addBelief(ts, "wait_perception", null,
-                                                loader.getProperty("hound_wait_perception", Integer.class));
+                                int waitTimePerception = (int) (waitTime * loader.getProperty("hound_wait_ratio_perception", Double.class));
+                                BeliefBaseManager.addBelief(ts, "wait_perception", null, waitTimePerception);
                                 break;
 
                         default:
