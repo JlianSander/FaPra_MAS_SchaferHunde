@@ -81,7 +81,7 @@ has_sheep_in_sight :- pos(Xme, Yme) & pos_agent(XS, YS, S) & sheep(S) & jia.comm
 
 +!driveSwarm(LS) 
     <- //.print("driveSwarm(", LS, ")");                                                                                                                                    //DEBUG
-    !updateSwarmData(LS);
+    //!updateSwarmData(LS);
     ?swarm(LS, CX, CY, R);
     !planPositionToDrive(LS);
     ?driving_position(Driving_Position);

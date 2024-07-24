@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import cartago.*;
 import jason.environment.grid.Location;
+import jia.util.common.init_agent;
 import grid.util.BypassPathfinder;
 import grid.util.HoundPathfinder;
 import grid.util.Pathfinder;
@@ -41,7 +42,12 @@ public class GridWorld extends Artifact {
         new GridView(model, drawCoords);
 
         Integer sheepWaitTime = loader.getProperty("sheep_wait_duration", Integer.class);
-        Double houndWaitRatio = loader.getProperty("hound_wait_ratio", Double.class);
+        Double houndWaitRatio = 0.0;
+        try{
+            houndWaitRatio = init_agent.getWait_ratio();
+        }catch(java.rmi.RemoteException e){
+            e.printStackTrace();
+        }
         Integer houndWaitTime = (int) (sheepWaitTime * houndWaitRatio);
         scenarioInfo = new ScenarioInfo(sheepWaitTime, houndWaitTime, houndWaitRatio);
 
