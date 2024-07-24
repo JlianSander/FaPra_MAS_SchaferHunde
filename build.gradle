@@ -144,6 +144,20 @@ task simFull(type: JavaExec, dependsOn: 'classes') {
     classpath sourceSets.main.runtimeClasspath
 }
 
+task simSubset(type: JavaExec, dependsOn: 'classes') {
+    group = 'JaCaMo'
+    description = 'Runs predefined JaCaMo simulations consecutively with all strategies'
+    doFirst {
+        mkdir 'log'
+        mkdir 'simulations/results'
+
+        def times = project.hasProperty('t') ? project.t.toString().toInteger() : 1
+        jvmArgs "-Dtimes=${times}", "-Dsubset=true"
+    }
+    mainClass = 'simulations.SimStarter'
+    classpath sourceSets.main.runtimeClasspath
+}
+
 task buildJCMDeps (type: JavaExec, dependsOn: 'classes') {
     mainClass = 'jacamo.infra.RunJaCaMoProject'
     args = ['mas_schafherde.jcm', '--deps']
