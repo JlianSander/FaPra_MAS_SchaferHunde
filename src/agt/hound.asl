@@ -9,8 +9,17 @@
        .set.create(S);
        +ignoredSheep(S);
        !!perceiveSurrounding;
-       !!startSearch;
+       !!ai;
        .print("Finished init hound").
+
++!ai : pos(MeX, MeY)
+    <- jia.hounds.use_ai(A, S, X, Y);
+    if(A \== -1){
+        !walkTowards(X, Y);
+    }
+    jia.hounds.update_ai(S);
+    !!ai;
+    .
 
 //-!G[error(no_relevant), error_msg(Msg)] <- .print("ERROR: ", Msg).                //!!!!!!!!!!!!!!!!!!!!!!!!! DEBUG !!!!!!!!!!!!!!!!!!!!!!!!!!! to silence error message
 //////////////////////////////////////////////////////////////////////////////////////////////////// Beliefs ////////////////////////////////////////////////////////////////////////////////////////////////////    
@@ -101,12 +110,13 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 //------------------------------------------------------- walkTowards -------------------------------------------------------
 
 +!walkTowards(X,Y) : not pos(X,Y)   //not yet reached target coordinates
-    <- .print("walking towards: (",X,",",Y,")");
+    <- //.print("walking towards: (",X,",",Y,")");
     !makeStepTowards(X,Y);
     !waitToMove;
     !walkTowards(X,Y).
 
-+!walkTowards(X,Y) <- .print("walking finished").   //reached target coordinates
+// +!walkTowards(X,Y) <- .print("walking finished").   //reached target coordinates
++!walkTowards(X,Y).   //reached target coordinates
                                                                                                   
 //------------------------------------------------------- makeStepTowards -------------------------------------------------------
 +!makeStepTowards(X,Y) : pos(X,Y) 
@@ -115,9 +125,9 @@ swarms_are_close_to_eachother_complete_linkage(Ss1, Ss2) :- swarm(Ss1, _, _, R1)
 @step[atomic]
 +!makeStepTowards(X,Y)
     <- 
-    .print("makeStepTowards(", X, ", ", Y, ")");
+    // .print("makeStepTowards(", X, ", ", Y, ")");
     nextStep(X,Y, NewX, NewY);
-    .print("stepped to new position: (",NewX,",",NewY,")");
+    // .print("stepped to new position: (",NewX,",",NewY,")");
     !updatePos(NewX,NewY).
 
 //------------------------------------------------------- perceiveSurrounding -------------------------------------------------------
