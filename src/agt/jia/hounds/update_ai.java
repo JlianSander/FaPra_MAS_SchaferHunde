@@ -44,6 +44,11 @@ public class update_ai extends DefaultInternalAction {
         State newState = houndAgent.computeState(ownLoc, allSheepPositions, allHoundPositions,
                 sheepAmountLeft);
 
+        // System.out.println("update AI");
+        // System.out.println("ownLoc: " + ownLoc);
+        // System.out.println("lastState: " + lastState.getAgentLoc());
+        // System.out.println("newState: " + newState.getAgentLoc());
+
         // Update Q-values
         houndAgent.update(lastState, newState, sheepCaptured);
         return true;

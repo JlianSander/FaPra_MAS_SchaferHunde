@@ -15,9 +15,10 @@
 +!ai : pos(MeX, MeY)
     <- jia.hounds.use_ai(A, S, X, Y);
     if(A \== -1){
-        !walkTowards(X, Y);
+        !makeStepTowards(X,Y);
     }
     jia.hounds.update_ai(S);
+    !waitToMove;
     !!ai;
     .
 

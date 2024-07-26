@@ -42,9 +42,11 @@ public class use_ai extends DefaultInternalAction {
         State currentState = houndAgent.computeState(ownLoc, allSheepPositions, allHoundPositions, sheepAmountLeft);
         if (!ownLoc.equals(currentState.getAgentLoc())) {
             System.out.println("PROBLEM!!!!!!!");
-            System.out.println("ownLoc: " + ownLoc);
-            System.out.println("currentState: " + currentState.getAgentLoc());
         }
+
+        // System.out.println("use AI");
+        // System.out.println("ownLoc: " + ownLoc);
+        // System.out.println("currentState: " + currentState.getAgentLoc());
 
         List<Location> availableActions = getAvailableActions(ownLoc);
 
@@ -53,6 +55,7 @@ public class use_ai extends DefaultInternalAction {
         Location newLoc = new Location(-1, -1);
         if (availableActions.size() > 0) {
             newLoc = houndAgent.chooseAction(currentState, availableActions);
+            // System.out.println("newLoc: " + newLoc);
             action = 1;
         }
 
