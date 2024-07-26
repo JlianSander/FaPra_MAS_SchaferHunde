@@ -8,9 +8,11 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
+import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.ObjectTerm;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import jia.common.in_line_of_sight;
 import jia.util.common.AgentUtil;
 import model.AgentInfo;
 import model.State;
@@ -26,7 +28,7 @@ public class update_ai extends DefaultInternalAction {
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
         State lastState = (State) ((ObjectTerm) args[0]).getObject();
 
-        // Get all other agent positions // TODO: limit by los
+        // Get all other agent positions
         List<Location> allSheepPositions = new ArrayList<>();
         List<Location> allHoundPositions = new ArrayList<>();
         for (AgentInfo agInfo : AgentDB.getInstance().getAllAgents()) {
@@ -37,11 +39,21 @@ public class update_ai extends DefaultInternalAction {
             }
         }
 
-        int sheepAmountLeft = 100; // TODO
-        boolean sheepCaptured = false; // TODO
+        List<Location> nearbySheepPositions = new ArrayList<>();
+        for (Location sheep : allSheepPositions) {
+            if ((Boolean) new in_line_of_sight().execute(ts, un,
+                    new Term[] { new NumberTermImpl(ownLoc.x),
+                            new NumberTermImpl(ownLoc.y), new NumberTermImpl(sheep.x),
+                            new NumberTermImpl(sheep.y) })) {
+                nearbySheepPositions.add(sheep);
+            }
+        }
+
+        int sheepAmountLeft = allSheepPositions.size();
+        boolean sheepCaptured = sheepAmountLeft < lastState.getSheepCount();
 
         // Compute new state
-        State newState = houndAgent.computeState(ownLoc, allSheepPositions, allHoundPositions,
+        State newState = houndAgent.computeState(ownLoc, nearbySheepPositions, allHoundPositions,
                 sheepAmountLeft);
 
         // System.out.println("update AI");

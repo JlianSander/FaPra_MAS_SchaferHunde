@@ -27,6 +27,14 @@ public class State implements Serializable {
         return agentLoc;
     }
 
+    public List<Location> getNearbySheepPositions() {
+        return nearbySheepPositions;
+    }
+
+    public int getSheepCount() {
+        return sheepAmountLeft;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

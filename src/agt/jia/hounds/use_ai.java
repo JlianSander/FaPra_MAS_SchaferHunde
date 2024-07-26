@@ -11,6 +11,7 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.ObjectTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+import jia.common.in_line_of_sight;
 import jia.util.common.AgentUtil;
 import model.AgentInfo;
 import model.State;
@@ -25,7 +26,7 @@ public class use_ai extends DefaultInternalAction {
         HoundAgent houndAgent = HoundAgent.getInstance();
         Location ownLoc = AgentUtil.getAgentPositionFromTs(ts);
 
-        // Get all other agent positions // TODO: limit by los
+        // Get all other agent positions
         List<Location> allSheepPositions = new ArrayList<>();
         List<Location> allHoundPositions = new ArrayList<>();
         for (AgentInfo agInfo : AgentDB.getInstance().getAllAgents()) {
@@ -36,13 +37,20 @@ public class use_ai extends DefaultInternalAction {
             }
         }
 
-        int sheepAmountLeft = 100; // TODO
+        List<Location> nearbySheepPositions = new ArrayList<>();
+        for (Location sheep : allSheepPositions) {
+            if ((Boolean) new in_line_of_sight().execute(ts, un,
+                    new Term[] { new NumberTermImpl(ownLoc.x),
+                            new NumberTermImpl(ownLoc.y), new NumberTermImpl(sheep.x),
+                            new NumberTermImpl(sheep.y) })) {
+                nearbySheepPositions.add(sheep);
+            }
+        }
+
+        int sheepAmountLeft = allSheepPositions.size();
 
         // Compute the current state
-        State currentState = houndAgent.computeState(ownLoc, allSheepPositions, allHoundPositions, sheepAmountLeft);
-        if (!ownLoc.equals(currentState.getAgentLoc())) {
-            System.out.println("PROBLEM!!!!!!!");
-        }
+        State currentState = houndAgent.computeState(ownLoc, nearbySheepPositions, allHoundPositions, sheepAmountLeft);
 
         // System.out.println("use AI");
         // System.out.println("ownLoc: " + ownLoc);

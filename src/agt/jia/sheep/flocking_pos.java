@@ -40,7 +40,7 @@ public class flocking_pos extends DefaultInternalAction {
         Integer visionRange = PropertiesLoader.getInstance().getProperty("vision_range", Integer.class);
 
         //  BFS
-        int amount = visionRange;
+        int amount = visionRange * 3;
         List<Location> reachableLocations = GridBFS.gatherLocations(ownLoc, amount);
 
         if (reachableLocations.size() == 0) {

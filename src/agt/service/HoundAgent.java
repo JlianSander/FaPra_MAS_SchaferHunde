@@ -15,9 +15,9 @@ public class HoundAgent implements Serializable {
     private String scenario;
 
     private final ConcurrentHashMap<State, AtomicReference<Map<Location, Double>>> qTables = new ConcurrentHashMap<>();
-    private final double learningRate = 0.9;
+    private final double learningRate = 0.2;
     private final double discountFactor = 0.9;
-    private final double explorationRate = 0.1;
+    private final double explorationRate = 0.2;
     private final Random random = new Random();
 
     private final double LIVING_PENALTY = -0.01;
@@ -44,7 +44,7 @@ public class HoundAgent implements Serializable {
     public Location chooseAction(State state, List<Location> availableLocations) {
         if (random.nextDouble() < explorationRate) {
             Location randomLocation = availableLocations.get(random.nextInt(availableLocations.size()));
-            System.out.println("random");
+            System.out.println("random: " + randomLocation);
             return randomLocation;
         } else {
             Location bestLocation = getBestValidLocation(state, availableLocations);
@@ -54,19 +54,42 @@ public class HoundAgent implements Serializable {
     }
 
     public void update(State oldState, State currentState, boolean sheepCaptured) {
-        double reward = sheepCaptured ? 1.0 : LIVING_PENALTY;
+        double reward = calculateReward(oldState, currentState, sheepCaptured);
         // DEBUG, check if we walked towards the right direction
-        // System.out.println(currentState.getAgentLoc() + " vs " + oldState.getAgentLoc());
-        // if (currentState.getAgentLoc().x > oldState.getAgentLoc().x
-        //         && currentState.getAgentLoc().y == oldState.getAgentLoc().y) {
-        if (GridModel.getInstance().getObjectsAt(currentState.getAgentLoc()).contains(GridModel.CORRAL)) {
-            System.out.println("Went correct, extra reward");
-            reward = 5000.0;
-        }
+        // if (GridModel.getInstance().getObjectsAt(currentState.getAgentLoc()).contains(GridModel.CORRAL)) {
+        //     System.out.println("Went correct, extra reward");
+        //     reward = 5000.0;
+        // }
         double oldValue = getQValue(oldState, currentState.getAgentLoc());
         double nextMax = getBestQValue(currentState);
         double newValue = oldValue + learningRate * (reward + discountFactor * nextMax - oldValue);
         setQValue(oldState, currentState.getAgentLoc(), newValue);
+    }
+
+    private double calculateReward(State oldState, State currentState, boolean sheepCaptured) {
+        double reward = 0.0;
+        if (currentState.getSheepCount() < oldState.getSheepCount()) {
+            reward = 1.0;
+        } else {
+            reward = LIVING_PENALTY;
+        }
+
+        Location agentPosition = currentState.getAgentLoc();
+        // calculate the distance to all nearby sheep into a single value for both states
+        double currentDistanceReward = 0;
+        for (Location sheep : currentState.getNearbySheepPositions()) {
+            currentDistanceReward += agentPosition.distanceChebyshev(sheep);
+        }
+        double oldDistanceReward = 0;
+        for (Location sheep : oldState.getNearbySheepPositions()) {
+            oldDistanceReward += agentPosition.distanceChebyshev(sheep);
+        }
+        if (currentDistanceReward == 0) {
+            return -1;
+        }
+        reward += currentState.getNearbySheepPositions().size() * 5 / currentDistanceReward
+                - oldState.getNearbySheepPositions().size() * 5 / oldDistanceReward;
+        return reward;
     }
 
     public State computeState(Location houndLoc, List<Location> nearbySheepPositions,

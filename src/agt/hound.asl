@@ -8,7 +8,7 @@
        .print("corral is in the area of (",TLX, ",", TLY,")x(", BRX, ",", BRY, ")");
        .set.create(S);
        +ignoredSheep(S);
-       !!perceiveSurrounding;
+    //    !!perceiveSurrounding;
        !!ai;
        .print("Finished init hound").
 
