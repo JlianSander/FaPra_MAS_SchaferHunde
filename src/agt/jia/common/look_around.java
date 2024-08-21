@@ -1,5 +1,8 @@
 package jia.common;
 
+import java.util.HashSet;
+import java.util.function.Predicate;
+
 import jason.NoValueException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
@@ -31,7 +34,7 @@ public class look_around extends DefaultInternalAction {
                 
                 if (i == 0 && j == 0){
                     //own position
-                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                    updateLocations(ts, loc, (posX, posY, agentID) -> {
                         return posX == loc.x && posY == loc.y;
                     });
                     continue;
@@ -47,12 +50,11 @@ public class look_around extends DefaultInternalAction {
 
                 AgentInfo seenAgent = agentDB.getAgentByLocation(loc.x, loc.y);
                 if (seenAgent == null) {
-                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                    updateLocations(ts, loc, (posX, posY, agentID) -> {
                         return posX == loc.x && posY == loc.y;
                     });
                 } else {
-                    //remove all beliefs about this agent's old position or other agents at this position
-                    removeOutdatedBeliefs(ts, loc, (posX, posY, agentID) -> {
+                    updateLocations(ts, loc, (posX, posY, agentID) -> {
                         return agentID.equals(seenAgent.getJasonId()) || posX == loc.x && posY == loc.y;
                     });
 
@@ -66,9 +68,29 @@ public class look_around extends DefaultInternalAction {
         return true;
     }
 
-    private void removeOutdatedBeliefs(TransitionSystem ts, Location loc,
+    private void updateLocations(TransitionSystem ts, Location loc,Function3<Integer, Integer, String, Boolean> filter){
+        //remove all beliefs about this agent's old position or other agents at this position
+        var oldBeliefs = removeOutdatedBeliefs(ts, loc, "pos_agent", filter);
+        //keep the old beliefs in memory
+        for(var belief : oldBeliefs){
+            try {
+                int posX = (int) ((NumberTerm) belief.getTerm(0)).solve();
+                int posY = (int) ((NumberTerm) belief.getTerm(1)).solve();
+                String agentID = ((Atom) belief.getTerm(2)).toString();
+                //remove the beliefs in memory to be replaced
+                removeOutdatedBeliefs(ts, loc, "pos_agent_old", (pX, pY, id) -> {  return id.equals(agentID) || posX == pX && posY == pY; });
+                BeliefBaseManager.addBelief(ts, "pos_agent_old", new Atom("percept"), loc.x, loc.y, new Atom(agentID));
+            } catch (NoValueException e) {
+                ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());
+            }
+        }
+    }
+
+
+    private HashSet<Literal> removeOutdatedBeliefs(TransitionSystem ts, Location loc, String name,
             Function3<Integer, Integer, String, Boolean> filter) {
-        var beliefs = BeliefBaseManager.getBeliefs(ts, "pos_agent", 3);
+        var oldBeliefs = new HashSet<Literal>();
+        var beliefs = BeliefBaseManager.getBeliefs(ts, name, 3);
         if (beliefs != null) {
             while (beliefs.hasNext()) {
                 Literal belief = beliefs.next();
@@ -79,12 +101,14 @@ public class look_around extends DefaultInternalAction {
                     if (filter.apply(posX, posY, agentID)) {
                         //other belief about same agent or belief about some other agent, who was thouhgt to be on this position
                         BeliefBaseManager.removeBelief(ts, belief);
+                        oldBeliefs.add(belief);
                     }
                 } catch (NoValueException e) {
                     ts.getAg().getLogger().info("ERROR in 'look_around' noValueException : " + e.getMessage());
                 }
             }
         }
+        return oldBeliefs;
     }
 
     @FunctionalInterface
