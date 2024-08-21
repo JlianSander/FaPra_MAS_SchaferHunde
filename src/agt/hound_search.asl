@@ -39,19 +39,34 @@ situation_ok_to_drive :- not is_driving & not no_driving.
     !!startSearch.
 
 //------------------------------------------------------- continueSearch -------------------------------------------------------
-i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S) & not no_driving.
+i_know_sheep_pos :- (pos_agent_old(_, _, S) | pos_agent(_, _, S)) & sheep(S) & is_sheep_of_interest(S) & not no_driving.
 
 +!continueSearch : i_know_sheep_pos 
-    <- //.print("searchStrategy2 i_know_sheep_pos");                                                                                                                                   //DEBUG
+    <- .print("searchStrategy i_know_sheep_pos");                                                                                                                                   //DEBUG
     .findall(S, pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep);
-    .nth(0, List_Sheep, S1);
-    ?pos_agent(X, Y, S1);
+    .length(List_Sheep, Len_Sheep);
+    if(Len_Sheep > 0){
+        .nth(0, List_Sheep, S1);
+        ?pos_agent(X, Y, S1);
+        !goToSheep(S1, X, Y);
+    }else{
+        .findall(S, pos_agent_old(_, _, S) & sheep(S) & is_sheep_of_interest(S), List_Sheep_old);
+        .nth(0, List_Sheep_old, S1);
+        ?pos_agent_old(X, Y, S1);
+        !goToSheep(S1, X, Y);
+    }
+    .
+
++!goToSheep(S1, X, Y) 
+    <- .print("GoToSheep(", S1, ",", X, ",", Y, ")" );
+    //?pos(MyX, MyY);
+    //.print("Search for sheep at (", X, ",", Y, ") while I'm at (", MyX, ",", MyY, ")");
     if(pos(X, Y)){ //hound stands on same spot
         !searchWithout(S1);
     }else{
         ?pos(Xme, Yme);
         jia.hounds.get_next_pos(Xme, Yme, 0, 0, X, Y, XNext, YNext);
-        .print("continueSearch myLoc (", Xme, ",", Yme, ") Target:(", X, ",", Y, ") Next:(", XNext, ",", YNext, ")");
+        //.print("continueSearch myLoc (", Xme, ",", Yme, ") Target:(", X, ",", Y, ") Next:(", XNext, ",", YNext, ")");
         if(XNext == Xme & YNext == Yme){
             //can't reach that sheep
             !searchWithout(S1);
@@ -59,8 +74,7 @@ i_know_sheep_pos :- pos_agent(_, _, S) & sheep(S) & is_sheep_of_interest(S) & no
             !reachDestination(XNext,YNext);
             !continueSearch;
         }
-    }
-    .
+    }.
 
  +!continueSearch : not i_know_sheep_pos
     <- .print("continue Search");
