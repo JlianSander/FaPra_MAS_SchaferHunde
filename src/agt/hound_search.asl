@@ -59,14 +59,14 @@ i_know_sheep_pos :- (pos_agent_old(_, _, S) | pos_agent(_, _, S)) & sheep(S) & i
 
 +!goToSheep(S1, X, Y) 
     <- .print("GoToSheep(", S1, ",", X, ",", Y, ")" );
-    ?pos(MyX, MyY);
-    .print("Search for sheep at (", X, ",", Y, ") while I'm at (", MyX, ",", MyY, ")");
+    //?pos(MyX, MyY);
+    //.print("Search for sheep at (", X, ",", Y, ") while I'm at (", MyX, ",", MyY, ")");
     if(pos(X, Y)){ //hound stands on same spot
         !searchWithout(S1);
     }else{
         ?pos(Xme, Yme);
         jia.hounds.get_next_pos(Xme, Yme, 0, 0, X, Y, XNext, YNext);
-        .print("continueSearch myLoc (", Xme, ",", Yme, ") Target:(", X, ",", Y, ") Next:(", XNext, ",", YNext, ")");
+        //.print("continueSearch myLoc (", Xme, ",", Yme, ") Target:(", X, ",", Y, ") Next:(", XNext, ",", YNext, ")");
         if(XNext == Xme & YNext == Yme){
             //can't reach that sheep
             !searchWithout(S1);
